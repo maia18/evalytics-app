@@ -32,7 +32,7 @@ python -m venv venv
 .\venv\Scripts\activate
 ```
 
-#### Linux / Mac::
+#### Linux / Mac:
 
 ```
 python3 -m venv venv
