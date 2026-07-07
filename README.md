@@ -18,6 +18,36 @@ Certifique-se de ter o [Python 3.x](https://www.python.org/downloads/) e o [Git]
 
 ### 2. Clonar o repositório
 Abra o seu terminal e baixe o código para a sua máquina:
-```bash
+```
 git clone [https://github.com/maia18/evalytics-app.git](https://github.com/SEU-USUARIO/evalytics-app.git)
 cd evalytics-app
+```
+
+### 3. Criar e ativar o Ambiente Virtual
+
+#### Windows:
+
+```
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+#### Linux / Mac::
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 4. Instalar as dependências
+
+```
+pip install -r requirements.txt
+```
+
+### 5. Configurar Variáveis de Ambiente:
+
+```
+SUPABASE_URL=[https://sua-url-do-supabase.supabase.co](https://sua-url-do-supabase.supabase.co)
+SUPABASE_KEY=sua-chave-anon-public-do-supabase
+```
