@@ -1,37 +1,33 @@
-from database.firebase_client import db
+from config.firebase_config import db
 from datetime import datetime
 
-COLECAO = "avaliacoes"
-
-def criar_avaliacao(professor_id: str, disciplina_id: str, respostas: list):
+def salvar_avaliacao(curso_id, curso_nome, respostas):
     """
-    Salva uma avaliação completa.
-    'respostas' deve ser uma lista de dicionários, por exemplo:
-    [{"indicador_id": "abc12", "nota": 5}, {"indicador_id": "xyz98", "nota": 4}]
+    Salva o formulário de avaliação preenchido no Firebase.
+    'respostas' é um dicionário no formato { id_do_indicador : nota }
     """
-    doc_ref = db.collection(COLECAO).document()
-    
-    dados = {
-        "professor_id": professor_id,
-        "disciplina_id": disciplina_id,
-        "respostas": respostas,
-        # Salva o momento exato em que o aluno enviou a avaliação
-        "data_criacao": datetime.now().isoformat() 
-    }
-    
-    doc_ref.set(dados)
-    return doc_ref.id
-
-def listar_avaliacoes():
-    """Busca todas as avaliações já respondidas."""
-    avaliacoes = []
-    
-    # Podemos ordenar pela data de criação decrescente se quisermos
-    docs = db.collection(COLECAO).order_by("data_criacao", direction="DESCENDING").stream()
-    
-    for doc in docs:
-        dados = doc.to_dict()
-        dados["id"] = doc.id
-        avaliacoes.append(dados)
+    try:
+        nova_avaliacao = {
+            "curso_id": curso_id,
+            "curso_nome": curso_nome,
+            # Salva a data e hora exatas em que o botão foi clicado
+            "data_avaliacao": datetime.now().isoformat(),
+            "respostas": respostas
+        }
         
-    return avaliacoes
+        db.collection("avaliacoes").add(nova_avaliacao)
+        print(f"Avaliação do curso {curso_nome} salva com sucesso!")
+        return True
+        
+    except Exception as e:
+        print(f"Erro ao salvar a avaliação: {e}")
+        return False
+    
+def listar_avaliacoes():
+    """Busca todas as avaliações concluídas no Firebase."""
+    try:
+        docs = db.collection("avaliacoes").stream()
+        return [{"id": doc.id, **doc.to_dict()} for doc in docs]
+    except Exception as e:
+        print(f"Erro ao buscar avaliações: {e}")
+        return []
