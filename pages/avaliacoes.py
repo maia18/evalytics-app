@@ -9,7 +9,7 @@ from components.layout import layout
 from components.header import titulo_pagina
 from components.grid import criar_grid
 
-from services.avaliacao_service import (
+from services.avaliacoes_service import (
     listar_avaliacoes,
     detalhes_avaliacao,
     remover_avaliacao,

@@ -1,23 +1,17 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
 import os
+import firebase_admin
+from firebase_admin import credentials, firestore
 
-# Caminho para o ficheiro de credenciais
-cred_path = "firebase_credentials.json"
+# Aponta para o seu arquivo de chaves local
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "firebase_credentials.json"
 
 def get_db():
-    # Verifica se o ficheiro existe para evitar erros
-    if not os.path.exists(cred_path):
-        raise FileNotFoundError(f"Ficheiro {cred_path} não encontrado! Verifique se está na pasta raiz do projeto.")
-
-    # Verifica se o Firebase já foi inicializado (importante para evitar erros de duplicação)
+    """Inicializa o app do Firebase e retorna o cliente do Firestore."""
     if not firebase_admin._apps:
-        cred = credentials.Certificate(cred_path)
+        cred = credentials.Certificate("firebase_credentials.json")
         firebase_admin.initialize_app(cred)
     
-    # Retorna o cliente do Firestore (a nossa ligação à base de dados)
     return firestore.client()
 
-# Exporta a variável 'db' para ser usada nos outros serviços
+# Exporta a variável 'db' para ser importada pelos seus services
 db = get_db()

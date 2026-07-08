@@ -1,72 +1,34 @@
-from typing import Dict, Any
-
 class AvaliacaoSession:
-    TOTAL_EIXOS = 3
-
+    """
+    Gerencia o estado temporário de uma avaliação em andamento.
+    No Flet, você pode instanciar essa classe e guardá-bar no page.session.
+    """
     def __init__(self):
-        self.reset()
-
-    def reset(self):
-        """Limpa o estado para iniciar uma nova avaliação do zero."""
         self.professor_id = None
         self.disciplina_id = None
-        self.eixo_atual = 1
-        self.indice_indicador = 0
-        self.respostas: Dict[str, Dict[str, Any]] = {}
-        self.finalizada = False
+        self.respostas = {}  # Formato: {"id_do_indicador": nota}
 
     def iniciar_avaliacao(self, professor_id: str, disciplina_id: str):
-        self.reset()
         self.professor_id = professor_id
         self.disciplina_id = disciplina_id
+        self.respostas = {}
 
-    def salvar_resposta(self, indicador_id: str, nota: int, comentario: str = ""):
-        """Salva ou atualiza a resposta do indicador atual na memória."""
-        self.respostas[indicador_id] = {
-            "nota": nota,
-            "comentario": comentario
-        }
+    def registrar_resposta(self, indicador_id: str, nota: int):
+        """Salva ou atualiza a nota de um indicador específico."""
+        self.respostas[indicador_id] = nota
 
-    def get_resposta(self, indicador_id: str) -> Dict[str, Any]:
-        """Recupera a resposta salva (útil caso o usuário retroceda)."""
-        return self.respostas.get(indicador_id, {"nota": None, "comentario": ""})
+    def obter_progresso(self, total_indicadores: int) -> float:
+        """Retorna o percentual de conclusão (0.0 a 1.0)."""
+        if total_indicadores == 0:
+            return 0.0
+        return len(self.respostas) / total_indicadores
 
-    def avancar(self, total_indicadores_eixo_atual: int) -> str:
-        """
-        Calcula o próximo passo do fluxo.
-        Retorna: 'proximo_indicador', 'proximo_eixo' ou 'finalizar'.
-        """
-        # Se ainda houver indicadores no eixo atual, apenas avança o índice
-        if self.indice_indicador < total_indicadores_eixo_atual - 1:
-            self.indice_indicador += 1
-            return "proximo_indicador"
-        
-        # Se acabaram os indicadores, mas ainda há eixos, pula para o próximo eixo
-        if self.eixo_atual < self.TOTAL_EIXOS:
-            self.eixo_atual += 1
-            self.indice_indicador = 0
-            return "proximo_eixo"
-        
-        # Se acabaram os eixos e os indicadores, a avaliação acabou
-        self.finalizada = True
-        return "finalizar"
-
-    def retroceder(self, total_indicadores_eixo_anterior: int = 0) -> str:
-        """
-        Calcula o passo anterior do fluxo.
-        """
-        if self.indice_indicador > 0:
-            self.indice_indicador -= 1
-            return "indicador_anterior"
-        
-        if self.eixo_atual > 1:
-            self.eixo_atual -= 1
-            # Ao voltar de eixo, o usuário deve cair no último indicador do eixo anterior
-            self.indice_indicador = max(0, total_indicadores_eixo_anterior - 1)
-            return "eixo_anterior"
-        
-        return "inicio"
-
-# Instância global para uso no NiceGUI 
-# (Se houver múltiplos usuários no futuro, migraremos isso para o app.storage.user)
-session = AvaliacaoSession()
+    def formatar_para_envio(self) -> list:
+        """Converte o dicionário interno para a lista que o Firebase espera."""
+        return [{"indicador_id": ind, "nota": nota} for ind, nota in self.respostas.items()]
+    
+    def limpar(self):
+        """Limpa a sessão após o envio bem-sucedido."""
+        self.professor_id = None
+        self.disciplina_id = None
+        self.respostas = {}

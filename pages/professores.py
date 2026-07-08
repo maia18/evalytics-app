@@ -8,7 +8,7 @@ from components.layout import layout
 from components.grid import criar_grid
 from components.forms import campo
 
-from services.professor_service import (
+from services.professores_service import (
     listar_professores,
     adicionar_professor,
     atualizar_professor,

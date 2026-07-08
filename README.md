@@ -20,8 +20,8 @@ O projeto está passando por uma **migração arquitetural estratégica** para a
 Para garantir a estabilidade do sistema, a transição está dividida nas seguintes fases:
 
 - [x] **Etapa 1: Planejamento e Alinhamento do Repositório** -> Atualização da documentação e definição do escopo.
-- [ ] **Etapa 2: Infraestrutura Firebase** -> Criação do projeto no console, ativação do Firestore e geração da chave `firebase_credentials.json`.
-- [ ] **Etapa 3: Modelagem NoSQL** -> Desenho das novas coleções (`professores`, `disciplinas`, `indicadores`, `avaliacoes`) e reescrita dos módulos de `services/`.
+- [x] **Etapa 2: Infraestrutura Firebase** -> Criação do projeto no console, ativação do Firestore e geração da chave `firebase_credentials.json`.
+- [x] **Etapa 3: Modelagem NoSQL** -> Desenho das novas coleções (`professores`, `disciplinas`, `indicadores`, `avaliacoes`) e reescrita dos módulos de `services/`.
 - [ ] **Etapa 4: Estrutura Base no Flet** -> Criação do arquivo principal com o sistema de rotas (`ft.View`) e tela de Login integrada ao Firebase Auth.
 - [ ] **Etapa 5: Migração de Telas** -> Adaptação passo a passo dos formulários de cadastro, do questionário reativo e do dashboard.
 - [ ] **Etapa 6: Relatórios e Exportação** -> Reimplementação da exportação de dados (CSV/Excel) e gráficos no novo ecossistema.

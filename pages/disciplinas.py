@@ -10,7 +10,7 @@ from components.header import titulo_pagina
 from components.grid import criar_grid
 from components.forms import campo, botao
 
-from services.disciplina_service import (
+from services.disciplinas_service import (
     listar_disciplinas,
     adicionar_disciplina,
     atualizar_disciplina,

@@ -1,5 +1,5 @@
 from nicegui import ui
-from services.avaliacao_service import listar_avaliacoes
+from services.avaliacoes_service import listar_avaliacoes
 
 
 def ranking_dashboard():

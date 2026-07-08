@@ -1,141 +1,61 @@
-from database.supabase_client import supabase
+from services.avaliacoes_service import listar_avaliacoes
+from services.professores_service import listar_professores
+from services.disciplinas_service import listar_disciplinas
+from services.indicadores_service import listar_indicadores
 
-def obter_resumo_dashboard():
-    """Busca o total de professores, disciplinas e avaliações no banco."""
-    try:
-        # Pega as contagens diretamente das tabelas
-        prof_res = supabase.table('professores').select('id', count='exact').execute()
-        disc_res = supabase.table('disciplinas').select('id', count='exact').execute()
-        aval_res = supabase.table('avaliacoes').select('id', count='exact').execute()
-        
-        return {
-            "professores": prof_res.count if prof_res else 0,
-            "disciplinas": disc_res.count if disc_res else 0,
-            "avaliacoes": aval_res.count if aval_res else 0
-        }
-    except Exception as e:
-        print(f"Erro ao obter resumo: {e}")
-        return {"professores": 0, "disciplinas": 0, "avaliacoes": 0}
+def gerar_relatorio_geral():
+    """
+    Puxa todos os dados do Firebase e cruza as informações em memória
+    para gerar um relatório consolidado de médias por professor.
+    """
+    # 1. Busca todos os dados "crus" das coleções
+    avaliacoes = listar_avaliacoes()
+    professores = {p["id"]: p for p in listar_professores()}
+    disciplinas = {d["id"]: d for d in listar_disciplinas()}
+    indicadores = {i["id"]: i for i in listar_indicadores()}
 
-def gerar_relatorio_ultima_avaliacao():
-    """Busca a última avaliação concluída e calcula suas médias."""
-    try:
-        # 1. Pega a última avaliação com os nomes do professor e disciplina
-        aval_res = supabase.table('avaliacoes')\
-            .select('*, professores(nome), disciplinas(nome)')\
-            .eq('status', 'concluida')\
-            .order('created_at', desc=True)\
-            .limit(1).execute()
+    # 2. Estrutura para calcular as médias (Agrupando por Professor)
+    # Formato: {"id_prof": {"nome": "João", "soma_notas": 20, "qtd_notas": 4}}
+    resultado_professores = {}
+
+    for avaliacao in avaliacacoes:
+        prof_id = avaliacao.get("professor_id")
         
-        if not aval_res.data:
-            return None
-            
-        ultima_aval = aval_res.data[0]
-        avaliacao_id = ultima_aval['id']
-        
-        # 2. Pega as respostas dessa avaliação cruzando com o eixo do indicador
-        resp_res = supabase.table('respostas')\
-            .select('nota, indicadores(eixo_id)')\
-            .eq('avaliacao_id', avaliacao_id).execute()
-        
-        respostas = resp_res.data
-        if not respostas:
-            return {
-                "avaliacao": ultima_aval,
-                "media_geral": 0,
-                "total_respostas": 0,
-                "medias_por_eixo": {}
+        # Ignora se o professor foi deletado do banco, mas a avaliação ficou
+        if prof_id not in professores:
+            continue
+
+        if prof_id not in resultado_professores:
+            resultado_professores[prof_id] = {
+                "nome": professores[prof_id].get("nome", "Desconhecido"),
+                "departamento": professores[prof_id].get("departamento", "N/A"),
+                "soma_notas": 0,
+                "qtd_notas": 0
             }
+
+        # Soma as notas dessa avaliação
+        for resposta in avaliacao.get("respostas", []):
+            nota = resposta.get("nota")
+            if isinstance(nota, (int, float)):
+                resultado_professores[prof_id]["soma_notas"] += nota
+                resultado_professores[prof_id]["qtd_notas"] += 1
+
+    # 3. Finaliza calculando a média real
+    relatorio_final = []
+    for prof_id, dados in resultado_professores.items():
+        media = 0
+        if dados["qtd_notas"] > 0:
+            media = dados["soma_notas"] / dados["qtd_notas"]
             
-        # 3. Calcula as médias
-        total_notas = 0
-        por_eixo = {}
-        
-        for r in respostas:
-            nota = r['nota']
-            eixo_id = r['indicadores']['eixo_id']
-            
-            total_notas += nota
-            if eixo_id not in por_eixo:
-                por_eixo[eixo_id] = {"soma": 0, "count": 0}
-                
-            por_eixo[eixo_id]["soma"] += nota
-            por_eixo[eixo_id]["count"] += 1
-            
-        media_geral = total_notas / len(respostas)
-        
-        medias_eixo = {
-            eixo: round(dados["soma"] / dados["count"], 2)
-            for eixo, dados in por_eixo.items()
-        }
-        
-        return {
-            "avaliacao": ultima_aval,
-            "media_geral": round(media_geral, 2),
-            "total_respostas": len(respostas),
-            "medias_por_eixo": medias_eixo
-        }
-        
-    except Exception as e:
-        print(f"Erro ao gerar relatorio: {e}")
-        return None
+        relatorio_final.append({
+            "professor_id": prof_id,
+            "nome_professor": dados["nome"],
+            "departamento": dados["departamento"],
+            "media_geral": round(media, 2),
+            "total_avaliacoes_indicadores": dados["qtd_notas"]
+        })
+
+    # Ordena o relatório da maior nota para a menor
+    relatorio_final.sort(key=lambda x: x["media_geral"], reverse=True)
     
-def gerar_relatorio_avaliacao(avaliacao_id: str):
-    """Busca os dados e calcula as médias para uma avaliação específica."""
-    try:
-        # Busca a avaliação específica
-        aval_res = supabase.table('avaliacoes')\
-            .select('*, professores(nome), disciplinas(nome)')\
-            .eq('id', avaliacao_id).execute()
-        
-        if not aval_res.data:
-            return None
-            
-        avaliacao = aval_res.data[0]
-        
-        # Busca as respostas vinculadas a esta avaliação
-        resp_res = supabase.table('respostas')\
-            .select('nota, indicadores(eixo_id)')\
-            .eq('avaliacao_id', avaliacao_id).execute()
-        
-        respostas = resp_res.data
-        if not respostas:
-            return {
-                "avaliacao": avaliacao,
-                "media_geral": 0,
-                "total_respostas": 0,
-                "medias_por_eixo": {}
-            }
-            
-        # Calcula as médias
-        total_notas = 0
-        por_eixo = {}
-        
-        for r in respostas:
-            nota = r['nota']
-            eixo_id = r['indicadores']['eixo_id']
-            
-            total_notas += nota
-            if eixo_id not in por_eixo:
-                por_eixo[eixo_id] = {"soma": 0, "count": 0}
-                
-            por_eixo[eixo_id]["soma"] += nota
-            por_eixo[eixo_id]["count"] += 1
-            
-        media_geral = total_notas / len(respostas)
-        
-        medias_eixo = {
-            eixo: round(dados["soma"] / dados["count"], 2)
-            for eixo, dados in por_eixo.items()
-        }
-        
-        return {
-            "avaliacao": avaliacao,
-            "media_geral": round(media_geral, 2),
-            "total_respostas": len(respostas),
-            "medias_por_eixo": medias_eixo
-        }
-        
-    except Exception as e:
-        print(f"Erro ao gerar relatorio especifico: {e}")
-        return None
+    return relatorio_final
