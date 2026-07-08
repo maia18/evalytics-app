@@ -28,7 +28,7 @@ Para garantir a estabilidade do sistema, a transição está dividida nas seguin
 
 ---
 
-## ⚙️ Como preparar o ambiente local (Nova Versão)
+## ⚙️ Como preparar o ambiente local
 
 Se você deseja colaborar com o desenvolvimento desta nova fase do projeto:
 
@@ -78,7 +78,7 @@ flet run app.py
 
 ---
 
-🔐 Controle de Acesso Temporário (Desenvolvimento)
+## 🔐 Controle de Acesso Temporário (Desenvolvimento)
 
 Enquanto a autenticação via Firebase Auth está sendo implementada, as credenciais administrativas locais são:
 
