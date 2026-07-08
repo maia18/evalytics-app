@@ -9,3 +9,6 @@ __pycache__/
 # Arquivos locais e variáveis de ambiente
 .env
 relatorio_*.csv
+
+# Credenciais do firebase
+firebase_credentials.json
