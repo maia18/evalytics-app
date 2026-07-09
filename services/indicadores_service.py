@@ -21,3 +21,12 @@ def criar_indicador(nome, categoria):
         print("Indicador criado com sucesso!")
     except Exception as e:
         print(f"Erro ao criar indicador: {e}")
+        
+def atualizar_indicador(id_indicador, novo_nome):
+    """Atualiza o nome de um indicador existente no Firebase."""
+    try:
+        db.collection("indicadores").document(id_indicador).update({
+            "nome": novo_nome
+        })
+    except Exception as e:
+        print(f"Erro ao atualizar indicador: {e}")
