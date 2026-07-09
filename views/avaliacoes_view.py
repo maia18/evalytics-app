@@ -1,88 +1,139 @@
 import flet as ft
 from services.indicadores_service import listar_indicadores
 from services.avaliacoes_service import salvar_avaliacao
+from indicadores import INDICADORES 
 
 def TelaAvaliacao(page: ft.Page, curso, on_voltar):
+    indicadores_banco = listar_indicadores()
     
-    indicadores = listar_indicadores()
-    total_indicadores = len(indicadores)
-    
+    # 1. ORGANIZAÇÃO E MAPEAMENTO DOS EIXOS
     estado = {
-        "indice": 0,
+        "eixo_atual": 1,
+        "indice_atual": 0, 
         "respostas": {}
     }
-    
-    # --- CABEÇALHO E BARRA DE NAVEGAÇÃO ---
-    texto_eixo = ft.Text(size=20, weight="bold", color="blue700")
-    
-    # A nova barra de rolagem horizontal com os números
-    linha_navegacao = ft.Row(scroll=ft.ScrollMode.AUTO, spacing=10)
-    
-    # --- CORPO DA PERGUNTA ---
-    titulo_indicador = ft.Text(size=18, weight="bold")
-    desc_indicador = ft.Text(size=14, color="grey600", italic=True)
-    
-    coluna_opcoes = ft.Column(spacing=15)
-    
-    # Salva a resposta automaticamente ao clicar (não depende mais do "Avançar")
-    def salvar_resposta(e):
-        ind_id = indicadores[estado["indice"]]["id"]
-        estado["respostas"][ind_id] = grupo_radios.value
-        atualizar_interface() # Atualiza a tela para pintar a "pílula" de verde
 
-    grupo_radios = ft.RadioGroup(content=coluna_opcoes, on_change=salvar_resposta)
+    eixos_agrupados = {
+        1: {"nome": "Organização Didático-Pedagógica", "indicadores": []},
+        2: {"nome": "Corpo Docente e Tutorial", "indicadores": []},
+        3: {"nome": "Infraestrutura", "indicadores": []}
+    }
+
+    ordem_original = [ind["titulo"] for ind in INDICADORES]
     
-    # --- BOTÕES DE AÇÃO ---
-    btn_cancelar = ft.TextButton("Cancelar Avaliação", icon=ft.Icons.CANCEL, icon_color="red", on_click=lambda _: on_voltar())
+    def pegar_posicao_original(ind_banco):
+        try: return ordem_original.index(ind_banco["nome"])
+        except ValueError: return 999 
+
+    indicadores_banco.sort(key=pegar_posicao_original)
+
+    for ind in indicadores_banco:
+        eixo_num = ind.get("eixo", 1)
+        if eixo_num in eixos_agrupados:
+            eixos_agrupados[eixo_num]["indicadores"].append(ind)
+
+    for eixo_num, dados in eixos_agrupados.items():
+        for i, ind in enumerate(dados["indicadores"]):
+            ind["numero_exibicao"] = f"{eixo_num}.{i + 1}"
+
+    # 2. CONTROLES ESTRUTURAIS DE MOLDURA (FIXOS)
+    botoes_abas = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+    
+    # --- A MÁGICA ACONTECE AQUI: A Nova Barra Deslizante (Slider) ---
+    slider_progresso = ft.Slider(
+        min=1, 
+        max=10, # O máximo será atualizado dinamicamente pelo código
+        value=1,
+        divisions=9, 
+        active_color="blue700", 
+        inactive_color="grey300",
+        label="Indicador {value}",
+        expand=True # Força o slider a ocupar o máximo de espaço horizontal possível
+    )
+    texto_progresso = ft.Text(size=14, color="grey700", weight="bold")
+    
+    # Função disparada quando o usuário "arrasta" a barra
+    def pular_pelo_slider(e):
+        # Transforma o valor da barra (1 a N) no índice do array (0 a N-1)
+        novo_indice = int(e.control.value) - 1 
+        if estado["indice_atual"] != novo_indice:
+            estado["indice_atual"] = novo_indice
+            atualizar_tela()
+
+    slider_progresso.on_change = pular_pelo_slider
+
+    container_progresso = ft.Row([
+        slider_progresso,
+        texto_progresso
+    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+    # ---------------------------------------------------------
+    
+    area_pergunta = ft.Container()
+    
     btn_voltar = ft.ElevatedButton("Anterior", icon=ft.Icons.ARROW_BACK)
     btn_avancar = ft.ElevatedButton("Avançar", icon=ft.Icons.ARROW_FORWARD, style=ft.ButtonStyle(bgcolor="blue700", color="white"))
 
-    # Pula direto para a pergunta clicada na barra superior
-    def pular_para_indicador(novo_indice):
-        estado["indice"] = novo_indice
-        atualizar_interface()
-
-    # Truque de UX: Seleciona o rádio clicando na caixa inteira
-    def selecionar_caixa(nota_str):
-        grupo_radios.value = nota_str
-        salvar_resposta(None)
-
-    # --- DESENHA A TELA ATUAL ---
-    def atualizar_interface():
-        ind = indicadores[estado["indice"]]
+    # 3. FUNÇÃO CENTRAL DE ATUALIZAÇÃO DA VIEW
+    def atualizar_tela():
+        eixo_id = estado["eixo_atual"]
+        idx = estado["indice_atual"]
         
-        # 1. Textos
-        texto_eixo.value = f"Eixo {ind.get('eixo', '')}: {ind.get('categoria', '')}"
-        titulo_indicador.value = f"{estado['indice'] + 1}. {ind.get('nome', '')}"
-        desc_indicador.value = ind.get("descricao", "")
-        desc_indicador.visible = bool(ind.get("descricao"))
-        
-        # 2. Constrói a Barra de Navegação Horizontal Superior
-        linha_navegacao.controls.clear()
-        for i in range(total_indicadores):
-            id_ind_i = indicadores[i]["id"]
-            respondido = id_ind_i in estado["respostas"]
-            
-            # Lógica de cores: Azul (Atual), Verde (Respondido), Cinza (Pendente)
-            cor_fundo = "blue700" if i == estado["indice"] else ("green100" if respondido else "grey200")
-            cor_texto = "white" if i == estado["indice"] else ("green900" if respondido else "black")
-            
-            linha_navegacao.controls.append(
-                ft.Container(
-                    content=ft.Text(str(i + 1), color=cor_texto, weight="bold"),
-                    bgcolor=cor_fundo,
-                    padding=10, # <-- CORREÇÃO APLICADA AQUI
-                    border_radius=20,
-                    on_click=lambda e, idx=i: pular_para_indicador(idx) 
+        lista_atual = eixos_agrupados[eixo_id]["indicadores"]
+        if not lista_atual: return
+
+        ind_atual = lista_atual[idx]
+        total_eixo = len(lista_atual)
+
+        # A. Renderiza os botões dos Eixos CENTRALIZADOS no topo
+        botoes_abas.controls.clear()
+        for e_id in [1, 2, 3]:
+            is_ativo = (e_id == eixo_id)
+            botoes_abas.controls.append(
+                ft.ElevatedButton(
+                    f"Eixo {e_id}",
+                    style=ft.ButtonStyle(
+                        bgcolor="blue700" if is_ativo else "grey200", 
+                        color="white" if is_ativo else "black"
+                    ),
+                    on_click=lambda e, id_eixo=e_id: mudar_eixo(id_eixo)
                 )
             )
 
-        # 3. Constrói as Opções de Resposta
-        coluna_opcoes.controls.clear()
-        criterios = ind.get("criterios", {})
-        criterios_ordenados = sorted(criterios.items(), key=lambda item: int(item[0]))
+        # B. Atualiza as proporções do Slider de acordo com o eixo atual
+        if total_eixo > 1:
+            slider_progresso.max = total_eixo
+            slider_progresso.divisions = total_eixo - 1
+            slider_progresso.value = idx + 1
+            slider_progresso.disabled = False
+        else:
+            slider_progresso.max = 1
+            slider_progresso.divisions = 1
+            slider_progresso.value = 1
+            slider_progresso.disabled = True
+
+        texto_progresso.value = f"{idx + 1} / {total_eixo}"
+
+        # C. Renderiza o Cartão com o Critério Selecionado
+        coluna_opcoes = ft.Column(spacing=10)
         
+        def salvar_resposta(valor):
+            estado["respostas"][ind_atual["id"]] = valor
+            atualizar_tela()
+
+        grupo_radios = ft.RadioGroup(
+            content=coluna_opcoes,
+            value=estado["respostas"].get(ind_atual["id"]),
+            on_change=lambda e: salvar_resposta(e.control.value)
+        )
+
+        criterios = ind_atual.get("criterios", {})
+        criterios_ordenados = sorted(criterios.items(), key=lambda item: int(item[0]))
+
         for nota, texto in criterios_ordenados:
+            def click_caixa(e, n=str(nota)):
+                grupo_radios.value = n
+                salvar_resposta(n)
+
             coluna_opcoes.controls.append(
                 ft.Container(
                     content=ft.Row([
@@ -92,17 +143,31 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
                     padding=15,
                     bgcolor="grey50",
                     border_radius=8,
-                    # O clique no container seleciona o radio
-                    on_click=lambda e, n=str(nota): selecionar_caixa(n) 
+                    on_click=click_caixa
                 )
             )
-            
-        # 4. Restaura a resposta marcada ao voltar na página
-        grupo_radios.value = estado["respostas"].get(ind["id"], None)
+
+        desc_texto = ind_atual.get("descricao", "")
+        descricao_ui = ft.Text(desc_texto, size=13, color="grey600", italic=True) if desc_texto else ft.Container()
+
+        area_pergunta.content = ft.Card(
+            elevation=1,
+            content=ft.Container(
+                padding=30,
+                content=ft.Column([
+                    ft.Text(eixos_agrupados[eixo_id]["nome"], size=12, color="blue700", weight="bold"),
+                    ft.Text(f"{ind_atual['numero_exibicao']}. {ind_atual.get('nome', '')}", size=18, weight="bold"),
+                    descricao_ui,
+                    ft.Divider(height=15, color="transparent"),
+                    grupo_radios
+                ])
+            )
+        )
+
+        # D. Lógica de Ativação dos Botões Inferiores
+        btn_voltar.disabled = (eixo_id == 1 and idx == 0)
         
-        # 5. Atualiza botões
-        btn_voltar.disabled = estado["indice"] == 0
-        if estado["indice"] == total_indicadores - 1:
+        if eixo_id == 3 and idx == len(eixos_agrupados[3]["indicadores"]) - 1:
             btn_avancar.text = "Finalizar Avaliação"
             btn_avancar.icon = ft.Icons.CHECK
             btn_avancar.style = ft.ButtonStyle(bgcolor="green700", color="white")
@@ -110,78 +175,96 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
             btn_avancar.text = "Avançar"
             btn_avancar.icon = ft.Icons.ARROW_FORWARD
             btn_avancar.style = ft.ButtonStyle(bgcolor="blue700", color="white")
-            
+
         page.update()
 
-    # --- CONTROLES DOS BOTÕES INFERIORES ---
+    # 4. FUNÇÕES DE NAVEGAÇÃO DA INTERFACE
+    def mudar_eixo(novo_eixo):
+        estado["eixo_atual"] = novo_eixo
+        estado["indice_atual"] = 0
+        atualizar_tela()
+
     def avancar_click(e):
-        if estado["indice"] == total_indicadores - 1:
-            # Botão de Finalizar clicado
+        eixo_id = estado["eixo_atual"]
+        idx = estado["indice_atual"]
+        total_eixo = len(eixos_agrupados[eixo_id]["indicadores"])
+        
+        if eixo_id == 3 and idx == total_eixo - 1:
             btn_avancar.disabled = True
             page.update()
             
             sucesso = salvar_avaliacao(curso["id"], curso["nome"], estado["respostas"])
-            
             if sucesso:
-                # Mostra quantas foram respondidas do total
-                qtd = len(estado["respostas"])
-                page.snack_bar = ft.SnackBar(ft.Text(f"Avaliação salva! ({qtd}/{total_indicadores} respondidas)"), bgcolor="green700")
+                page.snack_bar = ft.SnackBar(ft.Text("Avaliação registrada com sucesso!"), bgcolor="green700")
                 page.snack_bar.open = True
                 on_voltar()
             else:
                 btn_avancar.disabled = False
-                page.snack_bar = ft.SnackBar(ft.Text("Erro ao salvar. Verifique o terminal."), bgcolor="red700")
+                page.snack_bar = ft.SnackBar(ft.Text("Erro ao salvar avaliação."), bgcolor="red700")
                 page.snack_bar.open = True
                 page.update()
+            return
+
+        # Avanço contínuo
+        if idx < total_eixo - 1:
+            estado["indice_atual"] += 1
         else:
-            estado["indice"] += 1
-            atualizar_interface()
+            estado["eixo_atual"] += 1
+            estado["indice_atual"] = 0
+        atualizar_tela()
 
     def voltar_click(e):
-        if estado["indice"] > 0:
-            estado["indice"] -= 1
-            atualizar_interface()
+        idx = estado["indice_atual"]
+        if idx > 0:
+            estado["indice_atual"] -= 1
+        else:
+            estado["eixo_atual"] -= 1
+            estado["indice_atual"] = len(eixos_agrupados[estado["eixo_atual"]]["indicadores"]) - 1
+        atualizar_tela()
 
     btn_avancar.on_click = avancar_click
     btn_voltar.on_click = voltar_click
 
-    # --- MONTAGEM DO LAYOUT PRINCIPAL ---
-    cartao_principal = ft.Card(
-        elevation=2,
-        content=ft.Container(
-            padding=40,
+    atualizar_tela()
+
+    # 5. ARQUITETURA DO LAYOUT MASTER
+    return ft.Column([
+        
+        # CABEÇALHO FIXO
+        ft.Container(
             content=ft.Column([
-                texto_eixo,
-                
-                # Barra de navegação livre no lugar da barra de progresso rígida
-                linha_navegacao,
-                ft.Divider(height=20, color="transparent"),
-                
-                titulo_indicador,
-                desc_indicador,
+                ft.Row([ft.Text(f"Avaliando Curso: {curso.get('nome')}", size=20, weight="bold")], alignment=ft.MainAxisAlignment.CENTER),
                 ft.Divider(height=10, color="transparent"),
-                
-                grupo_radios,
-                
-                ft.Divider(height=20, color="transparent"),
-                
-                ft.Row([
-                    btn_cancelar,
+                botoes_abas,
+                ft.Divider(height=10, color="transparent"),
+                container_progresso # <--- O Slider Interativo Injetado
+            ]),
+            padding=20
+        ),
+        ft.Divider(height=1, color="grey300"),
+        
+        # ÁREA CENTRAL DE CONTEÚDO (Scroll de página isolado)
+        ft.Container(
+            content=ft.Column([
+                area_pergunta,
+                ft.Divider(height=30, color="transparent")
+            ], scroll=ft.ScrollMode.AUTO),
+            padding=30,
+            expand=True 
+        ),
+        
+        ft.Divider(height=1, color="grey300"),
+        
+        # RODAPÉ FIXO DE CONTROLES
+        ft.Container(
+            padding=15,
+            bgcolor="white",
+            content=ft.Row(
+                controls=[
+                    ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="red", on_click=lambda _: on_voltar()),
                     ft.Row([btn_voltar, btn_avancar])
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-            ])
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+            )
         )
-    )
-
-    if total_indicadores > 0:
-        atualizar_interface()
-    else:
-        cartao_principal.content = ft.Text("Nenhum indicador cadastrado.", color="red")
-
-    return ft.Container(
-        content=ft.Column([
-            ft.Text(f"Avaliando: {curso.get('nome')}", size=24, weight="bold"),
-            cartao_principal
-        ], expand=True, scroll=ft.ScrollMode.AUTO),
-        expand=True
-    )
+    ], expand=True)
