@@ -28,7 +28,7 @@ O projeto foi modernizado para oferecer uma arquitetura robusta e escalável:
 
 ---
 
-## Como Executar Localmente
+## Execução local
 
 ### 1. Clonar o projeto
 
