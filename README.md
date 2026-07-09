@@ -28,19 +28,7 @@ O projeto foi modernizado para oferecer uma arquitetura robusta e escalável:
 
 ---
 
-## Estrutura do Repositório
-
-evalytics-app/
-├── assets/      # Recursos visuais (logo, imagens)
-├── config/      # Configurações de conexão
-├── services/    # Camada de comunicação com o Firebase
-├── views/       # Telas e componentes da interface (Flet)
-├── main.py      # Ponto de entrada da aplicação
-└── requirements.txt
-
----
-
-## Como Executar Localmente
+## Execução local
 
 ### 1. Clonar o projeto
 
@@ -48,7 +36,6 @@ evalytics-app/
 git clone https://github.com/maia18/evalytics-app.git
 cd evalytics-app
 ```
----
 
 ### 2. Configurar o ambiente
 
