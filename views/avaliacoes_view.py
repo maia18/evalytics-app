@@ -6,7 +6,6 @@ from indicadores import INDICADORES
 def TelaAvaliacao(page: ft.Page, curso, on_voltar):
     indicadores_banco = listar_indicadores()
     
-    # 1. ORGANIZAÇÃO E MAPEAMENTO DOS EIXOS
     estado = {
         "eixo_atual": 1,
         "indice_atual": 0, 
@@ -36,25 +35,17 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
         for i, ind in enumerate(dados["indicadores"]):
             ind["numero_exibicao"] = f"{eixo_num}.{i + 1}"
 
-    # 2. CONTROLES ESTRUTURAIS DE MOLDURA (FIXOS)
-    botoes_abas = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+    # CONTROLES ESTRUTURAIS
+    botoes_abas = ft.Row(alignment=ft.MainAxisAlignment.END, spacing=5)
     
-    # --- A MÁGICA ACONTECE AQUI: A Nova Barra Deslizante (Slider) ---
     slider_progresso = ft.Slider(
-        min=1, 
-        max=10, # O máximo será atualizado dinamicamente pelo código
-        value=1,
-        divisions=9, 
-        active_color="blue700", 
-        inactive_color="grey300",
-        label="Indicador {value}",
-        expand=True # Força o slider a ocupar o máximo de espaço horizontal possível
+        min=1, max=10, value=1, divisions=9, 
+        active_color="blue700", inactive_color="grey300",
+        label="Indicador {value}", expand=True 
     )
-    texto_progresso = ft.Text(size=14, color="grey700", weight="bold")
+    texto_progresso = ft.Text(size=12, color="grey700", weight="bold")
     
-    # Função disparada quando o usuário "arrasta" a barra
     def pular_pelo_slider(e):
-        # Transforma o valor da barra (1 a N) no índice do array (0 a N-1)
         novo_indice = int(e.control.value) - 1 
         if estado["indice_atual"] != novo_indice:
             estado["indice_atual"] = novo_indice
@@ -66,14 +57,15 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
         slider_progresso,
         texto_progresso
     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-    # ---------------------------------------------------------
     
-    area_pergunta = ft.Container()
+    area_pergunta = ft.Container(expand=True)
     
-    btn_voltar = ft.ElevatedButton("Anterior", icon=ft.Icons.ARROW_BACK)
-    btn_avancar = ft.ElevatedButton("Avançar", icon=ft.Icons.ARROW_FORWARD, style=ft.ButtonStyle(bgcolor="blue700", color="white"))
+    btn_voltar = ft.ElevatedButton("Anterior", icon=ft.Icons.ARROW_BACK, height=35)
+    
+    # SOLUÇÃO BLINDADA: Dois botões independentes para evitar o bug visual do Flet
+    btn_avancar = ft.ElevatedButton("Avançar", icon=ft.Icons.ARROW_FORWARD, height=35, style=ft.ButtonStyle(bgcolor="blue700", color="white"))
+    btn_finalizar = ft.ElevatedButton("Finalizar", icon=ft.Icons.CHECK, height=35, style=ft.ButtonStyle(bgcolor="green700", color="white"), visible=False)
 
-    # 3. FUNÇÃO CENTRAL DE ATUALIZAÇÃO DA VIEW
     def atualizar_tela():
         eixo_id = estado["eixo_atual"]
         idx = estado["indice_atual"]
@@ -84,13 +76,13 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
         ind_atual = lista_atual[idx]
         total_eixo = len(lista_atual)
 
-        # A. Renderiza os botões dos Eixos CENTRALIZADOS no topo
         botoes_abas.controls.clear()
         for e_id in [1, 2, 3]:
             is_ativo = (e_id == eixo_id)
             botoes_abas.controls.append(
                 ft.ElevatedButton(
                     f"Eixo {e_id}",
+                    height=28,
                     style=ft.ButtonStyle(
                         bgcolor="blue700" if is_ativo else "grey200", 
                         color="white" if is_ativo else "black"
@@ -99,7 +91,6 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
                 )
             )
 
-        # B. Atualiza as proporções do Slider de acordo com o eixo atual
         if total_eixo > 1:
             slider_progresso.max = total_eixo
             slider_progresso.divisions = total_eixo - 1
@@ -113,8 +104,7 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
 
         texto_progresso.value = f"{idx + 1} / {total_eixo}"
 
-        # C. Renderiza o Cartão com o Critério Selecionado
-        coluna_opcoes = ft.Column(spacing=10)
+        coluna_opcoes = ft.Column(spacing=4)
         
         def salvar_resposta(valor):
             estado["respostas"][ind_atual["id"]] = valor
@@ -138,9 +128,9 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
                 ft.Container(
                     content=ft.Row([
                         ft.Radio(value=str(nota)),
-                        ft.Text(f"Nota {nota}:\n{texto}", expand=True, size=14)
+                        ft.Text(texto, expand=True, size=13)
                     ], vertical_alignment=ft.CrossAxisAlignment.START),
-                    padding=15,
+                    padding=8,
                     bgcolor="grey50",
                     border_radius=8,
                     on_click=click_caixa
@@ -148,37 +138,27 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
             )
 
         desc_texto = ind_atual.get("descricao", "")
-        descricao_ui = ft.Text(desc_texto, size=13, color="grey600", italic=True) if desc_texto else ft.Container()
+        descricao_ui = ft.Text(desc_texto, size=12, color="grey600", italic=True) if desc_texto else ft.Container()
 
-        area_pergunta.content = ft.Card(
-            elevation=1,
-            content=ft.Container(
-                padding=30,
-                content=ft.Column([
-                    ft.Text(eixos_agrupados[eixo_id]["nome"], size=12, color="blue700", weight="bold"),
-                    ft.Text(f"{ind_atual['numero_exibicao']}. {ind_atual.get('nome', '')}", size=18, weight="bold"),
-                    descricao_ui,
-                    ft.Divider(height=15, color="transparent"),
-                    grupo_radios
-                ])
-            )
+        area_pergunta.content = ft.Container(
+            padding=0, 
+            content=ft.Column([
+                ft.Text(eixos_agrupados[eixo_id]["nome"], size=12, color="blue700", weight="bold"),
+                ft.Text(f"{ind_atual['numero_exibicao']}. {ind_atual.get('nome', '')}", size=16, weight="bold"),
+                descricao_ui,
+                grupo_radios
+            ], spacing=2)
         )
 
-        # D. Lógica de Ativação dos Botões Inferiores
         btn_voltar.disabled = (eixo_id == 1 and idx == 0)
         
-        if eixo_id == 3 and idx == len(eixos_agrupados[3]["indicadores"]) - 1:
-            btn_avancar.text = "Finalizar Avaliação"
-            btn_avancar.icon = ft.Icons.CHECK
-            btn_avancar.style = ft.ButtonStyle(bgcolor="green700", color="white")
-        else:
-            btn_avancar.text = "Avançar"
-            btn_avancar.icon = ft.Icons.ARROW_FORWARD
-            btn_avancar.style = ft.ButtonStyle(bgcolor="blue700", color="white")
+        # Alterna dinamicamente qual botão fica visível na tela
+        is_ultimo_indicador = (eixo_id == 3 and idx == len(eixos_agrupados[3]["indicadores"]) - 1)
+        btn_avancar.visible = not is_ultimo_indicador
+        btn_finalizar.visible = is_ultimo_indicador
 
         page.update()
 
-    # 4. FUNÇÕES DE NAVEGAÇÃO DA INTERFACE
     def mudar_eixo(novo_eixo):
         estado["eixo_atual"] = novo_eixo
         estado["indice_atual"] = 0
@@ -190,7 +170,7 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
         total_eixo = len(eixos_agrupados[eixo_id]["indicadores"])
         
         if eixo_id == 3 and idx == total_eixo - 1:
-            btn_avancar.disabled = True
+            btn_finalizar.disabled = True
             page.update()
             
             sucesso = salvar_avaliacao(curso["id"], curso["nome"], estado["respostas"])
@@ -199,13 +179,12 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
                 page.snack_bar.open = True
                 on_voltar()
             else:
-                btn_avancar.disabled = False
+                btn_finalizar.disabled = False
                 page.snack_bar = ft.SnackBar(ft.Text("Erro ao salvar avaliação."), bgcolor="red700")
                 page.snack_bar.open = True
                 page.update()
             return
 
-        # Avanço contínuo
         if idx < total_eixo - 1:
             estado["indice_atual"] += 1
         else:
@@ -222,49 +201,46 @@ def TelaAvaliacao(page: ft.Page, curso, on_voltar):
             estado["indice_atual"] = len(eixos_agrupados[estado["eixo_atual"]]["indicadores"]) - 1
         atualizar_tela()
 
+    # Ambos disparam a mesma função, o código cuida de saber o momento de salvar ou avançar
     btn_avancar.on_click = avancar_click
+    btn_finalizar.on_click = avancar_click
     btn_voltar.on_click = voltar_click
 
     atualizar_tela()
 
-    # 5. ARQUITETURA DO LAYOUT MASTER
     return ft.Column([
-        
-        # CABEÇALHO FIXO
         ft.Container(
             content=ft.Column([
-                ft.Row([ft.Text(f"Avaliando Curso: {curso.get('nome')}", size=20, weight="bold")], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Divider(height=10, color="transparent"),
-                botoes_abas,
-                ft.Divider(height=10, color="transparent"),
-                container_progresso # <--- O Slider Interativo Injetado
-            ]),
-            padding=20
+                ft.Row([
+                    ft.Text(f"Avaliando: {curso.get('nome')}", size=16, weight="bold"),
+                    botoes_abas
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                container_progresso
+            ], spacing=0),
+            padding=10
         ),
         ft.Divider(height=1, color="grey300"),
         
-        # ÁREA CENTRAL DE CONTEÚDO (Scroll de página isolado)
         ft.Container(
             content=ft.Column([
-                area_pergunta,
-                ft.Divider(height=30, color="transparent")
+                area_pergunta
             ], scroll=ft.ScrollMode.AUTO),
-            padding=30,
+            padding=10,
             expand=True 
         ),
         
         ft.Divider(height=1, color="grey300"),
         
-        # RODAPÉ FIXO DE CONTROLES
         ft.Container(
-            padding=15,
+            padding=10,
             bgcolor="white",
             content=ft.Row(
                 controls=[
-                    ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="red", on_click=lambda _: on_voltar()),
-                    ft.Row([btn_voltar, btn_avancar])
+                    ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="red", height=35, on_click=lambda _: on_voltar()),
+                    # Inserimos o botão finalizar na mesma linha (ele só aparece no final)
+                    ft.Row([btn_voltar, btn_avancar, btn_finalizar]) 
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
             )
         )
-    ], expand=True)
+    ], expand=True, spacing=0)
