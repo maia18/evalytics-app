@@ -1,46 +1,56 @@
-# 📊 Evalytics - Sistema de Avaliação Institucional
+# 📊 Evalytics
 
-O **Evalytics** é uma plataforma web e mobile desenvolvida em Python para gestão e execução de autoavaliações institucionais baseadas nas diretrizes oficiais do **MEC/INEP**. 
+O **Evalytics** é uma solução inteligente para a gestão e execução de autoavaliações institucionais, desenhada para alinhar cursos superiores às diretrizes oficiais do **MEC/INEP**.
 
-O projeto está passando por uma **migração arquitetural estratégica** para adoção de uma interface cross-platform com **Flet** (baseado em Flutter) e um backend serverless escalável em tempo real com **Firebase**.
-
----
-
-## 🚀 Nova Stack Tecnológica (Em migração)
-
-* **Interface de Usuário (Frontend):** [Flet](https://flet.dev/) (Interface reativa e moderna rodando sobre o motor do Flutter)
-* **Banco de Dados (Backend):** [Firebase Firestore](https://firebase.google.com/) (Banco de dados NoSQL orientado a documentos com sincronização em tempo real)
-* **Autenticação:** Firebase Auth (Gestão segura de usuários e permissões administrativas)
-* **Visualização de Dados:** Flet Charts ou Plotly
+O sistema transforma o complexo processo de avaliação em uma jornada fluida, utilizando tecnologia de ponta para garantir **performance**, **escalabilidade** e uma **experiência** de usuário impecável para coordenadores e avaliadores.
 
 ---
 
-## 🗺️ Roadmap de Migração (Etapas)
+## Stack Tecnológica
 
-Para garantir a estabilidade do sistema, a transição está dividida nas seguintes fases:
+O projeto foi modernizado para oferecer uma arquitetura robusta e escalável:
 
-- [x] **Etapa 1: Planejamento e Alinhamento do Repositório** -> Atualização da documentação e definição do escopo.
-- [x] **Etapa 2: Infraestrutura Firebase** -> Criação do projeto no console, ativação do Firestore e geração da chave `firebase_credentials.json`.
-- [x] **Etapa 3: Modelagem NoSQL** -> Desenho das novas coleções (`professores`, `disciplinas`, `indicadores`, `avaliacoes`) e reescrita dos módulos de `services/`.
-- [ ] **Etapa 4: Estrutura Base no Flet** -> Criação do arquivo principal com o sistema de rotas (`ft.View`) e tela de Login integrada ao Firebase Auth.
-- [ ] **Etapa 5: Migração de Telas** -> Adaptação passo a passo dos formulários de cadastro, do questionário reativo e do dashboard.
-- [ ] **Etapa 6: Relatórios e Exportação** -> Reimplementação da exportação de dados (CSV/Excel) e gráficos no novo ecossistema.
+* **Interface (Frontend)**: [Flet](https://flet.dev/) (Interface reativa e moderna rodando sobre o motor do Flutter)
+* **Banco de Dados (Backend)**: [Firebase Firestore](https://firebase.google.com/) (Banco de dados NoSQL orientado a documentos com sincronização em tempo real)
+* **Segurança**: Firebase Auth (Gestão segura de usuários e permissões administrativas)
 
 ---
 
-## ⚙️ Como preparar o ambiente local
+## Principais Funcionalidades
 
-Se você deseja colaborar com o desenvolvimento desta nova fase do projeto:
+* **Gerenciamento Hierárquico**: Organização intuitiva de indicadores por eixos temáticos (Pastas).
 
-### 1. Clonar o repositório
+* **Editor Dinâmico**: Fluxo otimizado para atualização de títulos, descrições e critérios de avaliação com um clique.
+
+* **Interface Cross-Platform**: Experiência consistente em diferentes dispositivos.
+
+* **Dados em Tempo Real**: Sincronização imediata das avaliações entre usuários e base de dados.
+
+---
+
+## Estrutura do Repositório
+
+evalytics-app/
+├── assets/      # Recursos visuais (logo, imagens)
+├── config/      # Configurações de conexão
+├── services/    # Camada de comunicação com o Firebase
+├── views/       # Telas e componentes da interface (Flet)
+├── main.py      # Ponto de entrada da aplicação
+└── requirements.txt
+
+---
+
+## Como Executar Localmente
+
+### 1. Clonar o projeto
 
 ```
-git clone [https://github.com/maia18/evalytics-app.git](https://github.com/maia18/evalytics-app.git)
+git clone https://github.com/maia18/evalytics-app.git
 cd evalytics-app
 ```
 ---
 
-### 2. Criar e ativar o Ambiente Virtual
+### 2. Configurar o ambiente
 
 #### Windows:
 
@@ -70,15 +80,15 @@ pip freeze > requirements.txt
 Você precisará solicitar o arquivo 
 ```firebase_credentials.json``` à equipe e colá-lo na raiz do projeto (o arquivo já está configurado no .gitignore).
 
-### 5. Executar a aplicação
+### 5. Executar
 
 ```
-flet run app.py
+flet run main.py
 ```
 
 ---
 
-## 🔐 Controle de Acesso Temporário (Desenvolvimento)
+## Acesso de Desenvolvimento
 
 Enquanto a autenticação via Firebase Auth está sendo implementada, as credenciais administrativas locais são:
 
