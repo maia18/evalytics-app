@@ -1,7 +1,7 @@
 import flet as ft
 from services.indicadores_service import listar_indicadores
 from services.avaliacoes_service import salvar_avaliacao
-from indicadores import INDICADORES 
+from database.indicadores import INDICADORES 
 
 def TelaAvaliacao(page: ft.Page, curso, on_voltar):
     indicadores_banco = listar_indicadores()
