@@ -36,7 +36,6 @@ O projeto foi modernizado para oferecer uma arquitetura robusta e escalável:
 git clone https://github.com/maia18/evalytics-app.git
 cd evalytics-app
 ```
----
 
 ### 2. Configurar o ambiente
 
