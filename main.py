@@ -16,10 +16,8 @@ def main(page: ft.Page):
         page.views.clear()
 
         if rota == "/dashboard":
-            # Chama a função que criamos em dashboard.py
             page.views.append(ViewDashboard(page, mudar_tela))
         else:
-            # Chama a função que criamos em login.py
             page.views.append(ViewLogin(page, mudar_tela))
         
         page.update()
@@ -28,4 +26,4 @@ def main(page: ft.Page):
     mudar_tela("/")
 
 if __name__ == "__main__":
-    ft.run(main)
+    ft.run(main, assets_dir="assets")
