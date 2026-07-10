@@ -38,9 +38,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 
                 # Links de Navegação
                 ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, style=estilo_botao_menu, on_click=lambda _: mudar_tela("/avaliacoes")),
+                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, style=estilo_botao_menu),
-                ft.TextButton("Alunos e Turmas", icon=ft.Icons.PEOPLE, style=estilo_botao_menu),
+                ft.TextButton("Cursos", icon=ft.Icons.BOOK, style=estilo_botao_menu),
                 ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, style=estilo_botao_menu),
                 
                 # Empurra o botão de sair para o final da tela
