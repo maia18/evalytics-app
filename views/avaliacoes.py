@@ -1,4 +1,5 @@
 import flet as ft
+import json
 from database.indicadores import INDICADORES
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
@@ -34,6 +35,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
     # === 2. ESTADO AUXILIAR DA TELA ===
     pasta_aberta_atualmente = {"titulo": "", "eixo": 0}
+    item_alvo_acao = {} # Guarda qual item clicamos para editar ou excluir
 
     # === 3. LÓGICA DO MODAL: EDIÇÃO (LÁPIS) ===
     def fechar_modal_edicao(e):
@@ -54,9 +56,9 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
             spacing=15,
             controls=[
                 ft.Text("Descreva a falha encontrada ou nova melhoria:", size=14, weight="bold"),
-                ft.TextField(multiline=True, min_lines=2, max_lines=2, border_color="blue200", hint_text="Ex: Roteador do bloco B apresenta instabilidade..."),
+                ft.TextField(multiline=True, min_lines=2, max_lines=2, border_color="blue200"),
                 ft.Text("Justificativa / Plano de Ação:", size=14, weight="bold"),
-                ft.TextField(multiline=True, min_lines=3, max_lines=3, border_color="blue200", hint_text="Ex: Acionado a equipe de TI para substituição do equipamento..."),
+                ft.TextField(multiline=True, min_lines=3, max_lines=3, border_color="blue200"),
             ]
         ),
         actions=[
@@ -66,12 +68,60 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         actions_alignment=ft.MainAxisAlignment.END
     )
 
-    def abrir_modal(e):
-        page.overlay.append(modal_edicao)
+    def abrir_modal_edicao(e):
+        if modal_edicao not in page.overlay:
+            page.overlay.append(modal_edicao)
         modal_edicao.open = True
         page.update()
 
-    # === 4. LÓGICA DO MODAL: NOVO INDICADOR (BOTÃO AZUL) ===
+
+    # === 4. LÓGICA DO MODAL: EXCLUSÃO (LIXEIRA) ===
+    def fechar_modal_exclusao(e):
+        modal_exclusao.open = False
+        page.update()
+
+    def confirmar_exclusao(e):
+        # 1. Remove da memória procurando pelo título exato
+        for idx, item in enumerate(INDICADORES):
+            if item["titulo"] == item_alvo_acao["titulo"] and item["eixo"] == item_alvo_acao["eixo"]:
+                INDICADORES.pop(idx)
+                break
+        
+        # 2. Atualiza o arquivo físico indicadores.py
+        try:
+            with open("database/indicadores.py", "w", encoding="utf-8") as f:
+                lista_em_texto = json.dumps(INDICADORES, indent=4, ensure_ascii=False)
+                f.write(f"INDICADORES = {lista_em_texto}\n")
+        except Exception as erro:
+            print(f"Erro ao apagar no arquivo: {erro}")
+            
+        fechar_modal_exclusao(e)
+        page.snack_bar = ft.SnackBar(ft.Text("Indicador removido permanentemente!", color="red700"))
+        page.snack_bar.open = True
+        
+        # 3. Atualiza a tela
+        abrir_pasta(pasta_aberta_atualmente["titulo"])
+
+    modal_exclusao = ft.AlertDialog(
+        title=ft.Text("Confirmar Exclusão", size=18, weight="bold", color="red700"),
+        content=ft.Text("Tem certeza que deseja apagar este indicador? Esta ação será salva no arquivo físico e não pode ser desfeita."),
+        actions=[
+            ft.TextButton("Cancelar", on_click=fechar_modal_exclusao, style=ft.ButtonStyle(color="black54")),
+            ft.ElevatedButton("Sim, Excluir", bgcolor="red700", color="white", on_click=confirmar_exclusao)
+        ],
+        actions_alignment=ft.MainAxisAlignment.END
+    )
+
+    def preparar_exclusao(item):
+        item_alvo_acao.clear()
+        item_alvo_acao.update(item)
+        if modal_exclusao not in page.overlay:
+            page.overlay.append(modal_exclusao)
+        modal_exclusao.open = True
+        page.update()
+
+
+    # === 5. LÓGICA DO MODAL: NOVO INDICADOR (BOTÃO AZUL) ===
     campo_titulo = ft.TextField(label="Título do Indicador", border_color="blue200")
     campo_descricao = ft.TextField(label="Descrição / Observação (Opcional)", multiline=True, min_lines=2, border_color="blue200")
     
@@ -87,26 +137,47 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
             "status": "ATIVO", 
             "criterios": {1: "", 2: "", 3: "", 4: "", 5: ""}
         }
-        INDICADORES.append(novo_item)
         
+        # LÓGICA DE ORGANIZAÇÃO: Encontra o último item do eixo atual
+        eixo_atual = pasta_aberta_atualmente["eixo"]
+        indice_insercao = len(INDICADORES) # Padrão: joga pro final se não achar nada
+        
+        # Percorre a lista de trás para frente (reverse) para achar o último do mesmo eixo
+        for i in range(len(INDICADORES) - 1, -1, -1):
+            if INDICADORES[i].get("eixo") == eixo_atual:
+                indice_insercao = i + 1 # A posição exata para inserir é logo após ele
+                break
+                
+        # Insere na posição calculada em vez de jogar no final
+        INDICADORES.insert(indice_insercao, novo_item)
+        
+        # Atualiza o arquivo físico
+        try:
+            with open("database/indicadores.py", "w", encoding="utf-8") as f:
+                lista_em_texto = json.dumps(INDICADORES, indent=4, ensure_ascii=False)
+                f.write(f"INDICADORES = {lista_em_texto}\n")
+        except Exception as erro:
+            print(f"Erro ao salvar no arquivo: {erro}")
+        
+        # Limpa os campos
         campo_titulo.value = ""
         campo_descricao.value = ""
         
+        # Fecha e notifica
         fechar_modal_novo(e)
-        page.snack_bar = ft.SnackBar(ft.Text("Novo indicador criado com sucesso!", color="green"))
+        page.snack_bar = ft.SnackBar(ft.Text("Novo indicador salvo e organizado no arquivo!", color="green"))
         page.snack_bar.open = True
+        
+        # Atualiza a tela
         abrir_pasta(pasta_aberta_atualmente["titulo"])
-
+        
     modal_novo = ft.AlertDialog(
         title=ft.Text("Adicionar Novo Indicador", size=18, weight="bold"),
         content=ft.Column(
             width=500,
             height=200,
             spacing=15,
-            controls=[
-                campo_titulo,
-                campo_descricao
-            ]
+            controls=[campo_titulo, campo_descricao]
         ),
         actions=[
             ft.TextButton("Cancelar", on_click=fechar_modal_novo, style=ft.ButtonStyle(color="red")),
@@ -116,13 +187,16 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     )
 
     def abrir_modal_novo(e):
-        page.overlay.append(modal_novo)
+        if modal_novo not in page.overlay:
+            page.overlay.append(modal_novo)
         modal_novo.open = True
         page.update()
-        
-    # === 5. TELA SECUNDÁRIA: LISTA DE INDICADORES ===
-    def criar_linha_indicador(titulo, status):
+
+
+    # === 6. TELA SECUNDÁRIA: LISTA DE INDICADORES ===
+    def criar_linha_indicador(item, status):
         cor_fundo_status = "green600" if status == "ATIVO" else ("red600" if status == "FALHA" else "amber600")
+        
         return ft.Container(
             padding=15,
             bgcolor="white",
@@ -131,12 +205,16 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
             content=ft.Row(
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 controls=[
-                    ft.Text(titulo, size=15, weight="w500", color="black87", expand=True),
+                    ft.Text(item["titulo"], size=15, weight="w500", color="black87", expand=True),
                     ft.Container(
                         bgcolor=cor_fundo_status, padding=5, border_radius=4,
                         content=ft.Text(status, size=12, color="white", weight="bold")
                     ),
-                    ft.IconButton(icon=ft.Icons.EDIT, icon_color="blue700", tooltip="Adicionar Correção", on_click=abrir_modal)
+                    # Agrupamos os botões de Editar e Excluir
+                    ft.Row([
+                        ft.IconButton(icon=ft.Icons.EDIT, icon_color="blue700", tooltip="Adicionar Correção", on_click=abrir_modal_edicao),
+                        ft.IconButton(icon=ft.Icons.DELETE, icon_color="red700", tooltip="Excluir", on_click=lambda e: preparar_exclusao(item))
+                    ])
                 ]
             )
         )
@@ -178,7 +256,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         
         for item in lista_da_pasta:
             status_visual = item.get("status", "ATIVO")
-            controles_lista.append(criar_linha_indicador(item["titulo"], status_visual))
+            controles_lista.append(criar_linha_indicador(item, status_visual))
             
         area_conteudo.content = ft.Column(
             expand=True, 
@@ -189,7 +267,6 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         page.update()
 
     def voltar_para_pastas():
-        # Recalcula a quantidade ao voltar, garantindo que o número suba se você adicionou um novo
         qtd_eixo_1 = sum(1 for item in INDICADORES if item.get("eixo") == 1)
         qtd_eixo_2 = sum(1 for item in INDICADORES if item.get("eixo") == 2)
         qtd_eixo_3 = sum(1 for item in INDICADORES if item.get("eixo") == 3)
@@ -201,7 +278,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         area_conteudo.content = layout_pastas
         page.update()
 
-    # === 6. TELA INICIAL: PASTAS (EIXOS) ===
+    # === 7. TELA INICIAL: PASTAS (EIXOS) ===
     def criar_pasta_indicador(titulo_pasta, qtd_indicadores):
         return ft.Container(
             bgcolor="#F4F6F9",
@@ -244,7 +321,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         ]
     )
 
-    # === 7. MONTAGEM DA ESTRUTURA FINAL ===
+    # === 8. MONTAGEM DA ESTRUTURA FINAL ===
     area_conteudo = ft.Container(
         expand=True,
         padding=40,
