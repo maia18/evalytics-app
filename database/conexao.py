@@ -1,12 +1,17 @@
-# import firebase_admin
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    
 from firebase_admin import firestore
-from config.firebase_config import db
+from configurations.firebase_config import db
 
 # ==========================================
 # FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 # ==========================================
 
 def injetar_dados_teste():
+    
     """
     Função temporária para criar um documento no Firestore.
     Use isso apenas para validar se o Python consegue escrever na nuvem.
@@ -31,6 +36,7 @@ def injetar_dados_teste():
         print(f"❌ Erro ao salvar dados: {e}")
 
 def obter_medias_dashboard():
+    
     """
     Função que o seu dashboard.py chamará para montar o gráfico.
     """

@@ -1,4 +1,4 @@
-from config.firebase_config import db
+from configurations.firebase_config import db
 
 def listar_cursos():
     """Busca todos os cursos cadastrados na nuvem."""

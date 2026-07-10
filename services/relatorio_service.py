@@ -1,4 +1,4 @@
-from config.firebase_config import db
+from configurations.firebase_config import db
 from services.indicadores_service import listar_indicadores
 
 def calcular_medias_eixos():

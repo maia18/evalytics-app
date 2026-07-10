@@ -1,4 +1,4 @@
-from config.firebase_config import db
+from configurations.firebase_config import db
 
 # Nome da coleção no Firebase
 COLECAO = "disciplinas"

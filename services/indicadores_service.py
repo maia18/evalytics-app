@@ -1,4 +1,4 @@
-from config.firebase_config import db
+from configurations.firebase_config import db
 
 def listar_indicadores():
     """Busca todos os indicadores cadastrados na nuvem."""
