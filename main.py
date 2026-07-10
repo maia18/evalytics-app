@@ -16,7 +16,7 @@ def main(page: ft.Page):
     page.padding = 0
     page.bgcolor = ft.Colors.BLUE_GREY_50 
 
-    # Gerenciador de Rotas Enxuto
+    # Gerenciador de Rotas
     def mudar_tela(rota):
         page.views.clear()
 
