@@ -1,4 +1,5 @@
 import flet as ft
+from database.conexao import obter_medias_dashboard
 
 def ViewDashboard(page: ft.Page, mudar_tela):
     
@@ -157,23 +158,37 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 ft.Text(titulo, size=13, color="black54", weight="bold")
             ]
         )
+        
+    # === BUSCANDO DADOS DO FIREBASE ===
+    dados_nuvem = obter_medias_dashboard()
+    
+    # Tratamento caso o banco esteja vazio
+    if not dados_nuvem:
+        infra_atual, didatica_atual, atend_atual, mat_atual, inov_atual = 0, 0, 0, 0, 0
+    else:
+        infra_atual = dados_nuvem.get("infraestrutura", 0)
+        didatica_atual = dados_nuvem.get("didatica", 0)
+        atend_atual = dados_nuvem.get("atendimento", 0)
+        mat_atual = dados_nuvem.get("material", 0)
+        inov_atual = dados_nuvem.get("inovacao", 0)
 
     # Agrupando as colunas no nosso "Gráfico"
     grafico_customizado = ft.Container(
         expand=True,
         content=ft.Row(
-            alignment="spaceAround", # Simplificado
-            vertical_alignment="end", # <--- CORRIGIDO AQUI TAMBÉM
+            alignment="spaceAround",
+            vertical_alignment="end",
             controls=[
-                criar_coluna_comparativa("Infraestrutura", 4.2, 3.9),
-                criar_coluna_comparativa("Didática", 4.5, 4.1),
-                criar_coluna_comparativa("Atendimento", 3.8, 3.5),
-                criar_coluna_comparativa("Material", 4.0, 3.8),
-                criar_coluna_comparativa("Inovação", 4.1, 3.9),
+                # Passamos a variável do Firebase para a barra forte, e mantemos a clara fixa
+                criar_coluna_comparativa("Infraestrutura", infra_atual, 3.9),
+                criar_coluna_comparativa("Didática", didatica_atual, 4.1),
+                criar_coluna_comparativa("Atendimento", atend_atual, 3.5),
+                criar_coluna_comparativa("Material", mat_atual, 3.8),
+                criar_coluna_comparativa("Inovação", inov_atual, 3.9),
             ]
         )
     )
-
+    
     # Área reservada para o Gráfico (Atualizada)
     area_grafico = ft.Container(
         expand=True,
