@@ -133,18 +133,45 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                             ft.Text("Resultados Consolidados", size=18, weight="bold", color="black87"),
                             ft.Divider(height=10, color="transparent"),
                             
-                            # Placeholder para a futura tabela de dados
-                            ft.Container(
+                            # Tabela de Dados Dinâmica
+                            ft.ListView(
                                 expand=True,
-                                alignment=ft.Alignment(0, 0),
-                                content=ft.Column(
-                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                    alignment=ft.MainAxisAlignment.CENTER, # <--- Correção: apenas "alignment"
-                                    controls=[
-                                        ft.Icon(ft.Icons.DATA_EXPLORATION, size=50, color="grey400"),
-                                        ft.Text("Selecione os filtros acima para carregar a tabela analítica.", italic=True, color="grey500")
-                                    ]
-                                )
+                                controls=[
+                                    ft.DataTable(
+                                        heading_row_color="blue50",
+                                        columns=[
+                                            ft.DataColumn(ft.Text("Semestre", weight="bold")),
+                                            ft.DataColumn(ft.Text("Infraestrutura", weight="bold")),
+                                            ft.DataColumn(ft.Text("Didática", weight="bold")),
+                                            ft.DataColumn(ft.Text("Atendimento", weight="bold")),
+                                            ft.DataColumn(ft.Text("Material", weight="bold")),
+                                            ft.DataColumn(ft.Text("Inovação", weight="bold")),
+                                        ],
+                                        rows=[
+                                            # Aqui é onde os dados do Firestore serão injetados dinamicamente depois
+                                            ft.DataRow(
+                                                cells=[
+                                                    ft.DataCell(ft.Text("2025.2")),
+                                                    ft.DataCell(ft.Text("4.8")),
+                                                    ft.DataCell(ft.Text("4.5")),
+                                                    ft.DataCell(ft.Text("4.0")),
+                                                    ft.DataCell(ft.Text("4.2")),
+                                                    ft.DataCell(ft.Text("4.7")),
+                                                ],
+                                            ),
+                                            ft.DataRow(
+                                                cells=[
+                                                    ft.DataCell(ft.Text("2026.1")),
+                                                    ft.DataCell(ft.Text("Aguardando", color="grey")),
+                                                    ft.DataCell(ft.Text("-")),
+                                                    ft.DataCell(ft.Text("-")),
+                                                    ft.DataCell(ft.Text("-")),
+                                                    ft.DataCell(ft.Text("-")),
+                                                ],
+                                            ),
+                                        ],
+                                    )
+                                ]
                             )
                         ]
                     )
