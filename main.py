@@ -4,6 +4,7 @@ import flet as ft
 from views.login import ViewLogin
 from views.dashboard import ViewDashboard
 from views.avaliacoes import ViewAvaliacoes
+from views.relatorios import ViewRelatorios
 
 def main(page: ft.Page):
     
@@ -25,7 +26,9 @@ def main(page: ft.Page):
         elif rota == "/dashboard":
             page.views.append(ViewDashboard(page, mudar_tela))
         elif rota == "/avaliacoes":
-            page.views.append(ViewAvaliacoes(page, mudar_tela))
+            page.views.append(ViewAvaliacoes(page, mudar_tela))   
+        elif rota == "/relatorios":
+            page.views.append(ViewRelatorios(page, mudar_tela)) 
 
         page.update()
 

@@ -12,6 +12,9 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         padding=15,
         alignment=ft.alignment.Alignment(-1, 0) 
     )
+    
+    def sair(e):
+        mudar_tela("/") # Limpa o histórico ou qualquer variável de sessão necessária aqui
 
     sidebar = ft.Container(
         width=260,
@@ -28,7 +31,23 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                     alignment=ft.MainAxisAlignment.START
                 ),
                 ft.Divider(color="white24", height=30),
-                ft.TextButton("Dashboard", on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
+                
+                # Links de Navegação
+                ft.TextButton("Dashboard", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
+                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
+                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),                
+                ft.TextButton("Cursos", icon=ft.Icons.BOOK, style=estilo_botao_menu),
+                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, style=estilo_botao_menu),
+                
+                ft.Container(expand=True), 
+                
+                # Botão de Logout
+                ft.TextButton(
+                    "Sair do Sistema", 
+                    icon=ft.Icons.LOGOUT, 
+                    style=estilo_botao_menu,
+                    on_click=sair
+                )
             ]
         )
     )
