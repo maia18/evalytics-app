@@ -1,17 +1,6 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
-
-try:
-    # O arquivo JSON deve estar na mesma pasta deste script
-    cred = credentials.Certificate("database/credentials.json")
-    
-    if not firebase_admin._apps:
-        firebase_admin.initialize_app(cred)
-        
-    db = firestore.client()
-    
-except Exception as e:
-    print(f"Erro Crítico na Conexão: {e}")
+# import firebase_admin
+from firebase_admin import firestore
+from config.firebase_config import db
 
 # ==========================================
 # FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
