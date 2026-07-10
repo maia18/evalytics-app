@@ -36,6 +36,9 @@ def ViewLogin(page: ft.Page, mudar_tela):
             page.snack_bar = ft.SnackBar(ft.Text("Credenciais inválidas.", color="red"))
             page.snack_bar.open = True
             page.update()
+            
+    email_input.on_submit = fazer_login
+    senha_input.on_submit = fazer_login
 
     btn_entrar = ft.ElevatedButton(
         "Entrar",
