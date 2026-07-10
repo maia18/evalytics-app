@@ -118,24 +118,80 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         ]
     )
 
-    # Área reservada para o Gráfico de Radar
+    # === CRIAÇÃO DE UM GRÁFICO CUSTOMIZADO 100% À PROVA DE VERSÕES ===
+    def criar_coluna_comparativa(titulo, nota_atual, nota_anterior):
+        altura_maxima = 150 
+        
+        alt_atual = (nota_atual / 5.0) * altura_maxima
+        alt_anterior = (nota_anterior / 5.0) * altura_maxima
+
+        return ft.Column(
+            horizontal_alignment="center", # Simplificado para string
+            spacing=10,
+            controls=[
+                ft.Row(
+                    alignment="center", # Simplificado
+                    vertical_alignment="end", # <--- CORRIGIDO AQUI
+                    spacing=6,
+                    height=altura_maxima, 
+                    controls=[
+                        # Barra do Semestre Anterior
+                        ft.Container(
+                            width=25,
+                            height=alt_anterior,
+                            bgcolor="blue200",
+                            border_radius=6,
+                            animate=ft.Animation(500, "easeOut") 
+                        ),
+                        # Barra do Semestre Atual
+                        ft.Container(
+                            width=25,
+                            height=alt_atual,
+                            bgcolor="blue700",
+                            border_radius=6,
+                            animate=ft.Animation(500, "easeOut")
+                        )
+                    ]
+                ),
+                # Rótulo da Categoria
+                ft.Text(titulo, size=13, color="black54", weight="bold")
+            ]
+        )
+
+    # Agrupando as colunas no nosso "Gráfico"
+    grafico_customizado = ft.Container(
+        expand=True,
+        content=ft.Row(
+            alignment="spaceAround", # Simplificado
+            vertical_alignment="end", # <--- CORRIGIDO AQUI TAMBÉM
+            controls=[
+                criar_coluna_comparativa("Infraestrutura", 4.2, 3.9),
+                criar_coluna_comparativa("Didática", 4.5, 4.1),
+                criar_coluna_comparativa("Atendimento", 3.8, 3.5),
+                criar_coluna_comparativa("Material", 4.0, 3.8),
+                criar_coluna_comparativa("Inovação", 4.1, 3.9),
+            ]
+        )
+    )
+
+    # Área reservada para o Gráfico (Atualizada)
     area_grafico = ft.Container(
         expand=True,
+        width=float("inf"),
         bgcolor="white",
         border_radius=12,
         padding=30,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="black12"),
         content=ft.Column(
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            alignment=ft.MainAxisAlignment.CENTER,
             controls=[
-                ft.Icon(ft.Icons.RADAR, size=80, color="blue200"),
-                ft.Text("Área reservada para o Gráfico de Radar", size=18, color="black54"),
-                ft.Text("Mapeamento de Competências e Indicadores", size=14, color="black38"),
+                ft.Text("Desempenho por Categoria", size=18, weight="bold", color="black87"),
+                ft.Text("Comparativo: Semestre Atual (Azul Escuro) vs Anterior (Azul Claro)", size=14, color="black54"),
+                ft.Container(height=15), # Espaçador
+                grafico_customizado 
             ]
         )
     )
-
+    
     # === MONTAGEM DO CONTEÚDO CENTRAL ===
     conteudo_central = ft.Container(
         expand=True,
