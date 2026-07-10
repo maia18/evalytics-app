@@ -11,8 +11,8 @@ def main(page: ft.Page):
     page.window.icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "logo.ico")
     page.title = "Evalytics - Avaliação Institucional"
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.window.width = 1200
-    page.window.height = 800
+    page.window.width = 1920
+    page.window.height = 1080
     page.padding = 0
     page.bgcolor = ft.Colors.BLUE_GREY_50 
 
