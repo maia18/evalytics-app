@@ -11,4 +11,4 @@ __pycache__/
 relatorio_*.csv
 
 # Credenciais do firebase
-firebase_credentials.json
+credentials.json
