@@ -1,6 +1,8 @@
 import flet as ft
+
 from views.login import ViewLogin
 from views.dashboard import ViewDashboard
+from views.avaliacoes import ViewAvaliacoes
 
 def main(page: ft.Page):
     # Configurações Globais
@@ -15,11 +17,13 @@ def main(page: ft.Page):
     def mudar_tela(rota):
         page.views.clear()
 
-        if rota == "/dashboard":
-            page.views.append(ViewDashboard(page, mudar_tela))
-        else:
+        if rota == "/":
             page.views.append(ViewLogin(page, mudar_tela))
-        
+        elif rota == "/dashboard":
+            page.views.append(ViewDashboard(page, mudar_tela))
+        elif rota == "/avaliacoes":
+            page.views.append(ViewAvaliacoes(page, mudar_tela))
+
         page.update()
 
     # Inicia o app

@@ -38,7 +38,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 
                 # Links de Navegação
                 ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, style=estilo_botao_menu),
+                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, style=estilo_botao_menu, on_click=lambda _: mudar_tela("/avaliacoes")),
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, style=estilo_botao_menu),
                 ft.TextButton("Alunos e Turmas", icon=ft.Icons.PEOPLE, style=estilo_botao_menu),
                 ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, style=estilo_botao_menu),
@@ -85,7 +85,23 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 ]
             )
         )
-
+        
+    # 1º: BUSCAMOS OS DADOS PRIMEIRO!
+    # === BUSCANDO DADOS DO FIREBASE ===
+    dados_nuvem = obter_medias_dashboard()
+    if not dados_nuvem:
+        infra_atual, didatica_atual, atend_atual, mat_atual, inov_atual = 0, 0, 0, 0, 0
+        media_geral = 0.0
+    else:
+        infra_atual = dados_nuvem.get("infraestrutura", 0)
+        didatica_atual = dados_nuvem.get("didatica", 0)
+        atend_atual = dados_nuvem.get("atendimento", 0)
+        mat_atual = dados_nuvem.get("material", 0)
+        inov_atual = dados_nuvem.get("inovacao", 0)
+        
+        media_geral = round((infra_atual + didatica_atual + atend_atual + mat_atual + inov_atual) / 5, 1)
+    
+    # 2º: AGORA SIM, DESENHAMOS A TELA COM AS VARIÁVEIS PRONTAS
     # Topo (Boas-vindas)
     cabecalho = ft.Row(
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -111,15 +127,14 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     cards_kpi = ft.Row(
         spacing=20,
         controls=[
-            # Passamos a cor forte para o ícone, e o tom '50' (super claro) para o fundo
             criar_card_kpi("Taxa de Resposta", "85%", ft.Icons.TRENDING_UP, "green700", "green50"),
-            criar_card_kpi("Média Geral", "4.2/5", ft.Icons.STAR, "amber700", "amber50"),
+            criar_card_kpi("Média Geral", f"{media_geral}/5", ft.Icons.STAR, "amber700", "amber50"), 
             criar_card_kpi("Avaliações Pendentes", "12", ft.Icons.PENDING_ACTIONS, "red700", "red50"),
             criar_card_kpi("Departamentos", "8", ft.Icons.ACCOUNT_BALANCE, "blue700", "blue50"),
         ]
     )
 
-    # === CRIAÇÃO DE UM GRÁFICO CUSTOMIZADO 100% À PROVA DE VERSÕES ===
+    # === CRIAÇÃO DE UM GRÁFICO CUSTOMIZADO ===
     def criar_coluna_comparativa(titulo, nota_atual, nota_anterior):
         altura_maxima = 150 
         
@@ -165,12 +180,16 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     # Tratamento caso o banco esteja vazio
     if not dados_nuvem:
         infra_atual, didatica_atual, atend_atual, mat_atual, inov_atual = 0, 0, 0, 0, 0
+        media_geral = 0.0
     else:
         infra_atual = dados_nuvem.get("infraestrutura", 0)
         didatica_atual = dados_nuvem.get("didatica", 0)
         atend_atual = dados_nuvem.get("atendimento", 0)
         mat_atual = dados_nuvem.get("material", 0)
         inov_atual = dados_nuvem.get("inovacao", 0)
+        
+        # Calcula a média geral do semestre atual
+        media_geral = round((infra_atual + didatica_atual + atend_atual + mat_atual + inov_atual) / 5, 1)
 
     # Agrupando as colunas no nosso "Gráfico"
     grafico_customizado = ft.Container(
