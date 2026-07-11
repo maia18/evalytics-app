@@ -1,5 +1,5 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
+import firebase_admin # type: ignore
+from firebase_admin import credentials, firestore # type: ignore
 
 try:
     cred = credentials.Certificate("database/credentials.json")

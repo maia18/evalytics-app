@@ -1,4 +1,4 @@
-import flet as ft
+import flet as ft  # type: ignore
 import json
 from database.indicadores import INDICADORES
 
@@ -34,9 +34,8 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                 
                 # Links de Navegação
                 ft.TextButton("Dashboard", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),                
-                ft.TextButton("Cursos", icon=ft.Icons.BOOK, style=estilo_botao_menu),
+                ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
                 ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, style=estilo_botao_menu),
                 
                 ft.Container(expand=True), 

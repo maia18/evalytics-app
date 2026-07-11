@@ -1,4 +1,4 @@
-import flet as ft
+import flet as ft  # type: ignore
 
 def ViewRelatorios(page: ft.Page, mudar_tela):
     
@@ -42,16 +42,10 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                     style=estilo_botao_menu
                 ),
                 ft.TextButton(
-                    "Relatórios", 
-                    icon=ft.Icons.PIE_CHART, 
-                    on_click=lambda _: mudar_tela("/relatorios"), 
-                    style=ft.ButtonStyle(
-                        color="white",
-                        bgcolor="white10",
-                        shape=ft.RoundedRectangleBorder(radius=8),
-                        padding=15,
-                        alignment=ft.alignment.Alignment(-1, 0)
-                    )
+                    "Cursos", 
+                    icon=ft.Icons.BOOK, 
+                    on_click=lambda _: mudar_tela("/cursos"), 
+                    style=estilo_botao_menu
                 ),
                 
                 ft.Container(expand=True), 
