@@ -1,12 +1,13 @@
 import os
 import flet as ft # type: ignore
 
-from views.login import ViewLogin
-from views.dashboard import ViewDashboard
+from views.configuracoes import ViewConfiguracoes
 from views.avaliacoes import ViewAvaliacoes
 from views.relatorios import ViewRelatorios
+from views.formulario import ViewFormulario
+from views.dashboard import ViewDashboard
 from views.cursos import ViewCursos
-from views.configuracoes import ViewConfiguracoes
+from views.login import ViewLogin
 
 def main(page: ft.Page):
     
@@ -33,6 +34,8 @@ def main(page: ft.Page):
             page.views.append(ViewRelatorios(page, mudar_tela)) 
         elif rota == "/cursos":
             page.views.append(ViewCursos(page, mudar_tela))
+        elif rota == "/formulario":
+            page.views.append(ViewFormulario(page, mudar_tela))
         elif rota == "/configuracoes":
             page.views.append(ViewConfiguracoes(page, mudar_tela))
         
