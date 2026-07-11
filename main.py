@@ -6,6 +6,7 @@ from views.dashboard import ViewDashboard
 from views.avaliacoes import ViewAvaliacoes
 from views.relatorios import ViewRelatorios
 from views.cursos import ViewCursos
+from views.configuracoes import ViewConfiguracoes
 
 def main(page: ft.Page):
     
@@ -31,8 +32,10 @@ def main(page: ft.Page):
         elif rota == "/relatorios":
             page.views.append(ViewRelatorios(page, mudar_tela)) 
         elif rota == "/cursos":
-            page.views.append(ViewCursos(page, mudar_tela)) 
-
+            page.views.append(ViewCursos(page, mudar_tela))
+        elif rota == "/configuracoes":
+            page.views.append(ViewConfiguracoes(page, mudar_tela))
+        
         page.update()
 
     # Inicia o app

@@ -47,6 +47,13 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                     on_click=lambda _: mudar_tela("/cursos"), 
                     style=estilo_botao_menu
                 ),
+                ft.TextButton(
+                    "Configurações", 
+                    icon=ft.Icons.SETTINGS, 
+                    on_click=lambda _: mudar_tela("/configuracoes"), 
+                    style=estilo_botao_menu
+                ),
+
                 
                 ft.Container(expand=True), 
                 

@@ -40,7 +40,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),                
                 ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
-                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, style=estilo_botao_menu),
+                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
                 
                 # Empurra o botão de sair para o final da tela
                 ft.Container(expand=True), 
