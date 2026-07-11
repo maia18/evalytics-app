@@ -1,5 +1,5 @@
 import flet as ft
-from services.cursos_service import listar_cursos, criar_curso
+from utils.services.cursos_service import listar_cursos, criar_curso
 
 def TelaCursos(page: ft.Page, on_avaliar):
         

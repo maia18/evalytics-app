@@ -1,6 +1,6 @@
 import flet as ft
-from services.indicadores_service import listar_indicadores
-from services.avaliacoes_service import salvar_avaliacao
+from utils.services.indicadores_service import listar_indicadores
+from utils.services.avaliacoes_service import salvar_avaliacao
 from database.indicadores import INDICADORES 
 
 def TelaAvaliacao(page: ft.Page, curso, on_voltar):

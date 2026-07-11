@@ -1,5 +1,5 @@
 import flet as ft
-from services.professores_service import listar_professores, criar_professor
+from utils.services.professores_service import listar_professores, criar_professor
 
 def TelaProfessores(page: ft.Page):
     

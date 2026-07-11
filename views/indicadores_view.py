@@ -1,5 +1,5 @@
 import flet as ft
-from services.indicadores_service import listar_indicadores, atualizar_indicador
+from utils.services.indicadores_service import listar_indicadores, atualizar_indicador
 
 def TelaIndicadores(page: ft.Page):
     # Container mestre para trocar o conteúdo

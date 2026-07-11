@@ -1,6 +1,6 @@
 import flet as ft
-from services.relatorio_service import calcular_medias_eixos
-from services.pdf_service import gerar_pdf_resultados
+from utils.services.relatorio_service import calcular_medias_eixos
+from utils.services.pdf_service import gerar_pdf_resultados
 
 def TelaResultados(page: ft.Page):
     medias = calcular_medias_eixos()

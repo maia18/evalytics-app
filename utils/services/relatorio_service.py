@@ -1,5 +1,5 @@
 from configurations.firebase_config import db
-from services.indicadores_service import listar_indicadores
+from utils.services.indicadores_service import listar_indicadores
 
 def calcular_medias_eixos():
     try:
