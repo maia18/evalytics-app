@@ -1,5 +1,5 @@
 import os
-import flet as ft # type: ignore
+import flet as ft
 
 from views.configuracoes import ViewConfiguracoes
 from views.avaliacoes import ViewAvaliacoes
