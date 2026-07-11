@@ -1,32 +1,139 @@
-import flet as ft  # type: ignore
-from database.conexao import obter_medias_dashboard
+import flet as ft
 
 def ViewDashboard(page: ft.Page, mudar_tela):
     
-    # === ESTILOS BASE ===
+    # === 1. COMPONENTE: CARDS DE KPI ===
+    def criar_kpi_card(titulo, valor, icone, cor_icone, subtitulo):
+        return ft.Container(
+            width=260, # SOLUÇÃO: Largura fixa em vez de expand=True impede o esmagamento
+            bgcolor="white",
+            padding=20, 
+            border_radius=10,
+            shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+            content=ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                controls=[
+                    ft.Column(
+                        spacing=5,
+                        controls=[
+                            ft.Text(titulo, size=14, color="grey600", weight="bold"),
+                            ft.Text(valor, size=28, weight="bold", color="black87"),
+                            ft.Text(subtitulo, size=12, color="green600" if "↑" in subtitulo else "grey500")
+                        ]
+                    ),
+                    ft.Container(
+                        padding=15,
+                        bgcolor=f"{cor_icone}50",
+                        border_radius=50,
+                        content=ft.Icon(icone, color=cor_icone, size=28)
+                    )
+                ]
+            )
+        )
+
+    linha_kpis = ft.Row(
+        wrap=True, # SOLUÇÃO: Quando faltar espaço, joga o card de forma elegante para a linha de baixo
+        spacing=20,
+        run_spacing=20,
+        controls=[
+            criar_kpi_card("Total de Respostas", "342", ft.Icons.PEOPLE, "blue700", "↑ 12% este mês"),
+            criar_kpi_card("Média Institucional", "4.2", ft.Icons.STAR, "amber600", "Meta: 4.0"),
+            criar_kpi_card("Melhor Desempenho", "Eixo 1", ft.Icons.TRENDING_UP, "green700", "Didático-Pedagógica"),
+            criar_kpi_card("Atenção Necessária", "Eixo 3", ft.Icons.WARNING, "red700", "Infraestrutura (Nota 3.4)")
+        ]
+    )
+
+    # === 2. COMPONENTE: DESEMPENHO (BARRAS HORIZONTAIS) ===
+    def criar_barra_progresso(rotulo, nota, cor):
+        return ft.Column(
+            spacing=5,
+            controls=[
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    controls=[
+                        ft.Text(rotulo, size=14, weight="bold", color="black87"),
+                        ft.Text(f"{nota} / 5.0", size=14, color="grey700", weight="bold")
+                    ]
+                ),
+                ft.ProgressBar(value=nota/5.0, color=cor, bgcolor="grey200", height=10)
+            ]
+        )
+
+    card_grafico_barras = ft.Container(
+        width=600, # SOLUÇÃO: Largura base estabelecida
+        bgcolor="white",
+        padding=25,
+        border_radius=10,
+        shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+        content=ft.Column(
+            spacing=20,
+            controls=[
+                ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color="black87"),
+                ft.Divider(color="transparent", height=5),
+                criar_barra_progresso("Organização Didático-Pedagógica", 4.5, "blue700"),
+                criar_barra_progresso("Corpo Docente e Tutorial", 4.1, "blue500"),
+                criar_barra_progresso("Infraestrutura", 3.4, "orange700"),
+            ]
+        )
+    )
+
+    # === 3. COMPONENTE: DEMOGRAFIA (LISTA DE PROGRESSO) ===
+    def criar_demografia(curso, porcentagem, cor):
+        return ft.Column(
+            spacing=5,
+            controls=[
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    controls=[
+                        ft.Row([ft.Icon(ft.Icons.CIRCLE, color=cor, size=12), ft.Text(curso, size=14)]),
+                        ft.Text(f"{int(porcentagem*100)}%", size=14, weight="bold")
+                    ]
+                ),
+                ft.ProgressBar(value=porcentagem, color=cor, bgcolor="grey200", height=6)
+            ]
+        )
+
+    card_grafico_pizza = ft.Container(
+        width=300, # SOLUÇÃO: Largura base estabelecida
+        bgcolor="white",
+        padding=25,
+        border_radius=10,
+        shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+        content=ft.Column(
+            spacing=20,
+            controls=[
+                ft.Text("Participação por Área", size=18, weight="bold", color="black87"),
+                ft.Divider(color="transparent", height=5),
+                criar_demografia("Engenharias", 0.61, "blue700"),
+                criar_demografia("Tecnologia", 0.25, "blue400"),
+                criar_demografia("Administração", 0.14, "cyan300"),
+            ]
+        )
+    )
+
+    linha_graficos = ft.Row(
+        wrap=True, # SOLUÇÃO: Quebra a linha do gráfico de pizza se a tela apertar
+        spacing=20,
+        run_spacing=20,
+        controls=[card_grafico_barras, card_grafico_pizza]
+    )
+
+    # === 4. SIDEBAR E RESPONSIVIDADE ===
     estilo_botao_menu = ft.ButtonStyle(
         color={"":"white70", "hovered":"white"},
         bgcolor={"":"transparent", "hovered":"white10"},
         shape=ft.RoundedRectangleBorder(radius=8),
         padding=15,
-        # O Flet lê -1 como totalmente à esquerda e 0 como centro vertical
-        alignment=ft.alignment.Alignment(-1, 0) 
+        alignment=ft.Alignment(-1, 0) 
     )
 
-    # === FUNÇÕES DE AÇÃO ===
-    def sair(e):
-        # Limpa o histórico ou qualquer variável de sessão necessária aqui
-        mudar_tela("/")
-
-    # === MENU LATERAL (SIDEBAR) ===
     sidebar = ft.Container(
         width=260,
-        bgcolor="blue900", # Mantendo a identidade do login
+        bgcolor="blue900",
         padding=20,
         content=ft.Column(
             expand=True,
             controls=[
-                # Logo e Título
                 ft.Row(
                     controls=[
                         ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
@@ -35,224 +142,114 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                     alignment=ft.MainAxisAlignment.START
                 ),
                 ft.Divider(color="white24", height=30),
-                
-                # Links de Navegação
+                ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
                 ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),                
+                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
                 ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
                 ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
-                
-                # Empurra o botão de sair para o final da tela
-                ft.Container(expand=True), 
-                
-                # Botão de Logout
-                ft.TextButton(
-                    "Sair do Sistema", 
-                    icon=ft.Icons.LOGOUT, 
-                    style=estilo_botao_menu,
-                    on_click=sair
-                )
             ]
         )
     )
 
-    # === COMPONENTES DO CONTEÚDO CENTRAL ===
-    # Adicionamos 'cor_fundo' aos parâmetros
-    def criar_card_kpi(titulo, valor, icone, cor_icone, cor_fundo):
-        return ft.Container(
-            expand=1,
-            bgcolor="white",
-            border_radius=12,
-            padding=20,
-            shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="black12"),
-            content=ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                controls=[
-                    ft.Column(
-                        spacing=5,
-                        controls=[
-                            ft.Text(titulo, size=14, color="black54", weight="w500"),
-                            ft.Text(valor, size=28, color="black87", weight="bold"),
-                        ]
-                    ),
-                    ft.Container(
-                        padding=15,
-                        bgcolor=cor_fundo, # <-- Usamos a string da cor clara diretamente
-                        border_radius=50,
-                        content=ft.Icon(icone, color=cor_icone, size=30)
-                    )
-                ]
-            )
-        )
-        
-    # 1º: BUSCAMOS OS DADOS PRIMEIRO!
-    # === BUSCANDO DADOS DO FIREBASE ===
-    dados_nuvem = obter_medias_dashboard()
-    if not dados_nuvem:
-        infra_atual, didatica_atual, atend_atual, mat_atual, inov_atual = 0, 0, 0, 0, 0
-        media_geral = 0.0
-    else:
-        infra_atual = dados_nuvem.get("infraestrutura", 0)
-        didatica_atual = dados_nuvem.get("didatica", 0)
-        atend_atual = dados_nuvem.get("atendimento", 0)
-        mat_atual = dados_nuvem.get("material", 0)
-        inov_atual = dados_nuvem.get("inovacao", 0)
-        
-        media_geral = round((infra_atual + didatica_atual + atend_atual + mat_atual + inov_atual) / 5, 1)
-    
-    # 2º: AGORA SIM, DESENHAMOS A TELA COM AS VARIÁVEIS PRONTAS
-    # Topo (Boas-vindas)
-    cabecalho = ft.Row(
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        controls=[
-            ft.Column(
-                spacing=0,
-                controls=[
-                    ft.Text("Olá, Administrador 👋", size=28, weight="bold", color="black87"),
-                    ft.Text("Aqui está o panorama atual da instituição.", size=16, color="black54"),
-                ]
-            ),
-            # Avatar do Usuário
-            ft.CircleAvatar(
-                content=ft.Icon(ft.Icons.PERSON),
-                color="white",
-                bgcolor="blue700",
-                radius=25
-            )
-        ]
+    def alternar_sidebar(e=None):
+        sidebar.visible = not sidebar.visible
+        page.update()
+
+    btn_menu = ft.IconButton(
+        icon=ft.Icons.MENU,
+        icon_size=30,
+        icon_color="black87",
+        on_click=alternar_sidebar,
+        visible=False
     )
 
-    # Linha de Cards de Resumo (KPIs)
-    cards_kpi = ft.Row(
-        spacing=20,
-        controls=[
-            criar_card_kpi("Taxa de Resposta", "85%", ft.Icons.TRENDING_UP, "green700", "green50"),
-            criar_card_kpi("Média Geral", f"{media_geral}/5", ft.Icons.STAR, "amber700", "amber50"), 
-            criar_card_kpi("Avaliações Pendentes", "12", ft.Icons.PENDING_ACTIONS, "red700", "red50"),
-            criar_card_kpi("Departamentos", "8", ft.Icons.ACCOUNT_BALANCE, "blue700", "blue50"),
-        ]
-    )
-
-    # === CRIAÇÃO DE UM GRÁFICO CUSTOMIZADO ===
-    def criar_coluna_comparativa(titulo, nota_atual, nota_anterior):
-        altura_maxima = 150 
+    # SOLUÇÃO: Controle matemático que atua junto com o Wrap
+    def verificar_tamanho_tela(e=None):
+        try:
+            # Tenta acessar a página. Se o componente ainda não estiver na tela,
+            # ele cai no except silenciosamente sem quebrar o sistema.
+            _ = sidebar.page
+        except Exception:
+            return 
         
-        alt_atual = (nota_atual / 5.0) * altura_maxima
-        alt_anterior = (nota_anterior / 5.0) * altura_maxima
+        largura = page.width 
+        
+        # 1. Esconde/Mostra a Sidebar
+        if largura < 900:
+            sidebar.visible = False
+            btn_menu.visible = True
+        else:
+            sidebar.visible = True
+            btn_menu.visible = False
+            
+        # 2. Impede que o gráfico grande vaze da tela em resoluções minúsculas
+        largura_util = largura - 80 # Desconta os 40px de padding da área principal
+        if sidebar.visible:
+            largura_util -= 260 # Desconta o espaço da sidebar se ela estiver aberta
+            
+        if largura_util < 600:
+            card_grafico_barras.width = largura_util
+        else:
+            card_grafico_barras.width = 600
+            
+        try:
+            page.update()
+        except Exception:
+            pass
 
-        return ft.Column(
-            horizontal_alignment="center", # Simplificado para string
-            spacing=10,
+    page.on_resize = verificar_tamanho_tela
+
+    # === 5. ÁREA DE CONTEÚDO PRINCIPAL ===
+    area_conteudo = ft.Container(
+        expand=True,
+        padding=40,
+        bgcolor="#F4F6F9",
+        content=ft.Column(
+            expand=True,
+            spacing=25,
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Row(
-                    alignment="center", # Simplificado
-                    vertical_alignment="end", # <--- CORRIGIDO AQUI
-                    spacing=6,
-                    height=altura_maxima, 
+                    spacing=10,
                     controls=[
-                        # Barra do Semestre Anterior
-                        ft.Container(
-                            width=25,
-                            height=alt_anterior,
-                            bgcolor="blue200",
-                            border_radius=6,
-                            animate=ft.Animation(500, "easeOut") 
-                        ),
-                        # Barra do Semestre Atual
-                        ft.Container(
-                            width=25,
-                            height=alt_atual,
-                            bgcolor="blue700",
-                            border_radius=6,
-                            animate=ft.Animation(500, "easeOut")
+                        btn_menu,
+                        ft.Column(
+                            spacing=5,
+                            controls=[
+                                ft.Text("Visão Geral do Sistema", size=28, weight="bold", color="black87"),
+                                ft.Text("Acompanhe o engajamento e os resultados.", size=16, color="black54"),
+                            ]
                         )
                     ]
                 ),
-                # Rótulo da Categoria
-                ft.Text(titulo, size=13, color="black54", weight="bold")
-            ]
-        )
-        
-    # === BUSCANDO DADOS DO FIREBASE ===
-    dados_nuvem = obter_medias_dashboard()
-    
-    # Tratamento caso o banco esteja vazio
-    if not dados_nuvem:
-        infra_atual, didatica_atual, atend_atual, mat_atual, inov_atual = 0, 0, 0, 0, 0
-        media_geral = 0.0
-    else:
-        infra_atual = dados_nuvem.get("infraestrutura", 0)
-        didatica_atual = dados_nuvem.get("didatica", 0)
-        atend_atual = dados_nuvem.get("atendimento", 0)
-        mat_atual = dados_nuvem.get("material", 0)
-        inov_atual = dados_nuvem.get("inovacao", 0)
-        
-        # Calcula a média geral do semestre atual
-        media_geral = round((infra_atual + didatica_atual + atend_atual + mat_atual + inov_atual) / 5, 1)
-
-    # Agrupando as colunas no nosso "Gráfico"
-    grafico_customizado = ft.Container(
-        expand=True,
-        content=ft.Row(
-            alignment="spaceAround",
-            vertical_alignment="end",
-            controls=[
-                # Passamos a variável do Firebase para a barra forte, e mantemos a clara fixa
-                criar_coluna_comparativa("Infraestrutura", infra_atual, 3.9),
-                criar_coluna_comparativa("Didática", didatica_atual, 4.1),
-                criar_coluna_comparativa("Atendimento", atend_atual, 3.5),
-                criar_coluna_comparativa("Material", mat_atual, 3.8),
-                criar_coluna_comparativa("Inovação", inov_atual, 3.9),
-            ]
-        )
-    )
-    
-    # Área reservada para o Gráfico (Atualizada)
-    area_grafico = ft.Container(
-        expand=True,
-        width=float("inf"),
-        bgcolor="white",
-        border_radius=12,
-        padding=30,
-        shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="black12"),
-        content=ft.Column(
-            controls=[
-                ft.Text("Desempenho por Categoria", size=18, weight="bold", color="black87"),
-                ft.Text("Comparativo: Semestre Atual (Azul Escuro) vs Anterior (Azul Claro)", size=14, color="black54"),
-                ft.Container(height=15), # Espaçador
-                grafico_customizado 
-            ]
-        )
-    )
-    
-    # === MONTAGEM DO CONTEÚDO CENTRAL ===
-    conteudo_central = ft.Container(
-        expand=True,
-        bgcolor="#F4F6F9", # Um cinza bem claro para contrastar com os cards brancos
-        padding=30,
-        content=ft.Column(
-            spacing=30,
-            controls=[
-                cabecalho,
-                cards_kpi,
-                area_grafico
+                ft.Divider(color="transparent", height=5),
+                linha_kpis,
+                linha_graficos
             ]
         )
     )
 
-    # === RETORNO DA VIEW ===
+    # Força a checagem matemática ao carregar a tela pela primeira vez
+    if page.width:
+        if page.width < 900:
+            sidebar.visible = False
+            btn_menu.visible = True
+        else:
+            sidebar.visible = True
+            btn_menu.visible = False
+            
+        largura_util = page.width - 80
+        if sidebar.visible:
+            largura_util -= 260
+            
+        if largura_util < 600:
+            card_grafico_barras.width = largura_util
+        else:
+            card_grafico_barras.width = 600
+
     return ft.View(
         route="/dashboard",
         padding=0,
         bgcolor="white",
-        controls=[
-            ft.Row(
-                expand=True,
-                spacing=0,
-                controls=[
-                    sidebar,
-                    conteudo_central
-                ]
-            )
-        ]
+        controls=[ft.Row(expand=True, spacing=0, controls=[sidebar, area_conteudo])]
     )
