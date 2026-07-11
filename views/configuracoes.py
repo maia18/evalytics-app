@@ -507,39 +507,6 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     btn_banco = ft.TextButton("Banco de Dados", icon=ft.Icons.STORAGE, style=estilo_btn_aba, on_click=lambda e: mudar_aba(e, painel_banco))
     menu_abas = ft.Row([btn_indicadores, btn_seguranca, btn_banco], spacing=10)
 
-
-    # === SIDEBAR PADRÃO ===
-    estilo_botao_menu = ft.ButtonStyle(
-        color={"":"white70", "hovered":"white"},
-        bgcolor={"":"transparent", "hovered":"white10"},
-        shape=ft.RoundedRectangleBorder(radius=8),
-        padding=15,
-        alignment=ft.Alignment(-1, 0) 
-    )
-
-    sidebar = ft.Container(
-        width=260,
-        bgcolor="blue900",
-        padding=20,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
-                        ft.Text("Evalytics", size=24, weight="bold", color="white"),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
-                ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
-            ]
-        )
-    )
-
     # === CONTEÚDO PRINCIPAL (Estrutura da Tela) ===
     area_conteudo = ft.Container(
         expand=True,
