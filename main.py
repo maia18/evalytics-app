@@ -1,47 +1,23 @@
-import os
 import flet as ft
 
-from views.configuracoes import ViewConfiguracoes
-from views.avaliacoes import ViewAvaliacoes
-from views.relatorios import ViewRelatorios
-from views.formulario import ViewFormulario
-from views.dashboard import ViewDashboard
-from views.cursos import ViewCursos
-from views.login import ViewLogin
+from configurations.global_configs import configurar_aplicacao
+from components.router import obter_view
+
 
 def main(page: ft.Page):
-    
-    # Configurações Globais
-    page.window.icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "logo.ico")
-    page.title = "Evalytics - Avaliação Institucional"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.window.width = 1280
-    page.window.height = 720
-    page.padding = 0
-    page.bgcolor = ft.Colors.BLUE_GREY_50 
 
-    # Gerenciador de Rotas
-    def mudar_tela(rota):
+    configurar_aplicacao(page)
+
+    def mudar_tela(rota: str):
+
         page.views.clear()
 
-        if rota == "/":
-            page.views.append(ViewLogin(page, mudar_tela))
-        elif rota == "/dashboard":
-            page.views.append(ViewDashboard(page, mudar_tela))
-        elif rota == "/avaliacoes":
-            page.views.append(ViewAvaliacoes(page, mudar_tela))   
-        elif rota == "/relatorios":
-            page.views.append(ViewRelatorios(page, mudar_tela)) 
-        elif rota == "/cursos":
-            page.views.append(ViewCursos(page, mudar_tela))
-        elif rota == "/formulario":
-            page.views.append(ViewFormulario(page, mudar_tela))
-        elif rota == "/configuracoes":
-            page.views.append(ViewConfiguracoes(page, mudar_tela))
-        
+        view = obter_view(rota)
+
+        page.views.append(view(page, mudar_tela))
+
         page.update()
 
-    # Inicia o app
     mudar_tela("/")
 
 if __name__ == "__main__":

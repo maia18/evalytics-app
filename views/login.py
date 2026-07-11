@@ -1,7 +1,7 @@
 import flet as ft
 
 def ViewLogin(page: ft.Page, mudar_tela):
-    
+        
     email_input = ft.TextField(
         label="E-mail",
         prefix_icon=ft.Icons.EMAIL_OUTLINED,
@@ -20,7 +20,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
         can_reveal_password=True,
         border_radius=12,
         width=350,
-        bgcolor="transparent",
+        bgcolor="transparent",  
         border_color="blue800",
         focused_border_color="blue900",
         color="black87"
@@ -31,6 +31,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
             page.snack_bar = ft.SnackBar(ft.Text("Login realizado com sucesso!", color="green"))
             page.snack_bar.open = True
             page.update()
+            
             mudar_tela("/dashboard") 
         else:
             page.snack_bar = ft.SnackBar(ft.Text("Credenciais inválidas.", color="red"))

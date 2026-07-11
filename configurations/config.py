@@ -1,10 +1,4 @@
-APP_NAME = "Evalytics"
+APP_TITLE = "Evalytics - Avaliação Institucional"
 
-VERSION = "1.0.0"
-
-PRIMARY_COLOR = "#2563eb"      # Azul
-SECONDARY_COLOR = "#0f172a"    # Azul escuro
-SUCCESS_COLOR = "#22c55e"
-WARNING_COLOR = "#f59e0b"
-
-SIDEBAR_WIDTH = 240
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
