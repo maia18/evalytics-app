@@ -1,10 +1,10 @@
-from views.login import ViewLogin
-from views.dashboard import ViewDashboard
-from views.avaliacoes import ViewAvaliacoes
-from views.relatorios import ViewRelatorios
-from views.cursos import ViewCursos
-from views.formulario import ViewFormulario
-from views.configuracoes import ViewConfiguracoes
+from models.login import ViewLogin
+from models.dashboard import ViewDashboard
+from models.avaliacoes import ViewAvaliacoes
+from models.relatorios import ViewRelatorios
+from models.cursos import ViewCursos
+from models.formulario import ViewFormulario
+from models.configuracoes import ViewConfiguracoes
 
 ROTAS = {
     "/": ViewLogin,
