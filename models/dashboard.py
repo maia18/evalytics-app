@@ -142,6 +142,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         padding=15,
         alignment=ft.Alignment(-1, 0) 
     )
+    
+    def sair(e):
+        mudar_tela("/")  # Redireciona para tela inicial
 
     sidebar = ft.Container(
         width=260,
@@ -158,11 +161,14 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                     alignment=ft.MainAxisAlignment.START
                 ),
                 ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
+                ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
                 ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
                 ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
                 ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
+                
+                ft.Container(expand=True), 
+                ft.TextButton("Sair do Sistema", icon=ft.Icons.LOGOUT, style=estilo_botao_menu, on_click=sair)
             ]
         )
     )

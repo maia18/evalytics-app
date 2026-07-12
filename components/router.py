@@ -1,5 +1,6 @@
 """ Importa as views (páginas) da aplicação """  
 from models.login import ViewLogin
+from models.inicio import ViewInicio
 from models.dashboard import ViewDashboard
 from models.avaliacoes import ViewAvaliacoes
 from models.relatorios import ViewRelatorios
@@ -10,7 +11,8 @@ from models.configuracoes import ViewConfiguracoes
 # Dicionário que mapeia rotas (strings) para suas respectivas views
 ROTAS = {
     "/": ViewLogin,                         # Rota inicial (login)
-    "/dashboard": ViewDashboard,            # Página principal / painel
+    "/inicio": ViewInicio,                  # Página principal
+    "/dashboard": ViewDashboard,            # Página de Dashboard
     "/avaliacoes": ViewAvaliacoes,          # Página de avaliações
     "/relatorios": ViewRelatorios,          # Página de relatórios
     "/cursos": ViewCursos,                  # Página de cursos

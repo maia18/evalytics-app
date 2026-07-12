@@ -38,7 +38,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
             page.snack_bar = ft.SnackBar(ft.Text("Login realizado com sucesso!", color="green"))
             page.snack_bar.open = True
             page.update()
-            mudar_tela("/dashboard")  # redireciona para o dashboard
+            mudar_tela("/inicio")  # redireciona para a página principal
         else:
             page.snack_bar = ft.SnackBar(ft.Text("Credenciais inválidas.", color="red"))
             page.snack_bar.open = True
