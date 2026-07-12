@@ -1,12 +1,18 @@
+""" Importações """  
 import flet as ft
 from database.indicadores import INDICADORES
 
 def ViewFormulario(page: ft.Page, mudar_tela):
     
+    """
+    Tela de formulário de avaliação institucional.
+    Percorre os indicadores ativos, permitindo notas de 1 a 5 com critérios explicativos.
+    """
+
     # === 1. ESTADO DO FORMULÁRIO ===
     indicadores_ativos = [ind for ind in INDICADORES if ind.get("status", "ATIVO") == "ATIVO"]
     
-    # Agora rastreamos o ÍNDICE da pergunta atual na lista geral, não apenas o eixo
+    # Estado guarda índice da pergunta atual e respostas do usuário
     estado = {
         "indice_atual": 0,
         "respostas": {} 
@@ -18,17 +24,22 @@ def ViewFormulario(page: ft.Page, mudar_tela):
         3: "Infraestrutura"
     }
 
-    # === 2. COMPONENTE: CARD DA PERGUNTA ÚNICA ===
+    # === 2. COMPONENTE: CARD DE PERGUNTA ===
     def criar_card_pergunta(indicador):
+        """
+        Cria o card de uma pergunta única com slider de nota e critério dinâmico.
+        """
         titulo_ind = indicador["titulo"]
         criterios = indicador.get("criterios", {})
         
+        # Valor inicial da resposta (default = 3)
         valor_inicial = estado["respostas"].get(titulo_ind, 3)
         texto_inicial = criterios.get(str(valor_inicial), criterios.get(valor_inicial, "Critério não definido."))
 
         lbl_nota_destaque = ft.Text(str(valor_inicial), size=28, weight="bold", color="blue700")
         txt_criterio_dinamico = ft.Text(texto_inicial, size=14, color="grey700", italic=True, text_align=ft.TextAlign.CENTER)
 
+        # Atualiza nota e critério ao deslizar
         def ao_deslizar(e):
             nota_atual = int(e.control.value)
             estado["respostas"][titulo_ind] = nota_atual
@@ -59,13 +70,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
                     ft.Text(titulo_ind, size=18, weight="bold", color="black87"),
                     ft.Text(indicador.get("descricao", ""), size=14, color="grey500"),
                     ft.Divider(height=10, color="transparent"),
-                    ft.Row(
-                        controls=[
-                            ft.Text("1", color="grey400", weight="bold"),
-                            slider_nota,
-                            ft.Text("5", color="grey400", weight="bold"),
-                        ]
-                    ),
+                    ft.Row([ft.Text("1", color="grey400", weight="bold"), slider_nota, ft.Text("5", color="grey400", weight="bold")]),
                     ft.Container(
                         bgcolor="#F8F9FA",
                         padding=15,
@@ -80,11 +85,11 @@ def ViewFormulario(page: ft.Page, mudar_tela):
             )
         )
 
-    # === 3. LÓGICA DE NAVEGAÇÃO E RENDERIZAÇÃO ===
+    # === 3. LÓGICA DE NAVEGAÇÃO ===
     area_dinamica_conteudo = ft.Column(spacing=25)
 
     def pular_para_eixo(eixo_alvo):
-        # Acha a primeira pergunta pertencente ao eixo clicado e pula pra ela
+        """Permite pular diretamente para o primeiro indicador de um eixo."""
         for i, ind in enumerate(indicadores_ativos):
             if ind.get("eixo") == eixo_alvo:
                 estado["indice_atual"] = i
@@ -92,35 +97,36 @@ def ViewFormulario(page: ft.Page, mudar_tela):
         atualizar_renderizacao()
 
     def avancar(e):
+        """Avança para próxima pergunta ou finaliza se for a última."""
         if estado["indice_atual"] < len(indicadores_ativos) - 1:
             estado["indice_atual"] += 1
             atualizar_renderizacao()
         else:
-            # Acabaram as perguntas
             area_central.content = tela_sucesso
             page.update()
 
     def anterior(e):
+        """Volta para pergunta anterior."""
         if estado["indice_atual"] > 0:
             estado["indice_atual"] -= 1
             atualizar_renderizacao()
 
     def atualizar_renderizacao():
+        """Renderiza a pergunta atual com cabeçalho, card e rodapé."""
         if not indicadores_ativos:
             area_dinamica_conteudo.controls = [ft.Text("Nenhum indicador ativo.", color="grey500")]
             page.update()
             return
 
-        # Pega a pergunta atual baseada no índice
         ind_atual = indicadores_ativos[estado["indice_atual"]]
         eixo_atual = ind_atual.get("eixo")
         
-        # Lógica para mostrar "Pergunta 1 de 5" dentro deste eixo
+        # Calcula posição dentro do eixo
         inds_neste_eixo = [i for i in indicadores_ativos if i.get("eixo") == eixo_atual]
         posicao_neste_eixo = inds_neste_eixo.index(ind_atual) + 1
         total_neste_eixo = len(inds_neste_eixo)
 
-        # 1. Botões do Cabeçalho (Pílulas de Eixo)
+        # Stepper de eixos
         controles_stepper = []
         for i in range(1, 4):
             ativo = (i == eixo_atual)
@@ -136,7 +142,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
             )
         linha_stepper = ft.Row(controles_stepper, alignment=ft.MainAxisAlignment.END, spacing=10)
 
-        # 2. Cabeçalho Principal e Barra de Progresso Geral
+        # Cabeçalho com progresso geral
         progresso_geral = (estado["indice_atual"] + 1) / len(indicadores_ativos)
         
         cabecalho = ft.Column(
@@ -144,10 +150,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
             controls=[
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        ft.Text("Avaliação Institucional", size=22, weight="bold", color="black87"),
-                        linha_stepper
-                    ]
+                    controls=[ft.Text("Avaliação Institucional", size=22, weight="bold", color="black87"), linha_stepper]
                 ),
                 ft.ProgressBar(value=progresso_geral, color="#1976D2", bgcolor="#E0E0E0"),
                 ft.Row(
@@ -161,54 +164,25 @@ def ViewFormulario(page: ft.Page, mudar_tela):
             ]
         )
 
-        # 3. O Card da Pergunta Única
+        # Card da pergunta
         card = criar_card_pergunta(ind_atual)
 
-        # 4. Rodapé Tático com Botões
-        btn_cancelar = ft.TextButton(
-            "Cancelar", 
-            icon=ft.Icons.CANCEL, 
-            icon_color="red", 
-            style=ft.ButtonStyle(color="red"), 
-            on_click=lambda _: mudar_tela("/avaliacoes")
-        )
-
-        btn_anterior = ft.ElevatedButton(
-            "Anterior", 
-            icon=ft.Icons.ARROW_BACK, 
-            bgcolor="#E0E0E0", 
-            color="black87", 
-            disabled=(estado["indice_atual"] == 0), 
-            on_click=anterior
-        )
-
+        # Rodapé com botões
+        btn_cancelar = ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="red", style=ft.ButtonStyle(color="red"), on_click=lambda _: mudar_tela("/avaliacoes"))
+        btn_anterior = ft.ElevatedButton("Anterior", icon=ft.Icons.ARROW_BACK, bgcolor="#E0E0E0", color="black87", disabled=(estado["indice_atual"] == 0), on_click=anterior)
         eh_ultima_pergunta = (estado["indice_atual"] == len(indicadores_ativos) - 1)
-        btn_avancar = ft.ElevatedButton(
-            "Finalizar" if eh_ultima_pergunta else "Avançar",
-            icon=ft.Icons.CHECK if eh_ultima_pergunta else ft.Icons.ARROW_FORWARD,
-            bgcolor="#388E3C" if eh_ultima_pergunta else "#1976D2", 
-            color="white",
-            on_click=avancar
-        )
+        btn_avancar = ft.ElevatedButton("Finalizar" if eh_ultima_pergunta else "Avançar", icon=ft.Icons.CHECK if eh_ultima_pergunta else ft.Icons.ARROW_FORWARD, bgcolor="#388E3C" if eh_ultima_pergunta else "#1976D2", color="white", on_click=avancar)
 
         rodape = ft.Container(
             padding=20,
             bgcolor="white",
             border_radius=8,
             shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-            content=ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                controls=[
-                    btn_cancelar,
-                    ft.Row([btn_anterior, btn_avancar], spacing=10)
-                ]
-            )
+            content=ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN, controls=[btn_cancelar, ft.Row([btn_anterior, btn_avancar], spacing=10)])
         )
 
-        # Atualiza a tela substituindo tudo pelo novo estado
         area_dinamica_conteudo.controls = [cabecalho, card, rodape]
         page.update()
-
 
     # === 4. TELA DE SUCESSO ===
     tela_sucesso = ft.Column(
@@ -235,9 +209,10 @@ def ViewFormulario(page: ft.Page, mudar_tela):
         content=area_dinamica_conteudo
     )
 
-    # Inicializa o formulário na pergunta 0
+    # Inicializa o formulário na primeira pergunta
     atualizar_renderizacao()
 
+    # === RETORNO FINAL DA VIEW ===
     return ft.View(
         route="/formulario",
         padding=0,

@@ -1,11 +1,20 @@
+""" Importações """  
 import flet as ft
 
 def ViewDashboard(page: ft.Page, mudar_tela):
     
+    """
+    Tela de Dashboard do sistema Evalytics.
+    Mostra KPIs, gráficos de desempenho e participação, com sidebar responsiva.
+    """
+    
     # === 1. COMPONENTE: CARDS DE KPI ===
     def criar_kpi_card(titulo, valor, icone, cor_icone, subtitulo):
+        """
+        Cria um card de KPI com título, valor, subtítulo e ícone.
+        """
         return ft.Container(
-            width=260, # SOLUÇÃO: Largura fixa em vez de expand=True impede o esmagamento
+            width=260,
             bgcolor="white",
             padding=20, 
             border_radius=10,
@@ -31,8 +40,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
             )
         )
 
+    # Linha de KPIs com wrap para responsividade
     linha_kpis = ft.Row(
-        wrap=True, # SOLUÇÃO: Quando faltar espaço, joga o card de forma elegante para a linha de baixo
+        wrap=True,
         spacing=20,
         run_spacing=20,
         controls=[
@@ -45,6 +55,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
 
     # === 2. COMPONENTE: DESEMPENHO (BARRAS HORIZONTAIS) ===
     def criar_barra_progresso(rotulo, nota, cor):
+        """
+        Cria uma barra de progresso horizontal representando a nota média de um eixo.
+        """
         return ft.Column(
             spacing=5,
             controls=[
@@ -60,7 +73,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         )
 
     card_grafico_barras = ft.Container(
-        width=600, # SOLUÇÃO: Largura base estabelecida
+        width=600,
         bgcolor="white",
         padding=25,
         border_radius=10,
@@ -79,6 +92,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
 
     # === 3. COMPONENTE: DEMOGRAFIA (LISTA DE PROGRESSO) ===
     def criar_demografia(curso, porcentagem, cor):
+        """
+        Cria uma linha de demografia com porcentagem de participação por área.
+        """
         return ft.Column(
             spacing=5,
             controls=[
@@ -94,7 +110,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         )
 
     card_grafico_pizza = ft.Container(
-        width=300, # SOLUÇÃO: Largura base estabelecida
+        width=300,
         bgcolor="white",
         padding=25,
         border_radius=10,
@@ -112,7 +128,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     )
 
     linha_graficos = ft.Row(
-        wrap=True, # SOLUÇÃO: Quebra a linha do gráfico de pizza se a tela apertar
+        wrap=True,
         spacing=20,
         run_spacing=20,
         controls=[card_grafico_barras, card_grafico_pizza]
@@ -151,6 +167,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         )
     )
 
+    # Botão de menu para telas pequenas
     def alternar_sidebar(e=None):
         sidebar.visible = not sidebar.visible
         page.update()
@@ -163,18 +180,23 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         visible=False
     )
 
-    # SOLUÇÃO: Controle matemático que atua junto com o Wrap
+    # Função de responsividade
     def verificar_tamanho_tela(e=None):
+        """
+        Ajusta visibilidade da sidebar e largura dos gráficos conforme tamanho da tela.
+        """
         try:
-            # Tenta acessar a página. Se o componente ainda não estiver na tela,
+            """ 
+            Tenta acessar a página. Se o componente ainda não estiver na tela,
             # ele cai no except silenciosamente sem quebrar o sistema.
+            """
             _ = sidebar.page
         except Exception:
             return 
         
         largura = page.width 
         
-        # 1. Esconde/Mostra a Sidebar
+        # Sidebar responsiva
         if largura < 900:
             sidebar.visible = False
             btn_menu.visible = True
@@ -182,15 +204,12 @@ def ViewDashboard(page: ft.Page, mudar_tela):
             sidebar.visible = True
             btn_menu.visible = False
             
-        # 2. Impede que o gráfico grande vaze da tela em resoluções minúsculas
-        largura_util = largura - 80 # Desconta os 40px de padding da área principal
+        # Ajuste do gráfico de barras
+        largura_util = largura - 80
         if sidebar.visible:
-            largura_util -= 260 # Desconta o espaço da sidebar se ela estiver aberta
+            largura_util -= 260
             
-        if largura_util < 600:
-            card_grafico_barras.width = largura_util
-        else:
-            card_grafico_barras.width = 600
+        card_grafico_barras.width = largura_util if largura_util < 600 else 600
             
         try:
             page.update()
@@ -207,12 +226,12 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         content=ft.Column(
             expand=True,
             spacing=25,
-            scroll=ft.ScrollMode.AUTO,
+            scroll=ft.ScrollMode.AUTO, # permite rolagem caso o conteúdo ultrapasse a altura
             controls=[
                 ft.Row(
                     spacing=10,
                     controls=[
-                        btn_menu,
+                        btn_menu, # botão de menu aparece em telas pequenas
                         ft.Column(
                             spacing=5,
                             controls=[
@@ -223,8 +242,8 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                     ]
                 ),
                 ft.Divider(color="transparent", height=5),
-                linha_kpis,
-                linha_graficos
+                linha_kpis, # cards de KPI
+                linha_graficos # gráficos de barras e demografia
             ]
         )
     )
@@ -238,15 +257,17 @@ def ViewDashboard(page: ft.Page, mudar_tela):
             sidebar.visible = True
             btn_menu.visible = False
             
-        largura_util = page.width - 80
+        largura_util = page.width - 80 # desconta padding lateral
         if sidebar.visible:
-            largura_util -= 260
+            largura_util -= 260  # desconta largura da sidebar
             
+        # Ajusta largura do gráfico de barras conforme espaço disponível
         if largura_util < 600:
             card_grafico_barras.width = largura_util
         else:
             card_grafico_barras.width = 600
 
+    # === RETORNO FINAL DA VIEW ===
     return ft.View(
         route="/dashboard",
         padding=0,

@@ -1,8 +1,10 @@
+""" Importações """  
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Ajusta o path para permitir importações relativas ao projeto
+
+""" Importa o cliente Firestore e a configuração de conexão """
 from firebase_admin import firestore
 from configurations.firebase_config import db
 
@@ -11,11 +13,12 @@ from configurations.firebase_config import db
 # ==========================================
 
 def injetar_dados_teste():
-    
+
     """
     Função temporária para criar um documento no Firestore.
-    Use isso apenas para validar se o Python consegue escrever na nuvem.
+    Útil para validar se o Python consegue escrever na nuvem.
     """
+    
     avaliacao_simulada = {
         "semestre": "Atual",
         "notas": {
@@ -29,7 +32,7 @@ def injetar_dados_teste():
     }
     
     try:
-        # Acessa a coleção 'avaliacoes_institucionais' (se não existir, o Firebase cria na hora)
+        # Cria documento na coleção 'avaliacoes_institucionais'
         db.collection("avaliacoes_institucionais").add(avaliacao_simulada)
         print("✅ Dados de teste injetados com sucesso no Firestore!")
     except Exception as e:
@@ -38,13 +41,15 @@ def injetar_dados_teste():
 def obter_medias_dashboard():
     
     """
-    Função que o seu dashboard.py chamará para montar o gráfico.
+    Função que será usada pelo dashboard.py para montar gráficos.
+    Calcula médias das avaliações armazenadas no Firestore.
     """
+    
     try:
         # Puxa os documentos da coleção
         docs = db.collection("avaliacoes_institucionais").stream()
         
-        # Variáveis para somar as notas provindas do banco
+        # Acumuladores para somar notas
         soma = {"infra": 0, "didatica": 0, "atend": 0, "mat": 0, "inov": 0}
         total_avaliacoes = 0
         
@@ -59,7 +64,7 @@ def obter_medias_dashboard():
                 total_avaliacoes += 1
                 
         if total_avaliacoes == 0:
-            return None # Retorna None se o banco estiver vazio
+            return None # Retorna None se não houver dados
             
         # Calcula a média real baseada em todos os documentos do banco
         medias = {
@@ -80,6 +85,12 @@ def obter_medias_dashboard():
 # ==========================================
 
 def adicionar_curso_db(codigo, nome, depto, coord):
+    
+    """
+    Adiciona um novo curso na coleção 'cursos'.
+    Retorna o ID único gerado pelo Firebase.
+    """
+    
     try:
         # Adiciona um novo documento na coleção "cursos"
         novo_curso = {
@@ -89,6 +100,7 @@ def adicionar_curso_db(codigo, nome, depto, coord):
             "coordenador": coord,
             "timestamp": firestore.SERVER_TIMESTAMP
         }
+        
         # Retorna o ID único que o Firebase gerou para este documento
         _, doc_ref = db.collection("cursos").add(novo_curso)
         return doc_ref.id
@@ -97,6 +109,12 @@ def adicionar_curso_db(codigo, nome, depto, coord):
         return None
 
 def obter_cursos_db():
+    
+    """
+    Retorna lista de cursos armazenados no Firestore.
+    Cada curso inclui o ID do documento para futuras operações.
+    """
+    
     try:
         docs = db.collection("cursos").stream()
         lista_cursos = []
@@ -110,6 +128,11 @@ def obter_cursos_db():
         return []
 
 def atualizar_curso_db(doc_id, nome, depto, coord):
+    
+    """
+    Atualiza os dados de um curso existente.
+    """
+    
     try:
         db.collection("cursos").document(doc_id).update({
             "nome": nome,
@@ -122,6 +145,11 @@ def atualizar_curso_db(doc_id, nome, depto, coord):
         return False
 
 def excluir_curso_db(doc_id):
+    
+    """
+    Exclui um curso do Firestore pelo seu ID.
+    """
+    
     try:
         db.collection("cursos").document(doc_id).delete()
         return True

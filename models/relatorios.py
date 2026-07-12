@@ -1,7 +1,13 @@
-import flet as ft  # type: ignore
+""" Importações """  
+import flet as ft
 
 def ViewRelatorios(page: ft.Page, mudar_tela):
-    
+    """
+    Tela de Relatórios do sistema Evalytics.
+    Permite filtrar dados por semestre e eixo, visualizar resultados consolidados
+    e exportar em diferentes formatos.
+    """
+
     # === 1. SIDEBAR (MENU LATERAL) ===
     estilo_botao_menu = ft.ButtonStyle(
         color={"":"white70", "hovered":"white"},
@@ -12,7 +18,7 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     )
     
     def sair(e):
-        mudar_tela("/") # Limpa o histórico ou qualquer variável de sessão necessária aqui
+        mudar_tela("/")  # Redireciona para tela inicial
 
     sidebar = ft.Container(
         width=260,
@@ -33,17 +39,8 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                 ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
                 ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
                 ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
-
-                
                 ft.Container(expand=True), 
-                
-                # Botão de Logout
-                ft.TextButton(
-                    "Sair do Sistema", 
-                    icon=ft.Icons.LOGOUT, 
-                    style=estilo_botao_menu,
-                    on_click=sair
-                )
+                ft.TextButton("Sair do Sistema", icon=ft.Icons.LOGOUT, style=estilo_botao_menu, on_click=sair)
             ]
         )
     )
@@ -52,16 +49,16 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     area_conteudo = ft.Container(
         expand=True,
         padding=40,
-        bgcolor="#F4F6F9", # Fundo cinza bem claro para destacar os cartões brancos
+        bgcolor="#F4F6F9",  # fundo claro para destacar os cartões
         content=ft.Column(
             expand=True,
             controls=[
-                # Cabeçalho da página
+                # Cabeçalho
                 ft.Text("Relatórios e Exportações", size=28, weight="bold", color="black87"),
                 ft.Text("Gere visualizações dinâmicas, analise os critérios e exporte os resultados.", size=16, color="black54"),
                 ft.Divider(height=30, color="transparent"),
                 
-                # Barra de Filtros e Ações
+                # Barra de filtros e ações
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
@@ -70,21 +67,14 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                             controls=[
                                 ft.Dropdown(
                                     label="Semestre",
-                                    options=[
-                                        ft.dropdown.Option("2025.2"), 
-                                        ft.dropdown.Option("2026.1")
-                                    ],
+                                    options=[ft.dropdown.Option("2025.2"), ft.dropdown.Option("2026.1")],
                                     width=150,
                                     border_color="blue200",
                                     dense=True
                                 ),
                                 ft.Dropdown(
                                     label="Eixo Avaliativo",
-                                    options=[
-                                        ft.dropdown.Option("Todos"),
-                                        ft.dropdown.Option("Infraestrutura"),
-                                        ft.dropdown.Option("Corpo Docente"),
-                                    ],
+                                    options=[ft.dropdown.Option("Todos"), ft.dropdown.Option("Infraestrutura"), ft.dropdown.Option("Corpo Docente")],
                                     width=200,
                                     border_color="blue200",
                                     dense=True
@@ -102,7 +92,7 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                 ),
                 ft.Divider(height=20, color="transparent"),
                 
-                # Container para a Tabela de Dados ou Gráficos Detalhados
+                # Container para resultados
                 ft.Container(
                     expand=True,
                     bgcolor="white",
@@ -113,8 +103,6 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                         controls=[
                             ft.Text("Resultados Consolidados", size=18, weight="bold", color="black87"),
                             ft.Divider(height=10, color="transparent"),
-                            
-                            # Tabela de Dados Dinâmica
                             ft.ListView(
                                 expand=True,
                                 controls=[
@@ -129,27 +117,22 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
                                             ft.DataColumn(ft.Text("Inovação", weight="bold")),
                                         ],
                                         rows=[
-                                            # Aqui é onde os dados do Firestore serão injetados dinamicamente depois
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("2025.2")),
-                                                    ft.DataCell(ft.Text("4.8")),
-                                                    ft.DataCell(ft.Text("4.5")),
-                                                    ft.DataCell(ft.Text("4.0")),
-                                                    ft.DataCell(ft.Text("4.2")),
-                                                    ft.DataCell(ft.Text("4.7")),
-                                                ],
-                                            ),
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("2026.1")),
-                                                    ft.DataCell(ft.Text("Aguardando", color="grey")),
-                                                    ft.DataCell(ft.Text("-")),
-                                                    ft.DataCell(ft.Text("-")),
-                                                    ft.DataCell(ft.Text("-")),
-                                                    ft.DataCell(ft.Text("-")),
-                                                ],
-                                            ),
+                                            ft.DataRow(cells=[
+                                                ft.DataCell(ft.Text("2025.2")),
+                                                ft.DataCell(ft.Text("4.8")),
+                                                ft.DataCell(ft.Text("4.5")),
+                                                ft.DataCell(ft.Text("4.0")),
+                                                ft.DataCell(ft.Text("4.2")),
+                                                ft.DataCell(ft.Text("4.7")),
+                                            ]),
+                                            ft.DataRow(cells=[
+                                                ft.DataCell(ft.Text("2026.1")),
+                                                ft.DataCell(ft.Text("Aguardando", color="grey")),
+                                                ft.DataCell(ft.Text("-")),
+                                                ft.DataCell(ft.Text("-")),
+                                                ft.DataCell(ft.Text("-")),
+                                                ft.DataCell(ft.Text("-")),
+                                            ]),
                                         ],
                                     )
                                 ]
@@ -161,19 +144,12 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
         )
     )
 
-    # === 3. MONTAGEM DA ESTRUTURA FINAL ===
+    # === 3. VIEW FINAL ===
     return ft.View(
         route="/relatorios",
         padding=0,
         bgcolor="white",
         controls=[
-            ft.Row(
-                expand=True,
-                spacing=0,
-                controls=[
-                    sidebar,
-                    area_conteudo
-                ]
-            )
+            ft.Row(expand=True, spacing=0, controls=[sidebar, area_conteudo])
         ]
     )

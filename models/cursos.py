@@ -1,23 +1,37 @@
-import flet as ft # type: ignore
+""" Importações """  
+import flet as ft
 from database.conexao import adicionar_curso_db, obter_cursos_db, atualizar_curso_db, excluir_curso_db 
 
 def ViewCursos(page: ft.Page, mudar_tela):
     
-    # === 1. LÓGICA DE MODAIS E CAMPOS ===
+    """
+    Tela de gerenciamento de cursos.
+    Permite cadastrar, editar e excluir cursos integrados ao banco Firebase.
+    """
+    
+    # === 1. CAMPOS DE FORMULÁRIO (Adicionar e Editar) ===
+    
+    # Campos para adicionar novo curso
     campo_nome = ft.TextField(label="Nome do Curso", border_color="blue200", dense=True)
     campo_departamento = ft.TextField(label="Departamento", border_color="blue200", dense=True)
     campo_coordenador = ft.TextField(label="Coordenador Responsável", border_color="blue200", dense=True)
 
+    # Campos para edição de curso existente
     campo_edit_nome = ft.TextField(label="Nome do Curso", border_color="blue200", dense=True)
     campo_edit_departamento = ft.TextField(label="Departamento", border_color="blue200", dense=True)
     campo_edit_coordenador = ft.TextField(label="Coordenador Responsável", border_color="blue200", dense=True)
 
-    # Dicionário nativo do Python para guardar o estado da edição (Agora guarda o ID do banco também)
+    # Estado auxiliar para guardar linha em edição e ID do documento no Firebase
     estado = {"linha_atual": None, "id_firebase": None}
 
-    # === 2. FUNÇÕES GERADORAS E AÇÕES ===
-    # Agora recebemos o "doc_id" do Firebase para saber qual documento editar/deletar
+    # === 2. FUNÇÕES DE CRIAÇÃO DE LINHAS E AÇÕES ===
     def criar_linha_curso(doc_id, codigo, nome_val, depto_val, coord_val):
+        
+        """
+        Cria uma linha da tabela com dados do curso.
+        Inclui botões de editar e excluir que interagem com o banco.
+        """
+        
         txt_codigo = ft.Text(codigo, color="green" if codigo == "NOVO" else "black", weight="bold")
         txt_nome = ft.Text(nome_val, weight="bold")
         txt_depto = ft.Text(depto_val)
@@ -29,24 +43,25 @@ def ViewCursos(page: ft.Page, mudar_tela):
                 ft.DataCell(txt_nome),
                 ft.DataCell(txt_depto),
                 ft.DataCell(txt_coord),
-                ft.DataCell(ft.Row())
+                ft.DataCell(ft.Row()) # célula reservada para ações
             ]
         )
-
+        
+        # Ação de excluir curso
         def acao_deletar(e):
-            # 1. Deleta do Banco de Dados usando o ID
-            sucesso = excluir_curso_db(doc_id)
+            sucesso = excluir_curso_db(doc_id)  # remove do banco
             if sucesso:
-                # 2. Deleta da Tela
-                tabela_cursos.rows.remove(linha)
+                tabela_cursos.rows.remove(linha) # remove da tabela
                 page.update()
-
+                
+        # Ação de editar curso
         def acao_editar(e):
+            # Preenche campos de edição com valores atuais
             campo_edit_nome.value = txt_nome.value
             campo_edit_departamento.value = txt_depto.value
             campo_edit_coordenador.value = txt_coord.value
             
-            # Guardamos a linha visual e o ID do Firebase no estado
+            # Guarda referência da linha e ID do documento
             estado["linha_atual"] = linha
             estado["id_firebase"] = doc_id
             
@@ -54,7 +69,8 @@ def ViewCursos(page: ft.Page, mudar_tela):
                 page.overlay.append(modal_editar)
             modal_editar.open = True
             page.update()
-
+        
+        # Botões de ação na última célula
         linha.cells[4].content = ft.Row([
             ft.IconButton(icon=ft.Icons.EDIT, icon_color="blue700", tooltip="Editar", on_click=acao_editar),
             ft.IconButton(icon=ft.Icons.DELETE, icon_color="red700", tooltip="Excluir", on_click=acao_deletar)
@@ -62,8 +78,8 @@ def ViewCursos(page: ft.Page, mudar_tela):
         
         return linha
 
-    # === 3. TABELA INICIAL VAZIA ===
-    # A tabela começa sem linhas. Vamos preenchê-la com os dados do banco logo em seguida.
+    # === 3. TABELA DE CURSOS (Inicialmente vazia) ===
+    
     tabela_cursos = ft.DataTable(
         heading_row_color="blue50",
         columns=[
@@ -76,25 +92,25 @@ def ViewCursos(page: ft.Page, mudar_tela):
         rows=[],
     )
 
-    # === 4. CARREGAR DADOS DO BANCO AO ABRIR A TELA ===
+    # === 4. CARREGAR CURSOS DO BANCO ===
     def carregar_cursos_iniciais():
+        """
+        Busca cursos no Firebase e popula a tabela.
+        """
         cursos_do_banco = obter_cursos_db()
-        # Limpa linhas antigas caso a tela seja recarregada
-        tabela_cursos.rows.clear() 
+        tabela_cursos.rows.clear() # limpa linhas antigas
         for c in cursos_do_banco:
             codigo = c.get("codigo", "S/C")
             nome = c.get("nome", "")
             depto = c.get("departamento", "")
             coord = c.get("coordenador", "")
             doc_id = c.get("id")
-            # Cria a linha visual passando o ID real do documento
             nova_linha = criar_linha_curso(doc_id, codigo, nome, depto, coord)
             tabela_cursos.rows.append(nova_linha)
     
-    # Chama a função para popular a tabela
     carregar_cursos_iniciais()
 
-    # === 5. CONTROLES DOS MODAIS ===
+    # === 5. FUNÇÕES DE MODAIS ===
     def fechar_modal_add(e):
         modal_adicionar.open = False
         page.update()
@@ -104,26 +120,31 @@ def ViewCursos(page: ft.Page, mudar_tela):
         page.update()
 
     def salvar_curso(e):
+        """
+        Adiciona novo curso ao banco e à tabela.
+        """
         nome = campo_nome.value
         depto = campo_departamento.value
         coord = campo_coordenador.value
-        codigo_novo = "NOVO" # Você pode criar uma lógica para gerar códigos depois
+        codigo_novo = "NOVO"  # placeholder para código
 
         if nome and depto:
-            # 1. Salva no Firebase PRIMEIRO e pega o ID gerado
             novo_id = adicionar_curso_db(codigo_novo, nome, depto, coord)
             
             if novo_id:
-                # 2. Se deu certo no banco, desenha a linha na tela com o ID correto
                 nova_linha = criar_linha_curso(novo_id, codigo_novo, nome, depto, coord)
                 tabela_cursos.rows.append(nova_linha)
                 
+                # limpa campos e fecha modal
                 campo_nome.value = ""
                 campo_departamento.value = ""
                 campo_coordenador.value = ""
                 fechar_modal_add(e)
 
     def salvar_edicao(e):
+        """
+        Atualiza curso no banco e na tabela.
+        """
         linha_em_edicao = estado["linha_atual"]
         id_banco = estado["id_firebase"]
         
@@ -132,11 +153,9 @@ def ViewCursos(page: ft.Page, mudar_tela):
         coord = campo_edit_coordenador.value
 
         if linha_em_edicao and id_banco:
-            # 1. Atualiza no Firebase
             sucesso = atualizar_curso_db(id_banco, nome, depto, coord)
             
             if sucesso:
-                # 2. Se deu certo no banco, atualiza a tela
                 linha_em_edicao.cells[1].content.value = nome
                 linha_em_edicao.cells[2].content.value = depto
                 linha_em_edicao.cells[3].content.value = coord
@@ -149,7 +168,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
         modal_adicionar.open = True
         page.update()
 
-    # === 6. CONSTRUÇÃO DAS JANELAS MODAIS ===
+    # === 6. DEFINIÇÃO DOS MODAIS ===
     modal_adicionar = ft.AlertDialog(
         modal=True,
         title=ft.Text("Cadastrar Novo Curso", size=20, weight="bold"),
@@ -170,7 +189,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
         ],
     )
 
-    # === 6. SIDEBAR ===
+    # === 7. SIDEBAR ===
     estilo_botao_menu = ft.ButtonStyle(
         color={"":"white70", "hovered":"white"},
         bgcolor={"":"transparent", "hovered":"white10"},
@@ -180,7 +199,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
     )
     
     def sair(e):
-        mudar_tela("/") # Limpa o histórico ou qualquer variável de sessão necessária aqui
+        mudar_tela("/") # Redireciona para tela inicial
 
     sidebar = ft.Container(
         width=260,
@@ -215,7 +234,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
         )
     )
 
-    # === 7. CONTEÚDO PRINCIPAL ===
+    # === 8. CONTEÚDO PRINCIPAL ===
     area_conteudo = ft.Container(
         expand=True,
         padding=40,
@@ -267,7 +286,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
                             ft.ListView(
                                 expand=True,
                                 controls=[
-                                    tabela_cursos # Chamando a variável limpa
+                                    tabela_cursos # Tabela dinâmica de cursos
                                 ]
                             )
                         ]
@@ -277,6 +296,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
         )
     )
 
+    # === RETORNO FINAL DA VIEW ===
     return ft.View(
         route="/cursos",
         padding=0,

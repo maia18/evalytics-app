@@ -1,13 +1,25 @@
-import flet as ft # type: ignore
-import csv
+""" Importações """  
 import os
+import csv
 from datetime import datetime
+
+import flet as ft # Biblioteca Flet para UI
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
+    """
+    View responsável pela tela de Avaliações.
+    Inclui exportação de dados, cards de controle e tabela de respostas.
+    """
+    
     # === 1. LÓGICA DE EXPORTAÇÃO DE DADOS ===
     def exportar_csv(e):
-        # Dados simulados baseados na tabela
+        
+        """
+        Exporta dados simulados para um arquivo CSV.
+        O nome do arquivo inclui timestamp para evitar sobrescrita.
+        """
+        
         dados_exportacao = [
             ["ID_Resposta", "Data_Hora", "Curso", "Eixo_Avaliado", "Nota_Geral", "Comentario"],
             ["RES-001", "2026-07-10 14:30", "Engenharia", "Didática", "4.5", "Ótima metodologia."],
@@ -23,7 +35,8 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
             with open(caminho_arquivo, mode='w', newline='', encoding='utf-8') as arquivo_csv:
                 escritor = csv.writer(arquivo_csv, delimiter=';')
                 escritor.writerows(dados_exportacao)
-                
+
+            # Feedback visual ao usuário
             page.snack_bar = ft.SnackBar(ft.Text(f"Arquivo CSV exportado com sucesso: {nome_arquivo}", color="green"))
             page.snack_bar.open = True
         except Exception as erro:
@@ -39,7 +52,6 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     status_ciclo = ft.Container(
         content=ft.Text("EM ANDAMENTO", color="white", size=12, weight="bold"),
         bgcolor="green600",
-        # Solução à prova de falhas: um valor inteiro fixo para o preenchimento
         padding=8, 
         border_radius=15
     )
@@ -107,6 +119,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
             ft.DataColumn(ft.Text("Comentário")),
         ],
         rows=[
+            # Exemplo de linhas com dados simulados
             ft.DataRow(cells=[
                 ft.DataCell(ft.Text("RES-004", color="grey700")),
                 ft.DataCell(ft.Text("Hoje, 10:20")),
@@ -203,13 +216,14 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
 
     # === 4. ÁREA DE CONTEÚDO PRINCIPAL ===
     area_conteudo = ft.Container(
-        expand=True,
-        padding=40,
-        bgcolor="#F4F6F9",
+        expand=True,          # Ocupa todo o espaço disponível
+        padding=40,           # Espaçamento interno
+        bgcolor="#F4F6F9",  # Cor de fundo clara para contraste
         content=ft.Column(
             expand=True,
             spacing=20,
             controls=[
+                # Cabeçalho da página
                 ft.Column(
                     spacing=5,
                     controls=[
@@ -217,21 +231,25 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                         ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="black54"),
                     ]
                 ),
-                card_controle_ciclo,
-                card_tabela_dados
+                card_controle_ciclo,    # Card de controle do ciclo
+                card_tabela_dados       # Card com tabela de dados brutos
             ]
         )
     )
-
+    
+    """ Retorna a View completa para a rota "/avaliacoes """
     return ft.View(
-        route="/avaliacoes",
-        padding=0,
-        bgcolor="white",
+        route="/avaliacoes",    # Define a rota
+        padding=0,              # Remove padding externo
+        bgcolor="white",        # Cor de fundo da view
         controls=[
             ft.Row(
                 expand=True,
                 spacing=0,
-                controls=[sidebar, area_conteudo]
+                controls=[
+                    sidebar,        # Sidebar de navegação
+                    area_conteudo   # Área principal com cards e tabela
+                    ]
             )
         ]
     )

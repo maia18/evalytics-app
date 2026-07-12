@@ -1,7 +1,13 @@
+""" Importações """  
 import flet as ft
 
 def ViewLogin(page: ft.Page, mudar_tela):
-        
+    """
+    Tela de login do sistema Evalytics.
+    Possui campos de e-mail e senha, validação simples e design com efeito de vidro sobre fundo animado.
+    """
+
+    # === 1. CAMPOS DE ENTRADA ===
     email_input = ft.TextField(
         label="E-mail",
         prefix_icon=ft.Icons.EMAIL_OUTLINED,
@@ -26,21 +32,23 @@ def ViewLogin(page: ft.Page, mudar_tela):
         color="black87"
     )
     
+    # === 2. LÓGICA DE LOGIN ===
     def fazer_login(e):
         if email_input.value == "admin" and senha_input.value == "admin123":
             page.snack_bar = ft.SnackBar(ft.Text("Login realizado com sucesso!", color="green"))
             page.snack_bar.open = True
             page.update()
-            
-            mudar_tela("/dashboard") 
+            mudar_tela("/dashboard")  # redireciona para o dashboard
         else:
             page.snack_bar = ft.SnackBar(ft.Text("Credenciais inválidas.", color="red"))
             page.snack_bar.open = True
             page.update()
             
+    # Permite login ao pressionar Enter
     email_input.on_submit = fazer_login
     senha_input.on_submit = fazer_login
 
+    # Botão de entrar
     btn_entrar = ft.ElevatedButton(
         "Entrar",
         width=350,
@@ -55,9 +63,10 @@ def ViewLogin(page: ft.Page, mudar_tela):
         )
     )
 
+    # === 3. PAINEL DE LOGIN COM EFEITO VIDRO ===
     painel_vidro = ft.Container(
         expand=1,
-        bgcolor="#D9FFFFFF", 
+        bgcolor="#D9FFFFFF",  # efeito translúcido
         blur=15,
         content=ft.Column(
             controls=[
@@ -75,7 +84,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
         )
     )
 
-    # === A MÁGICA DAS CAMADAS ACONTECE AQUI ===
+    # === 4. CAMADAS VISUAIS (FUNDO + CONTEÚDO) ===
     return ft.View(
         route="/",
         padding=0,
@@ -83,8 +92,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
             ft.Stack(
                 expand=True,
                 controls=[
-                    # CAMADA 1: O Fundo
-                    # Solto no Stack com dimensões altíssimas para o "cover" fazer efeito
+                    # CAMADA 1: Fundo animado
                     ft.Image(
                         src="fundo.gif", 
                         fit="cover",
@@ -92,11 +100,11 @@ def ViewLogin(page: ft.Page, mudar_tela):
                         height=3000, 
                     ),
                     
-                    # CAMADA 2: O Conteúdo da Tela
+                    # CAMADA 2: Conteúdo principal
                     ft.Row(
                         expand=True,
                         controls=[
-                            # Lado Esquerdo (Apenas o texto flutuando)
+                            # Lado esquerdo: título e slogan
                             ft.Container(
                                 expand=1,
                                 content=ft.Column(
@@ -108,7 +116,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
                                 )
                             ),
-                            # Lado Direito (O Painel)
+                            # Lado direito: painel de login
                             painel_vidro
                         ],
                         spacing=0

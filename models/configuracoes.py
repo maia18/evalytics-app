@@ -1,10 +1,17 @@
-import flet as ft
+""" Importações """  
 import json
+import flet as ft
 from database.indicadores import INDICADORES
 
 def ViewConfiguracoes(page: ft.Page, mudar_tela):
     
+    """
+    Tela de Configurações do sistema Evalytics.
+    Contém a sidebar de navegação e modais para edição, exclusão e critérios dos indicadores.
+    """
+    
     # === 1. SIDEBAR E NAVEGAÇÃO ===
+    # Estilo padrão para os botões do menu lateral
     estilo_botao_menu = ft.ButtonStyle(
         color={"":"white70", "hovered":"white"},
         bgcolor={"":"transparent", "hovered":"white10"},
@@ -12,10 +19,12 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         padding=15,
         alignment=ft.Alignment(-1, 0)
     )
-
+    
+    # Função de logout
     def sair(e):
         mudar_tela("/")
-
+        
+    # Sidebar com logo, opções de navegação e botão de sair
     sidebar = ft.Container(
         width=260,
         bgcolor="blue900",
@@ -36,8 +45,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
                 ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
 
-                
-                ft.Container(expand=True), 
+                ft.Container(expand=True), # Espaço flexível para empurrar o botão de sair para baixo
                 
                 # Botão de Logout
                 ft.TextButton(
@@ -51,12 +59,14 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     )
 
     # === 2. ESTADO AUXILIAR DA TELA ===
+    # Variáveis auxiliares para controlar qual pasta está aberta e qual item está sendo editado/excluído
     pasta_aberta_atualmente = {"titulo": "", "eixo": 0}
     item_alvo_acao = {}
 
     # =====================================================================
-    # === 3. LÓGICA DO MODAL: EDIÇÃO DE TÍTULO E DESCRIÇÃO (LÁPIS) ========
+    # === 3. LÓGICA DO MODAL: EDIÇÃO DE TÍTULO E DESCRIÇÃO ========
     # =====================================================================
+    
     campo_edicao_titulo = ft.TextField(label="Título", min_lines=1, max_lines=2, border_color="blue200")
     campo_edicao_descricao = ft.TextField(label="Descrição / Observação", min_lines=2, max_lines=4, border_color="blue200")
 
@@ -65,12 +75,14 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         page.update()
 
     def salvar_edicao(e):
+        # Atualiza título e descrição do indicador selecionado
         for item in INDICADORES:
             if item["titulo"] == item_alvo_acao["titulo"] and item["eixo"] == item_alvo_acao["eixo"]:
                 item["titulo"] = campo_edicao_titulo.value
                 item["descricao"] = campo_edicao_descricao.value
                 break
-        
+            
+        # Persiste alterações no arquivo físico
         try:
             with open("database/indicadores.py", "w", encoding="utf-8") as f:
                 lista_em_texto = json.dumps(INDICADORES, indent=4, ensure_ascii=False)
@@ -82,7 +94,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         page.snack_bar = ft.SnackBar(ft.Text("Indicador atualizado com sucesso!", color="green"))
         page.snack_bar.open = True
         abrir_pasta(pasta_aberta_atualmente["titulo"])
-
+        
+    # Modal de edição
     modal_edicao = ft.AlertDialog(
         title=ft.Text("Editar Título e/ou Descrição", size=20, weight="bold"),
         content=ft.Column(
@@ -99,6 +112,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     )
 
     def abrir_modal_edicao(e, item):
+        # Preenche campos com dados do item selecionado
         item_alvo_acao.clear()
         item_alvo_acao.update(item)
         campo_edicao_titulo.value = item.get("titulo", "")
@@ -109,11 +123,11 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         modal_edicao.open = True
         page.update()
 
-
     # =====================================================================
-    # === 4. LÓGICA DO MODAL: CRITÉRIOS (CLIQUE NO TÍTULO DO INDICADOR) ===
+    # === 4. LÓGICA DO MODAL: CRITÉRIOS DE AVALIAÇÃO ===
     # =====================================================================
     
+    # Campos para até 5 critérios
     c1 = ft.TextField(label="Critério 1", multiline=True, expand=True, border_color="blue200")
     c2 = ft.TextField(label="Critério 2", multiline=True, expand=True, border_color="blue200")
     c3 = ft.TextField(label="Critério 3", multiline=True, expand=True, border_color="blue200")
@@ -125,6 +139,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         page.update()
 
     def salvar_criterios(e):
+        # Atualiza critérios do indicador selecionado
         for item in INDICADORES:
             if item["titulo"] == item_alvo_acao["titulo"] and item["eixo"] == item_alvo_acao["eixo"]:
                 item["criterios"] = {
@@ -135,7 +150,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
                     5: c5.value
                 }
                 break
-        
+            
+        # Persiste alterações no arquivo físico
         try:
             with open("database/indicadores.py", "w", encoding="utf-8") as f:
                 lista_em_texto = json.dumps(INDICADORES, indent=4, ensure_ascii=False)
@@ -146,7 +162,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         fechar_modal_criterios(e)
         page.snack_bar = ft.SnackBar(ft.Text("Critério(s) atualizado(s) com sucesso!", color="green"))
         page.snack_bar.open = True
-
+        
+    # Modal de critérios
     modal_criterios = ft.AlertDialog(
         title=ft.Text("Editar Critérios de Avaliação", size=20, weight="bold"),
         content=ft.Container(
@@ -172,6 +189,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     )
 
     def abrir_modal_criterios(e, item):
+        # Preenche campos com critérios existentes
         item_alvo_acao.clear()
         item_alvo_acao.update(item)
         
@@ -189,18 +207,22 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
 
 
     # =====================================================================
-    # === 5. LÓGICA DO MODAL: EXCLUSÃO (LIXEIRA) ==========================
+    # === 5. MODAL DE EXCLUSÃO DE INDICADOR ==========================
     # =====================================================================
+    
     def fechar_modal_exclusao(e):
+        """Fecha o modal de exclusão sem realizar nenhuma ação."""
         modal_exclusao.open = False
         page.update()
 
     def confirmar_exclusao(e):
+        """Remove o indicador selecionado da lista e atualiza o arquivo físico."""
         for idx, item in enumerate(INDICADORES):
             if item["titulo"] == item_alvo_acao["titulo"] and item["eixo"] == item_alvo_acao["eixo"]:
                 INDICADORES.pop(idx)
                 break
         
+        # Persiste a exclusão no arquivo
         try:
             with open("database/indicadores.py", "w", encoding="utf-8") as f:
                 lista_em_texto = json.dumps(INDICADORES, indent=4, ensure_ascii=False)
@@ -213,6 +235,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         page.snack_bar.open = True
         abrir_pasta(pasta_aberta_atualmente["titulo"])
 
+    # Modal de confirmação de exclusão
     modal_exclusao = ft.AlertDialog(
         title=ft.Text("Confirmar Exclusão", size=18, weight="bold", color="red700"),
         content=ft.Text("Tem certeza que deseja apagar este indicador? Esta ação será salva no arquivo físico e não pode ser desfeita."),
@@ -224,6 +247,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     )
 
     def preparar_exclusao(item):
+        """Prepara o modal de exclusão com o item selecionado."""
         item_alvo_acao.clear()
         item_alvo_acao.update(item)
         if modal_exclusao not in page.overlay:
@@ -233,16 +257,20 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
 
 
     # =====================================================================
-    # === 6. LÓGICA DO MODAL: NOVO INDICADOR (BOTÃO AZUL) =================
+    # === 6. MODAL DE NOVO INDICADOR =================
     # =====================================================================
+    
+    # Campos de entrada para novo indicador
     campo_titulo = ft.TextField(label="Título do Indicador", border_color="blue200")
     campo_descricao = ft.TextField(label="Descrição / Observação (Opcional)", multiline=True, min_lines=2, border_color="blue200")
     
     def fechar_modal_novo(e):
+        # Campos de entrada para novo indicador
         modal_novo.open = False
         page.update()
 
     def salvar_novo(e):
+        """Cria um novo indicador e insere na lista, respeitando o eixo atual."""
         novo_item = {
             "titulo": campo_titulo.value,
             "eixo": pasta_aberta_atualmente["eixo"],
@@ -251,6 +279,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             "criterios": {1: "", 2: "", 3: "", 4: "", 5: ""}
         }
         
+        # Insere o novo item logo após o último indicador do mesmo eixo
         eixo_atual = pasta_aberta_atualmente["eixo"]
         indice_insercao = len(INDICADORES)
         for i in range(len(INDICADORES) - 1, -1, -1):
@@ -260,6 +289,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
                 
         INDICADORES.insert(indice_insercao, novo_item)
         
+        # Persiste no arquivo físico
         try:
             with open("database/indicadores.py", "w", encoding="utf-8") as f:
                 lista_em_texto = json.dumps(INDICADORES, indent=4, ensure_ascii=False)
@@ -267,6 +297,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         except Exception as erro:
             print(f"Erro ao salvar no arquivo: {erro}")
         
+        # Limpa campos e fecha modal
         campo_titulo.value = ""
         campo_descricao.value = ""
         
@@ -275,6 +306,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         page.snack_bar.open = True
         abrir_pasta(pasta_aberta_atualmente["titulo"])
 
+    # Modal de criação de novo indicador
     modal_novo = ft.AlertDialog(
         title=ft.Text("Adicionar Novo Indicador", size=18, weight="bold"),
         content=ft.Column(
@@ -291,20 +323,29 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     )
 
     def abrir_modal_novo(e):
+        """Abre o modal para adicionar novo indicador."""
         if modal_novo not in page.overlay:
             page.overlay.append(modal_novo)
         modal_novo.open = True
         page.update()
-
+        
+    # Área dinâmica onde os indicadores serão renderizados
     area_dinamica_indicadores = ft.Container(expand=True)
     
     # =====================================================================
     # === 7. TELA SECUNDÁRIA: LISTA DE INDICADORES ========================
     # =====================================================================
+    
     def criar_linha_indicador(item, status):
+        
+        """
+        Cria uma linha visual para cada indicador da lista.
+        Inclui título interativo (abre critérios), status colorido e botões de ação.
+        """
+        # Define cor de fundo do status conforme valor
         cor_fundo_status = "green600" if status == "ATIVO" else ("red600" if status == "FALHA" else "amber600")
         
-        # O título agora é interativo, pintado de azul para sugerir o clique
+        # O título é clicável e abre o modal de critérios
         titulo_interativo = ft.Container(
             content=ft.Text(item["titulo"], size=15, weight="w500", color="blue700"),
             expand=True,
@@ -312,6 +353,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             on_click=lambda e, i=item: abrir_modal_criterios(e, i)
         )
         
+        # Linha completa com título, status e botões de editar/excluir
         return ft.Container(
             padding=15,
             bgcolor="white",
@@ -334,6 +376,13 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         )
 
     def abrir_pasta(titulo_pasta):
+        
+        """
+        Abre uma pasta (eixo) e lista todos os indicadores relacionados.
+        Também adiciona botão para criar novo indicador.
+        """
+        
+        # Mapeamento dos títulos para IDs de eixo
         mapa_eixos = {
             "Organização Didático-Pedagógica": 1,
             "Corpo Docente e Tutorial": 2,
@@ -341,11 +390,14 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         }
         eixo_id = mapa_eixos.get(titulo_pasta)
         
+        # Atualiza estado da pasta aberta
         pasta_aberta_atualmente["titulo"] = titulo_pasta
         pasta_aberta_atualmente["eixo"] = eixo_id
         
+        # Filtra indicadores do eixo selecionado
         lista_da_pasta = [item for item in INDICADORES if item.get("eixo") == eixo_id]
         
+        # Cabeçalho da pasta com botão de voltar e botão de novo indicador
         controles_lista = [
             ft.Row(
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -368,10 +420,12 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             ft.Divider(height=20, color="transparent")
         ]
         
+        # Adiciona cada indicador da pasta à lista
         for item in lista_da_pasta:
             status_visual = item.get("status", "ATIVO")
             controles_lista.append(criar_linha_indicador(item, status_visual))
         
+        # Renderiza lista na área de conteúdo
         area_conteudo_aba.content = ft.Column(
             expand=True,
             scroll=ft.ScrollMode.AUTO,
@@ -381,14 +435,23 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         page.update()
 
     def voltar_para_pastas():
+        
+        """
+        Volta para a visão geral das pastas (eixos).
+        Atualiza a contagem de indicadores em cada pasta.
+        """
+        
+        # Conta indicadores por eixo
         qtd_eixo_1 = sum(1 for item in INDICADORES if item.get("eixo") == 1)
         qtd_eixo_2 = sum(1 for item in INDICADORES if item.get("eixo") == 2)
         qtd_eixo_3 = sum(1 for item in INDICADORES if item.get("eixo") == 3)
         
+        # Atualiza visual das pastas com contagem
         layout_pastas.controls[1].controls[0] = criar_pasta_indicador("Organização Didático-Pedagógica", qtd_eixo_1)
         layout_pastas.controls[1].controls[1] = criar_pasta_indicador("Corpo Docente e Tutorial", qtd_eixo_2)
         layout_pastas.controls[1].controls[2] = criar_pasta_indicador("Infraestrutura", qtd_eixo_3)
 
+        # Renderiza novamente a visão de pastas
         area_conteudo_aba.content = layout_pastas
         page.update()
 
@@ -397,11 +460,18 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     # =====================================================================
     
     def criar_pasta_indicador(titulo_pasta, qtd_indicadores):
+        
+        """
+        Cria um card visual representando uma pasta (eixo).
+        Mostra ícone de pasta, título e quantidade de indicadores.
+        Ao clicar, abre a lista de indicadores do eixo.
+        """
+        
         return ft.Container(
             bgcolor="#F4F6F9",
             border_radius=8,
             padding=20,
-            ink=True,
+            ink=True, # Permite efeito visual de clique
             on_click=lambda e: abrir_pasta(titulo_pasta),
             content=ft.Row(
                 spacing=15,
@@ -417,11 +487,13 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
                 ]
             )
         )
-
+        
+    # Conta indicadores por eixo para exibir na tela inicial
     qtd_eixo_1 = sum(1 for item in INDICADORES if item.get("eixo") == 1)
     qtd_eixo_2 = sum(1 for item in INDICADORES if item.get("eixo") == 2)
     qtd_eixo_3 = sum(1 for item in INDICADORES if item.get("eixo") == 3)
-
+    
+    # Layout inicial com as pastas (eixos)
     layout_pastas = ft.Column(
         expand=True,
         spacing=25,
@@ -438,10 +510,14 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         ]
     )
 
-    # Estado inicial da aba: Mostrando as pastas
+    # Estado inicial da aba: mostra as pastas
     area_dinamica_indicadores.content = layout_pastas    
     
-    # === COMPONENTES DAS OUTRAS ABAS (Segurança e Banco) ===
+    # =====================================================================
+    # === 9. OUTRAS ABAS: SEGURANÇA E BANCO DE DADOS ======================
+    # =====================================================================
+    
+    # Aba de Segurança
     painel_seguranca = ft.Container(
         padding=20,
         content=ft.Column(
@@ -457,7 +533,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             ]
         )
     )
-
+    
+    # Aba de Banco de Dados
     painel_banco = ft.Container(
         padding=20,
         content=ft.Column(
@@ -490,24 +567,40 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         )
     )
 
-    # === SISTEMA CUSTOMIZADO DE ABAS ===
+    # =====================================================================
+    # === 10. SISTEMA DE ABAS CUSTOMIZADO =================================
+    # =====================================================================
+    
+    # Container que troca o conteúdo conforme aba selecionada
     area_conteudo_aba = ft.Container(content=area_dinamica_indicadores, expand=True, padding=20)
 
     def mudar_aba(e, painel_selecionado):
+        
+        """
+        Alterna entre as abas (Indicadores, Segurança, Banco).
+        Atualiza cor de fundo do botão ativo.
+        """
+        
         area_conteudo_aba.content = painel_selecionado
         btn_indicadores.bgcolor = "blue50" if painel_selecionado == area_dinamica_indicadores else "transparent"
         btn_seguranca.bgcolor = "blue50" if painel_selecionado == painel_seguranca else "transparent"
         btn_banco.bgcolor = "blue50" if painel_selecionado == painel_banco else "transparent"
         page.update()
 
+    # Estilo dos botões de aba
     estilo_btn_aba = ft.ButtonStyle(color={"":"blue900"}, shape=ft.RoundedRectangleBorder(radius=8), padding=15)
-
+    
+    # Botões de navegação entre abas
     btn_indicadores = ft.TextButton("Indicadores", icon=ft.Icons.RULE, style=estilo_btn_aba, on_click=lambda e: mudar_aba(e, area_dinamica_indicadores))
     btn_seguranca = ft.TextButton("Segurança", icon=ft.Icons.SECURITY, style=estilo_btn_aba, on_click=lambda e: mudar_aba(e, painel_seguranca))
     btn_banco = ft.TextButton("Banco de Dados", icon=ft.Icons.STORAGE, style=estilo_btn_aba, on_click=lambda e: mudar_aba(e, painel_banco))
+    
+    # Linha com os botões de abas
     menu_abas = ft.Row([btn_indicadores, btn_seguranca, btn_banco], spacing=10)
 
-    # === CONTEÚDO PRINCIPAL (Estrutura da Tela) ===
+    # =====================================================================
+    # === 11. CONTEÚDO PRINCIPAL DA TELA ==================================
+    # =====================================================================
     area_conteudo = ft.Container(
         expand=True,
         padding=40,
@@ -546,7 +639,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             ]
         )
     )
-
+    
+    # Retorno final da View
     return ft.View(
         route="/configuracoes",
         padding=0,

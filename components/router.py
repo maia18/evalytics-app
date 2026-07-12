@@ -1,3 +1,4 @@
+""" Importa as views (páginas) da aplicação """  
 from models.login import ViewLogin
 from models.dashboard import ViewDashboard
 from models.avaliacoes import ViewAvaliacoes
@@ -6,16 +7,21 @@ from models.cursos import ViewCursos
 from models.formulario import ViewFormulario
 from models.configuracoes import ViewConfiguracoes
 
+# Dicionário que mapeia rotas (strings) para suas respectivas views
 ROTAS = {
-    "/": ViewLogin,
-    "/dashboard": ViewDashboard,
-    "/avaliacoes": ViewAvaliacoes,
-    "/relatorios": ViewRelatorios,
-    "/cursos": ViewCursos,
-    "/formulario": ViewFormulario,
-    "/configuracoes": ViewConfiguracoes,
+    "/": ViewLogin,                         # Rota inicial (login)
+    "/dashboard": ViewDashboard,            # Página principal / painel
+    "/avaliacoes": ViewAvaliacoes,          # Página de avaliações
+    "/relatorios": ViewRelatorios,          # Página de relatórios
+    "/cursos": ViewCursos,                  # Página de cursos
+    "/formulario": ViewFormulario,          # Página de formulário
+    "/configuracoes": ViewConfiguracoes,    # Página de configurações
 }
 
-
 def obter_view(rota: str):
+    """
+    Função que retorna a view correspondente à rota informada.
+    
+    Caso a rota não exista no dicionário ROTAS, retorna a ViewLogin por padrão.
+    """
     return ROTAS.get(rota, ViewLogin)
