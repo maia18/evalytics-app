@@ -84,6 +84,54 @@ def ViewInicio(page: ft.Page, mudar_tela):
             ]
         )
     )
+    
+    # === 3. COMPONENTE: ATIVIDADE RECENTE ===
+    def criar_item_atividade(icone, cor, texto, tempo):
+        return ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            controls=[
+                ft.Row([
+                    ft.Icon(icone, color=cor, size=18),
+                    ft.Text(texto, size=14, color="black87")
+                ]),
+                ft.Text(tempo, size=12, color="grey500", italic=True)
+            ]
+        )
+
+    card_atividade = ft.Container(
+        expand=True, # Ocupa o restante do espaço ao lado do status
+        bgcolor="white",
+        padding=25,
+        border_radius=10,
+        border=ft.Border.all(1, "grey300"),
+        content=ft.Column(
+            spacing=15,
+            controls=[
+                ft.Text("Atividade Recente", size=18, weight="bold", color="black87"),
+                ft.Divider(color="grey200", height=5),
+                criar_item_atividade(ft.Icons.PERSON_ADD, "blue600", "12 novas avaliações recebidas", "Há 2 horas"),
+                criar_item_atividade(ft.Icons.SETTINGS, "orange600", "Indicadores do Eixo 2 atualizados", "Ontem"),
+                criar_item_atividade(ft.Icons.PLAY_CIRCLE, "green600", "Ciclo 2026.1 iniciado", "Há 3 dias"),
+            ]
+        )
+    )
+
+    # Painel inferior dividindo o Status e a Atividade Recente
+    painel_inferior = ft.Row(
+        spacing=20,
+        controls=[
+            card_status,
+            card_atividade
+        ]
+    )
+
+    area_painel = ft.Column(
+        spacing=30,
+        controls=[
+            linha_atalhos,
+            painel_inferior
+        ]
+    )
 
     # === 3. SIDEBAR PADRÃO ===
     estilo_botao_menu = ft.ButtonStyle(
@@ -175,9 +223,8 @@ def ViewInicio(page: ft.Page, mudar_tela):
                     ]
                 ),
                 ft.Divider(color="transparent", height=10),
-                # Agora os elementos estão na raiz da Coluna, organizados corretamente
                 linha_atalhos,
-                card_status
+                painel_inferior
             ]
         )
     )
