@@ -2,10 +2,12 @@ from configurations.firebase_config import db
 from datetime import datetime
 
 def salvar_avaliacao(curso_id, curso_nome, respostas):
+    
     """
     Salva o formulário de avaliação preenchido no Firebase.
     'respostas' é um dicionário no formato { id_do_indicador : nota }
     """
+    
     try:
         nova_avaliacao = {
             "curso_id": curso_id,
@@ -24,7 +26,9 @@ def salvar_avaliacao(curso_id, curso_nome, respostas):
         return False
     
 def listar_avaliacoes():
+    
     """Busca todas as avaliações concluídas no Firebase."""
+    
     try:
         docs = db.collection("avaliacoes").stream()
         return [{"id": doc.id, **doc.to_dict()} for doc in docs]

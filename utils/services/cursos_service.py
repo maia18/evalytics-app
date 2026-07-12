@@ -1,7 +1,9 @@
 from configurations.firebase_config import db
 
 def listar_cursos():
+    
     """Busca todos os cursos cadastrados na nuvem."""
+    
     try:
         docs = db.collection("cursos").stream()
         return [{"id": doc.id, **doc.to_dict()} for doc in docs]
@@ -10,7 +12,9 @@ def listar_cursos():
         return []
 
 def criar_curso(nome, modalidade):
+    
     """Salva um novo curso no Firebase."""
+    
     try:
         novo_curso = {
             "nome": nome,

@@ -1,8 +1,10 @@
 class AvaliacaoSession:
+    
     """
     Gerencia o estado temporário de uma avaliação em andamento.
     No Flet, você pode instanciar essa classe e guardá-bar no page.session.
     """
+    
     def __init__(self):
         self.professor_id = None
         self.disciplina_id = None
