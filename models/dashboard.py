@@ -161,7 +161,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                     alignment=ft.MainAxisAlignment.START
                 ),
                 ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
+                ft.TextButton("Visão Geral", icon=ft.Icons.HOME, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
                 ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
                 ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
                 ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),

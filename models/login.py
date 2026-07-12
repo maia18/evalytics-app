@@ -110,7 +110,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
                                 content=ft.Column(
                                     controls=[
                                         ft.Text("Evalytics", size=70, weight="w900", color="white"),
-                                        ft.Text("Gestão Inteligente de Avaliação Institucional", size=18, color="white")
+                                        ft.Text("Gestão de Avaliação Institucional", size=18, color="white")
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER

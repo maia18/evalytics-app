@@ -12,16 +12,15 @@ def ViewInicio(page: ft.Page, mudar_tela):
     else:
         saudacao = "Boa noite"
 
-    # === 1. COMPONENTE: ATALHOS RÁPIDOS (QUICK ACTIONS) ===
+    # === 1. COMPONENTE: ATALHOS RÁPIDOS ===
     def criar_card_atalho(titulo, descricao, icone, cor, rota):
         return ft.Container(
-            expand=True,
+            width=280, 
             bgcolor="white",
             padding=25,
             border_radius=10,
-            shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-            ink=True, # Adiciona o efeito de clique (ripple)
-            on_click=lambda _: mudar_tela(rota),
+            # Retornamos para a sombra que é 100% compatível com sua versão
+            shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"), 
             content=ft.Column(
                 spacing=15,
                 controls=[
@@ -32,37 +31,27 @@ def ViewInicio(page: ft.Page, mudar_tela):
                         content=ft.Icon(icone, color=cor, size=32)
                     ),
                     ft.Text(titulo, size=18, weight="bold", color="black87"),
-                    ft.Text(descricao, size=14, color="grey600")
+                    ft.Text(descricao, size=14, color="grey600"),
+                    ft.Container(height=10), # Espaçador
+                    ft.ElevatedButton(
+                        "Acessar",
+                        icon=ft.Icons.ARROW_FORWARD,
+                        bgcolor=cor,
+                        color="white",
+                        on_click=lambda _: mudar_tela(rota)
+                    )
                 ]
             )
         )
 
     linha_atalhos = ft.Row(
         spacing=20,
-        wrap=True,
+        wrap=True, # Garante que os cards não sejam esmagados em telas menores
         run_spacing=20,
         controls=[
-            criar_card_atalho(
-                "Analisar Dados", 
-                "Acesse o Dashboard para ver o desempenho geral.", 
-                ft.Icons.PIE_CHART, 
-                "blue700", 
-                "/dashboard"
-            ),
-            criar_card_atalho(
-                "Gerir Avaliações", 
-                "Inicie ou encerre ciclos de coleta de feedback.", 
-                ft.Icons.ASSIGNMENT, 
-                "green700", 
-                "/avaliacoes"
-            ),
-            criar_card_atalho(
-                "Configurar Banco", 
-                "Ajuste indicadores e credenciais do sistema.", 
-                ft.Icons.SETTINGS, 
-                "orange700", 
-                "/configuracoes"
-            )
+            criar_card_atalho("Dashboard", "Visão geral e gráficos de desempenho.", ft.Icons.PIE_CHART, "blue700", "/dashboard"),
+            criar_card_atalho("Avaliações", "Gerencie os ciclos de coleta ativos.", ft.Icons.ASSIGNMENT, "green700", "/avaliacoes"),
+            criar_card_atalho("Configurações", "Ajuste os indicadores e o sistema.", ft.Icons.SETTINGS, "orange700", "/configuracoes")
         ]
     )
 
@@ -186,8 +175,8 @@ def ViewInicio(page: ft.Page, mudar_tela):
                     ]
                 ),
                 ft.Divider(color="transparent", height=10),
+                # Agora os elementos estão na raiz da Coluna, organizados corretamente
                 linha_atalhos,
-                ft.Divider(color="transparent", height=10),
                 card_status
             ]
         )
