@@ -241,7 +241,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                         ft.Column(
                             spacing=5,
                             controls=[
-                                ft.Text("Visão Geral do Sistema", size=28, weight="bold", color="black87"),
+                                ft.Text("Dashboard do Sistema", size=28, weight="bold", color="black87"),
                                 ft.Text("Acompanhe o engajamento e os resultados.", size=16, color="black54"),
                             ]
                         )
