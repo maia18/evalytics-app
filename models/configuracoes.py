@@ -23,7 +23,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     # === 2. ESTADO AUXILIAR DA TELA ===
     # Variáveis auxiliares para controlar qual pasta está aberta e qual item está sendo editado/excluído
     pasta_aberta_atualmente = {"titulo": "", "eixo": 0}    
-    # Preparar conteúdo principal para ser adicionado ao layout responsivo    item_alvo_acao = {}
+    # Preparar conteúdo principal para ser adicionado ao layout responsivo    
+    item_alvo_acao = {}
 
     # =====================================================================
     # === 3. LÓGICA DO MODAL: EDIÇÃO DE TÍTULO E DESCRIÇÃO ========

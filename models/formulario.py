@@ -168,7 +168,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
         card = criar_card_pergunta(ind_atual)
 
         # Rodapé com botões
-        btn_cancelar = ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="red", style=ft.ButtonStyle(color="red"), on_click=lambda _: mudar_tela("/avaliacoes"))
+        btn_cancelar = ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="red", style=ft.ButtonStyle(color="red"), on_click=lambda _: mudar_tela("/inicio"))
         btn_anterior = ft.ElevatedButton("Anterior", icon=ft.Icons.ARROW_BACK, bgcolor="#E0E0E0", color="black87", disabled=(estado["indice_atual"] == 0), on_click=anterior)
         eh_ultima_pergunta = (estado["indice_atual"] == len(indicadores_ativos) - 1)
         btn_avancar = ft.ElevatedButton("Finalizar" if eh_ultima_pergunta else "Avançar", icon=ft.Icons.CHECK if eh_ultima_pergunta else ft.Icons.ARROW_FORWARD, bgcolor="#388E3C" if eh_ultima_pergunta else "#1976D2", color="white", on_click=avancar)
@@ -198,7 +198,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
                 color="grey600"
             ),
             ft.Container(height=20),
-            ft.ElevatedButton("Voltar para o Painel", on_click=lambda _: mudar_tela("/avaliacoes"))
+            ft.ElevatedButton("Voltar para o Painel", on_click=lambda _: mudar_tela("/inicio"))
         ]
     )
 
