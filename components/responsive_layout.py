@@ -9,18 +9,17 @@ import flet as ft
 class ResponsiveLayout:
     """
     Cria um layout responsivo com sidebar, topbar e conteúdo adaptável a qualquer tamanho de tela.
-    
-    Uso:
-        layout = ResponsiveLayout(page, "Página Título", "Subtítulo")
-        layout.add_content(seu_conteudo)
-        view = layout.criar_view("/rota")
     """
     
-    def __init__(self, page: ft.Page, titulo_pagina: str, subtitulo: str = "", dark_mode: bool = False):
+    # Adicionamos o mudar_tela=None aqui!
+    def __init__(self, page: ft.Page, titulo_pagina: str, subtitulo: str = "", dark_mode: bool = False, mudar_tela=None):
         self.page = page
         self.titulo_pagina = titulo_pagina
         self.subtitulo = subtitulo
         self.dark_mode = dark_mode
+        
+        # Salvamos a função para o menu poder usar
+        self.mudar_tela = mudar_tela 
         
         # Paleta de cores
         self.COR_FUNDO = "#1E1E1E" if dark_mode else "#F9FAFB"
@@ -102,23 +101,19 @@ class ResponsiveLayout:
         )
         
         # Função auxiliar para criar itens do menu COM ícones
-        def criar_item_menu(icone: str, texto: str) -> ft.Container:
+        def criar_item_menu(icone: str, texto: str, rota: str) -> ft.Container:
             return ft.Container(
                 content=ft.Row(
                     spacing=12,
                     controls=[
                         ft.Icon(icone, size=20, color="grey700" if not self.dark_mode else "grey300"),
-                        ft.Text(
-                            texto,
-                            size=14,
-                            weight="w500",
-                            color=self.COR_TEXTO_PRINCIPAL,
-                        ),
+                        ft.Text(texto, size=14, weight="w500", color=self.COR_TEXTO_PRINCIPAL),
                     ]
                 ),
                 padding=10,
                 height=45,
                 border_radius=8,
+                on_click=lambda _: self.mudar_tela(rota) if self.mudar_tela else None
             )
         
         # Labels de seção corrigidos (padding usando valor inteiro simples)
@@ -138,51 +133,45 @@ class ResponsiveLayout:
             logo_container,
             ft.Divider(height=2),
             label_menu,
-            criar_item_menu(ft.Icons.HOME, "Início"),
-            criar_item_menu(ft.Icons.ADD_BOX_OUTLINED, "Nova Avaliação"),
-            criar_item_menu(ft.Icons.GRID_VIEW_OUTLINED, "Dashboard"),
-            criar_item_menu(ft.Icons.SCHOOL_OUTLINED, "Professores"),
-            criar_item_menu(ft.Icons.MENU_BOOK_OUTLINED, "Cursos"),
-            criar_item_menu(ft.Icons.PIE_CHART_OUTLINE, "Relatórios"),
+            criar_item_menu(ft.Icons.HOME, "Início", "/inicio"),
+            criar_item_menu(ft.Icons.ADD_BOX_OUTLINED, "Nova Avaliação", "/avaliacoes"),
+            criar_item_menu(ft.Icons.GRID_VIEW_OUTLINED, "Dashboard", "/dashboard"),
+            criar_item_menu(ft.Icons.SCHOOL_OUTLINED, "Professores", "/professores"),
+            criar_item_menu(ft.Icons.MENU_BOOK_OUTLINED, "Cursos", "/cursos"),
+            criar_item_menu(ft.Icons.PIE_CHART_OUTLINE, "Relatórios", "/relatorios"),
             ft.Divider(height=2),
             label_config,
-            criar_item_menu(ft.Icons.SETTINGS_OUTLINED, "Configurações"),
+            criar_item_menu(ft.Icons.SETTINGS_OUTLINED, "Configurações", "/configuracoes"),
         ], scroll=ft.ScrollMode.AUTO, spacing=0, expand=False)
     
     def _criar_sidebar_colapsada(self):
         """Retorna conteúdo da sidebar apenas com ícones (modo colapsado)"""
-        def criar_botao_icon(icone: str, tooltip_text: str) -> ft.Container:
+        def criar_botao_icon(icone: str, tooltip_text: str, rota: str) -> ft.Container:
             return ft.Container(
-                content=ft.Icon(
-                    icone, 
-                    color=self.COR_TEXTO_PRINCIPAL, 
-                    size=24,
-                    tooltip=tooltip_text
-                ),
+                content=ft.Icon(icone, color=self.COR_TEXTO_PRINCIPAL, size=24, tooltip=tooltip_text),
                 padding=8,
                 alignment=ft.Alignment.CENTER,
+                border_radius=8,
+                on_click=lambda _: self.mudar_tela(rota) if self.mudar_tela else None
             )
         
         return ft.Column([
-            ft.Container(
-                content=ft.Icon(ft.Icons.ANALYTICS, color=self.COR_PRIMARIA, size=28),
-                padding=8,
-                alignment=ft.Alignment.CENTER,
-            ),
+            ft.Container(content=ft.Icon(ft.Icons.ANALYTICS, color=self.COR_PRIMARIA, size=28), padding=8, alignment=ft.Alignment.CENTER),
             ft.Divider(height=1),
-            criar_botao_icon(ft.Icons.HOME, "Início"),
-            criar_botao_icon(ft.Icons.ADD_CIRCLE, "Nova Avaliação"),
-            criar_botao_icon(ft.Icons.DASHBOARD, "Dashboard"),
-            criar_botao_icon(ft.Icons.SCHOOL, "Professores"),
-            criar_botao_icon(ft.Icons.BOOK, "Cursos"),
-            criar_botao_icon(ft.Icons.PIE_CHART, "Relatórios"),
+            criar_botao_icon(ft.Icons.HOME, "Início", "/inicio"),
+            criar_botao_icon(ft.Icons.ADD_CIRCLE, "Nova Avaliação", "/avaliacoes"),
+            criar_botao_icon(ft.Icons.DASHBOARD, "Dashboard", "/dashboard"),
+            criar_botao_icon(ft.Icons.SCHOOL, "Professores", "/professores"),
+            criar_botao_icon(ft.Icons.BOOK, "Cursos", "/cursos"),
+            criar_botao_icon(ft.Icons.PIE_CHART, "Relatórios", "/relatorios"),
             ft.Divider(height=1),
-            criar_botao_icon(ft.Icons.SETTINGS, "Configurações"),
+            criar_botao_icon(ft.Icons.SETTINGS, "Configurações", "/configuracoes"),
         ], scroll=ft.ScrollMode.AUTO, spacing=0, alignment=ft.MainAxisAlignment.START)
     
     def _criar_topbar_content(self):
         """Retorna o conteúdo da topbar"""
-        menu_button = ft.IconButton(
+        # Transformamos em self.menu_button para controlarmos a visibilidade
+        self.menu_button = ft.IconButton(
             icon=ft.Icons.MENU, 
             on_click=lambda e: self._toggle_sidebar()
         )
@@ -197,7 +186,7 @@ class ResponsiveLayout:
                 ft.Row(
                     spacing=10,
                     controls=[
-                        menu_button,
+                        self.menu_button, # Agora usamos o botão da classe
                         ft.Column(
                             spacing=0,
                             controls=[
@@ -270,11 +259,14 @@ class ResponsiveLayout:
     def _ajustar_responsividade(self, e=None):
         """Ajusta a visibilidade, tamanho e conteúdo dos componentes conforme o tamanho da tela"""
         if self.page.width < 700:
-            # MOBILE: Sidebar invisível
+            # MOBILE: Sidebar invisível e Menu Hambúrguer VISÍVEL
             self.sidebar_desktop.visible = False
             self.sidebar_desktop.width = 0
+            self.menu_button.visible = True
         else:
+            # DESKTOP/TABLET: Sidebar visível e Menu Hambúrguer OCULTO
             self.sidebar_desktop.visible = True
+            self.menu_button.visible = False
             self._fechar_sidebar()  # Garante que mobile feche ao expandir
             
             if self.page.width >= 1100:

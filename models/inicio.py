@@ -5,7 +5,7 @@ def ViewInicio(page: ft.Page, mudar_tela):
     """Página inicial do Evalytics com layout responsivo"""
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(page, "Início", "Bem-vindo ao Evalytics")
+    layout = ResponsiveLayout(page, "Início", "Bem-vindo ao Evalytics", mudar_tela=mudar_tela)    
     
     # Função auxiliar para criar cards clicáveis
     def criar_card(titulo, descricao, icone, rota):
