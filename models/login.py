@@ -1,127 +1,140 @@
-""" Importações """  
 import flet as ft
 
 def ViewLogin(page: ft.Page, mudar_tela):
-    """
-    Tela de login do sistema Evalytics.
-    Possui campos de e-mail e senha, validação simples e design com efeito de vidro sobre fundo animado.
-    """
+    
+    # === ESTILOS E PALETA ===
+    COR_PRIMARIA = "#F59E0B" # Laranja do template
+    COR_FUNDO = "#F9FAFB"    # Fundo cinza super claro
+    COR_CARD = "#FFFFFF"     # Cartão branco
+    COR_BORDA = "#E5E7EB"    # Borda sutil
+    COR_TEXTO_TITULO = "#111827"
+    COR_TEXTO_SECUNDARIO = "#6B7280"
 
-    # === 1. CAMPOS DE ENTRADA ===
-    email_input = ft.TextField(
-        label="E-mail",
-        prefix_icon=ft.Icons.EMAIL_OUTLINED,
-        border_radius=12, 
-        width=350,
-        bgcolor="transparent",
-        border_color="blue800",          
-        focused_border_color="blue900",  
-        color="black87"
-    )
-    
-    senha_input = ft.TextField(
-        label="Senha",
-        prefix_icon=ft.Icons.LOCK_OUTLINE,
-        password=True,
-        can_reveal_password=True,
-        border_radius=12,
-        width=350,
-        bgcolor="transparent",  
-        border_color="blue800",
-        focused_border_color="blue900",
-        color="black87"
-    )
-    
-    # === 2. LÓGICA DE LOGIN ===
+    # === LÓGICA DE LOGIN ===
     def fazer_login(e):
-        if email_input.value == "admin" and senha_input.value == "admin123":
-            page.snack_bar = ft.SnackBar(ft.Text("Login realizado com sucesso!", color="green"))
-            page.snack_bar.open = True
-            page.update()
-            mudar_tela("/inicio")  # redireciona para a página principal
-        else:
-            page.snack_bar = ft.SnackBar(ft.Text("Credenciais inválidas.", color="red"))
-            page.snack_bar.open = True
-            page.update()
-            
-    # Permite login ao pressionar Enter
-    email_input.on_submit = fazer_login
-    senha_input.on_submit = fazer_login
+        # Aqui no futuro você conectará com o firebase_config.py
+        mudar_tela("/inicio")
 
-    # Botão de entrar
-    btn_entrar = ft.ElevatedButton(
+    # === 1. CABEÇALHO (LOGO E BOAS-VINDAS) ===
+    cabecalho = ft.Column(
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        spacing=10,
+        controls=[
+            # Logo no lugar do ícone
+            ft.Container(
+                # padding=5,
+                content=ft.Image(
+                    src="logo.png",
+                    width=60,
+                    height=60,
+                    fit="CONTAIN",
+                )
+            ),
+            # Textos
+            ft.Text("Bem-vindo ao Evalytics", size=28, weight="bold", color=COR_TEXTO_TITULO),
+            ft.Text(
+                "Faça login para gerenciar as avaliações institucionais.", 
+                size=16, 
+                color=COR_TEXTO_SECUNDARIO,
+                text_align=ft.TextAlign.CENTER
+            )
+        ]
+    )
+
+    # === 2. CAMPOS DE ENTRADA (ESTILO CLEAN) ===
+    campo_email = ft.Column(
+        spacing=5,
+        controls=[
+            ft.Text("Email", size=14, weight="w500", color=COR_TEXTO_TITULO),
+            ft.TextField(
+                hint_text="voce@instituicao.com",
+                hint_style=ft.TextStyle(color=COR_TEXTO_SECUNDARIO),
+                border_color=COR_BORDA,
+                border_radius=8,
+                content_padding=15,
+                cursor_color=COR_TEXTO_TITULO,
+                text_style=ft.TextStyle(color=COR_TEXTO_TITULO)
+            )
+        ]
+    )
+
+    campo_senha = ft.Column(
+        spacing=5,
+        controls=[
+            ft.Text("Senha", size=14, weight="w500", color=COR_TEXTO_TITULO),
+            ft.TextField(
+                hint_text="Digite sua senha",
+                hint_style=ft.TextStyle(color=COR_TEXTO_SECUNDARIO),
+                password=True,
+                can_reveal_password=True,
+                border_color=COR_BORDA,
+                border_radius=8,
+                content_padding=15,
+                cursor_color=COR_TEXTO_TITULO,
+                text_style=ft.TextStyle(color=COR_TEXTO_TITULO)
+            )
+        ]
+    )
+
+    # === 3. AÇÕES EXTRAS ===
+    opcoes_extras = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        controls=[
+            ft.Checkbox(
+                label="Lembrar-me", 
+                label_style=ft.TextStyle(color=COR_TEXTO_SECUNDARIO, size=14), 
+                fill_color=COR_PRIMARIA
+            ),
+            ft.TextButton(
+                "Esqueceu a senha?", 
+                style=ft.ButtonStyle(color=COR_PRIMARIA)
+            )
+        ]
+    )
+
+    # === 4. BOTÃO PRINCIPAL ===
+    btn_login = ft.ElevatedButton(
         "Entrar",
-        width=350,
-        height=50,
-        on_click=fazer_login,
-        style=ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=12),
-            bgcolor={"":"blue700", "hovered":"blue800"}, 
-            color="white",
-            elevation={"":"2", "hovered":"6"}, 
-            animation_duration=250
-        )
+        bgcolor=COR_PRIMARIA,
+        color="white",
+        width=float("inf"),
+        height=45,
+        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
+        on_click=fazer_login
     )
 
-    # === 3. PAINEL DE LOGIN COM EFEITO VIDRO ===
-    painel_vidro = ft.Container(
-        expand=1,
-        bgcolor="#D9FFFFFF",  # efeito translúcido
-        blur=15,
+    # === 5. CARTÃO DO FORMULÁRIO ===
+    card_login = ft.Container(
+        width=420,
+        bgcolor=COR_CARD,
+        padding=40,
+        border_radius=12,
+        shadow=ft.BoxShadow(blur_radius=15, color="black12"), 
         content=ft.Column(
+            spacing=20,
             controls=[
-                ft.Icon(ft.Icons.ACCOUNT_CIRCLE, size=80, color="blue700"),
-                ft.Text("Acesso ao Sistema", size=28, weight="bold", color="black87"),
-                ft.Container(height=30),
-                email_input,
-                ft.Container(height=5),
-                senha_input,
-                ft.Container(height=25),
-                btn_entrar
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                campo_email,
+                campo_senha,
+                opcoes_extras,
+                btn_login
+            ]
         )
     )
 
-    # === 4. CAMADAS VISUAIS (FUNDO + CONTEÚDO) ===
+    # === VIEW FINAL ===
     return ft.View(
         route="/",
-        padding=0,
+        bgcolor=COR_FUNDO,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
+        padding=20,
         controls=[
-            ft.Stack(
-                expand=True,
-                controls=[
-                    # CAMADA 1: Fundo animado
-                    ft.Image(
-                        src="fundo.gif", 
-                        fit="cover",
-                        width=3000,  
-                        height=3000, 
-                    ),
-                    
-                    # CAMADA 2: Conteúdo principal
-                    ft.Row(
-                        expand=True,
-                        controls=[
-                            # Lado esquerdo: título e slogan
-                            ft.Container(
-                                expand=1,
-                                content=ft.Column(
-                                    controls=[
-                                        ft.Text("Evalytics", size=70, weight="w900", color="white"),
-                                        ft.Text("Gestão de Avaliação Institucional", size=18, color="white")
-                                    ],
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                                )
-                            ),
-                            # Lado direito: painel de login
-                            painel_vidro
-                        ],
-                        spacing=0
-                    )
-                ]
+            ft.Container(
+                content=ft.Column(
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=30,
+                    controls=[cabecalho, card_login]
+                )
             )
         ]
     )
