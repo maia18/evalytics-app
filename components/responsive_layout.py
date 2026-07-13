@@ -16,17 +16,20 @@ class ResponsiveLayout:
         self.page = page
         self.titulo_pagina = titulo_pagina
         self.subtitulo = subtitulo
-        self.dark_mode = dark_mode
+        self.mudar_tela = mudar_tela
         
-        # Salvamos a função para o menu poder usar
-        self.mudar_tela = mudar_tela 
+        # Lê a preferência salva ou usa falso (Light Mode) por padrão
+        self.dark_mode = getattr(self.page, "is_dark_mode", False)
         
-        # Paleta de cores
-        self.COR_FUNDO = "#1E1E1E" if dark_mode else "#F9FAFB"
-        self.COR_BORDA = "#3C3C3C" if dark_mode else "#E5E7EB"
+        # Aplica o tema nativo do Flet
+        self.page.theme_mode = ft.ThemeMode.DARK if self.dark_mode else ft.ThemeMode.LIGHT
+        
+        # Paleta de cores dinâmica
+        self.COR_FUNDO = "#1E1E1E" if self.dark_mode else "#F9FAFB"
+        self.COR_BORDA = "#3C3C3C" if self.dark_mode else "#E5E7EB"
         self.COR_PRIMARIA = "#F59E0B"
-        self.COR_CARD = "#2C2C2C" if dark_mode else "white"
-        self.COR_TEXTO_PRINCIPAL = "white" if dark_mode else "black"
+        self.COR_CARD = "#2C2C2C" if self.dark_mode else "white"
+        self.COR_TEXTO_PRINCIPAL = "white" if self.dark_mode else "black"
         
         # Estado
         self.sidebar_mobile_aberta = False
@@ -168,15 +171,18 @@ class ResponsiveLayout:
     
     def _criar_topbar_content(self):
         """Retorna o conteúdo da topbar"""
-        # Transformamos em self.menu_button para controlarmos a visibilidade
         self.menu_button = ft.IconButton(
             icon=ft.Icons.MENU, 
             on_click=lambda e: self._toggle_sidebar()
         )
         
+        # Função para o botão de tema
         def toggle_dark_mode(e):
             self.dark_mode = not self.dark_mode
             self._atualizar_tema()
+            
+        # Define se mostra a Lua (modo claro atual) ou Sol (modo escuro atual)
+        icone_tema = ft.Icons.LIGHT_MODE_OUTLINED if self.dark_mode else ft.Icons.DARK_MODE_OUTLINED
         
         return ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -184,21 +190,12 @@ class ResponsiveLayout:
                 ft.Row(
                     spacing=10,
                     controls=[
-                        self.menu_button, # Agora usamos o botão da classe
+                        self.menu_button,
                         ft.Column(
                             spacing=0,
                             controls=[
-                                ft.Text(
-                                    self.titulo_pagina, 
-                                    size=20, 
-                                    weight="bold", 
-                                    color=self.COR_TEXTO_PRINCIPAL
-                                ),
-                                ft.Text(
-                                    self.subtitulo, 
-                                    size=12, 
-                                    color="grey"
-                                ),
+                                ft.Text(self.titulo_pagina, size=20, weight="bold", color=self.COR_TEXTO_PRINCIPAL),
+                                ft.Text(self.subtitulo, size=12, color="grey"),
                             ],
                         ),
                     ],
@@ -206,18 +203,13 @@ class ResponsiveLayout:
                 ft.Row(
                     controls=[
                         ft.Dropdown(
-                            width=200, 
-                            height=40, 
-                            value="San Francisco HQ",
+                            width=200, height=40, value="San Francisco HQ",
                             options=[ft.dropdown.Option("San Francisco HQ")]
                         ),
-                        ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, on_click=toggle_dark_mode),
+                        # Botão com evento ativo e ícone dinâmico
+                        ft.IconButton(icone_tema, on_click=toggle_dark_mode),
                         ft.IconButton(ft.Icons.NOTIFICATIONS_NONE),
-                        ft.CircleAvatar(
-                            content=ft.Text("AC"), 
-                            bgcolor=self.COR_PRIMARIA, 
-                            radius=18
-                        ),
+                        ft.CircleAvatar(content=ft.Text("AC"), bgcolor=self.COR_PRIMARIA, radius=18),
                     ]
                 ),
             ],
@@ -247,12 +239,17 @@ class ResponsiveLayout:
         self.page.update()
     
     def _atualizar_tema(self):
-        """Atualiza as cores ao mudar tema"""
-        self.COR_FUNDO = "#1E1E1E" if self.dark_mode else "#F9FAFB"
-        self.COR_BORDA = "#3C3C3C" if self.dark_mode else "#E5E7EB"
-        self.COR_CARD = "#2C2C2C" if self.dark_mode else "white"
-        self.COR_TEXTO_PRINCIPAL = "white" if self.dark_mode else "black"
+        """Atualiza as cores e recarrega a tela para aplicar o tema"""
+        # Salva o estado atual criando um atributo customizado na página
+        self.page.is_dark_mode = self.dark_mode
+        
+        # Altera o tema base da janela do Flet
+        self.page.theme_mode = ft.ThemeMode.DARK if self.dark_mode else ft.ThemeMode.LIGHT
         self.page.update()
+        
+        # Força o recarregamento da tela atual para as novas cores pegarem nos cards
+        if self.mudar_tela and hasattr(self, 'rota_atual'):
+            self.mudar_tela(self.rota_atual)
     
     def _ajustar_responsividade(self, e=None):
         """Ajusta a visibilidade, tamanho e conteúdo dos componentes conforme o tamanho da tela"""
@@ -286,6 +283,7 @@ class ResponsiveLayout:
     
     def criar_view(self, route: str):
         """Cria e retorna a View com o layout responsivo"""
+        self.rota_atual = route
         self.page.on_resize = self._ajustar_responsividade
         self._ajustar_responsividade()
         
