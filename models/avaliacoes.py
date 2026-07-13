@@ -14,7 +14,12 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     """
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(page, "Avaliações", "Acompanhe respostas e métricas em tempo real.")
+    layout = ResponsiveLayout(
+        page, 
+        titulo_pagina="Avaliações", 
+        subtitulo="Acompanhe respostas e métricas em tempo real.", 
+        mudar_tela=mudar_tela
+    )
     
     # === 1. LÓGICA DE EXPORTAÇÃO DE DADOS ===
     def exportar_csv(e):

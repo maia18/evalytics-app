@@ -10,7 +10,13 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     """
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(page, "Relatórios e Exportações", "Gere visualizações dinâmicas e exporte resultados.")
+    
+    layout = ResponsiveLayout(
+        page, 
+        titulo_pagina="Relatórios e Exportações", 
+        subtitulo="Gere visualizações dinâmicas e exporte resultados.", 
+        mudar_tela=mudar_tela
+    )
 
     # === CONTEÚDO PRINCIPAL ===
     conteudo = ft.Column(

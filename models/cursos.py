@@ -11,7 +11,13 @@ def ViewCursos(page: ft.Page, mudar_tela):
     """
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(page, "Gestão de Cursos", "Adicione, edite ou remova os cursos da instituição.")
+    
+    layout = ResponsiveLayout(
+        page, 
+        titulo_pagina="Gestão de Cursos", 
+        subtitulo="Adicione, edite ou remova os cursos da instituição.", 
+        mudar_tela=mudar_tela
+    )
     
     # === 1. CAMPOS DE FORMULÁRIO (Adicionar e Editar) ===
     

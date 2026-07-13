@@ -10,7 +10,12 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     """
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(page, "Dashboard", "Acompanhe o engajamento e os resultados.")
+    layout = ResponsiveLayout(
+        page, 
+        titulo_pagina="Dashboard", 
+        subtitulo="Visão geral dos indicadores institucionais.", 
+        mudar_tela=mudar_tela
+    )
     
     # === 1. COMPONENTE: CARDS DE KPI ===
     def criar_kpi_card(titulo, valor, icone, cor_icone, subtitulo):

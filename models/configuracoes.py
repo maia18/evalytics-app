@@ -12,7 +12,13 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     """
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(page, "Configurações", "Gerencie indicadores e critérios de avaliação.")
+    
+    layout = ResponsiveLayout(
+        page, 
+        titulo_pagina="Configurações", 
+        subtitulo="Gerencie indicadores e critérios de avaliação.", 
+        mudar_tela=mudar_tela
+    )
 
     # === 2. ESTADO AUXILIAR DA TELA ===
     # Variáveis auxiliares para controlar qual pasta está aberta e qual item está sendo editado/excluído
