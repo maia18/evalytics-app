@@ -1,245 +1,245 @@
 import flet as ft
-from datetime import datetime
 
 def ViewInicio(page: ft.Page, mudar_tela):
-    
-    # Saudação baseada na hora do dia
-    hora_atual = datetime.now().hour
-    if hora_atual < 12:
-        saudacao = "Bom dia"
-    elif hora_atual < 18:
-        saudacao = "Boa tarde"
-    else:
-        saudacao = "Boa noite"
+    dark_mode = False
 
-    # === 1. COMPONENTE: ATALHOS RÁPIDOS ===
-    def criar_card_atalho(titulo, descricao, icone, cor, rota):
-        return ft.Container(
-            width=280, 
-            bgcolor="white",
-            padding=25,
-            border_radius=10,
-            # Retornamos para a sombra que é 100% compatível com sua versão
-            shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"), 
-            content=ft.Column(
-                spacing=15,
-                controls=[
-                    ft.Container(
-                        padding=15,
-                        bgcolor=f"{cor}50",
-                        border_radius=8,
-                        content=ft.Icon(icone, color=cor, size=32)
-                    ),
-                    ft.Text(titulo, size=18, weight="bold", color="black87"),
-                    ft.Text(descricao, size=14, color="grey600"),
-                    ft.Container(height=10), # Espaçador
-                    ft.ElevatedButton(
-                        "Acessar",
-                        icon=ft.Icons.ARROW_FORWARD,
-                        bgcolor=cor,
-                        color="white",
-                        on_click=lambda _: mudar_tela(rota)
-                    )
-                ]
-            )
-        )
+    COR_FUNDO = "#F9FAFB"
+    COR_BORDA = "#E5E7EB"
+    COR_PRIMARIA = "#F59E0B"
 
-    linha_atalhos = ft.Row(
-        spacing=20,
-        wrap=True, # Garante que os cards não sejam esmagados em telas menores
-        run_spacing=20,
-        controls=[
-            criar_card_atalho("Dashboard", "Visão geral e gráficos de desempenho.", ft.Icons.PIE_CHART, "blue700", "/dashboard"),
-            criar_card_atalho("Avaliações", "Gerencie os ciclos de coleta ativos.", ft.Icons.ASSIGNMENT, "green700", "/avaliacoes"),
-            criar_card_atalho("Configurações", "Ajuste os indicadores e o sistema.", ft.Icons.SETTINGS, "orange700", "/configuracoes")
-        ]
+    def aplicar_tema():
+        nonlocal COR_FUNDO, COR_BORDA, COR_PRIMARIA
+        if dark_mode:
+            COR_FUNDO = "#1E1E1E"
+            COR_BORDA = "#3C3C3C"
+            COR_PRIMARIA = "#F59E0B"
+        else:
+            COR_FUNDO = "#F9FAFB"
+            COR_BORDA = "#E5E7EB"
+            COR_PRIMARIA = "#F59E0B"
+
+    aplicar_tema()
+
+    def toggle_dark_mode(e):
+        nonlocal dark_mode
+        dark_mode = not dark_mode
+        aplicar_tema()
+        page.bgcolor = COR_FUNDO
+        page.update()
+
+    # === OVERLAY ===
+    overlay = ft.Container(
+        visible=False,
+        expand=True,
+        bgcolor="#00000088",
+        on_click=lambda e: fechar_sidebar(),
     )
 
-    # === 2. COMPONENTE: STATUS DO SISTEMA ===
-    card_status = ft.Container(
-        width=400,
-        bgcolor="white",
-        padding=25,
-        border_radius=10,
-        shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-        content=ft.Column(
-            spacing=15,
+    # === SIDEBAR MOBILE ===
+    sidebar_mobile_aberta = False
+    sidebar = ft.Container(
+        left=-270,
+        top=0,
+        bottom=0,
+        width=250,
+        bgcolor="white" if not dark_mode else "#2C2C2C",
+        animate_position=ft.Animation(300, ft.AnimationCurve.EASE_OUT),
+        border=ft.Border(right=ft.BorderSide(1, COR_BORDA)),
+        padding=20,
+        shadow=ft.BoxShadow(blur_radius=25, spread_radius=2, color="#33000000"),
+        content=ft.Column([
+            ft.Row([ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA), ft.Text("Evalytics", size=20, weight="bold")]),
+            ft.Divider(),
+            ft.Text("Início", size=14, weight="bold"),
+            ft.Text("Nova Avaliação", size=14),
+            ft.Text("Dashboard", size=14),
+            ft.Text("Professores", size=14),
+            ft.Text("Cursos", size=14),
+            ft.Text("Relatórios", size=14),
+            ft.Text("Configurações", size=14),
+        ])
+    )
+
+    def abrir_sidebar():
+        nonlocal sidebar_mobile_aberta
+        sidebar_mobile_aberta = True
+        sidebar.left = 0
+        overlay.visible = True
+        page.update()
+
+    def fechar_sidebar():
+        nonlocal sidebar_mobile_aberta
+        sidebar_mobile_aberta = False
+        sidebar.left = -270
+        overlay.visible = False
+        page.update()
+
+    def toggle_sidebar(e):
+        if page.width >= 900:
+            return
+        if sidebar_mobile_aberta:
+            fechar_sidebar()
+        else:
+            abrir_sidebar()
+
+    menu_button = ft.IconButton(icon=ft.Icons.MENU, on_click=toggle_sidebar)
+
+    # === TOPBAR ===
+    topbar = ft.Container(
+        padding=20,
+        bgcolor="white" if not dark_mode else "#2C2C2C",
+        border=ft.Border(bottom=ft.BorderSide(1, COR_BORDA)),
+        content=ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             controls=[
-                ft.Text("Status do Sistema", size=18, weight="bold", color="black87"),
-                ft.Divider(color="grey200", height=5),
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    spacing=10,
                     controls=[
-                        ft.Row([ft.Icon(ft.Icons.CLOUD_DONE, color="green700", size=20), ft.Text("Banco de Dados", size=14)]),
-                        ft.Text("Conectado", color="green700", weight="bold", size=14)
-                    ]
+                        menu_button,
+                        ft.Column(
+                            spacing=0,
+                            controls=[
+                                ft.Text("Início", size=20, weight="bold", color="white" if dark_mode else "black"),
+                                ft.Text("Bem-vindo ao Evalytics", size=12, color="grey"),
+                            ],
+                        ),
+                    ],
                 ),
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
-                        ft.Row([ft.Icon(ft.Icons.SYNC, color="blue700", size=20), ft.Text("Ciclo Atual", size=14)]),
-                        ft.Text("2026.1 (Ativo)", color="blue700", weight="bold", size=14)
+                        ft.Dropdown(width=200, height=40, value="San Francisco HQ",
+                                    options=[ft.dropdown.Option("San Francisco HQ")]),
+                        ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, on_click=toggle_dark_mode),
+                        ft.IconButton(ft.Icons.NOTIFICATIONS_NONE),
+                        ft.CircleAvatar(content=ft.Text("AC"), bgcolor=COR_PRIMARIA, radius=18),
+                    ]
+                ),
+            ],
+        ),
+    )
+
+    # === CONTEÚDO PRINCIPAL ===
+    def criar_card(titulo, descricao, icone):
+        return ft.Container(
+            width=300,
+            bgcolor="white" if not dark_mode else "#2C2C2C",
+            padding=20,
+            border_radius=12,
+            border=ft.Border(
+                left=ft.BorderSide(width=1, color=COR_BORDA),
+                top=ft.BorderSide(width=1, color=COR_BORDA),
+                right=ft.BorderSide(width=1, color=COR_BORDA),
+                bottom=ft.BorderSide(width=1, color=COR_BORDA),
+            ),
+            content=ft.Column([
+                ft.Icon(icone, color=COR_PRIMARIA, size=30),
+                ft.Text(titulo, weight="bold", color="white" if dark_mode else "black"),
+                ft.Text(descricao, size=12, color="grey")
+            ])
+        )
+
+    conteudo = ft.Container(
+        padding=20,
+        content=ft.Column(
+            expand=True,
+            controls=[
+                ft.Container(
+                    bgcolor="white" if not dark_mode else "#2C2C2C",
+                    padding=25,
+                    border_radius=12,
+                    border=ft.Border(
+                        left=ft.BorderSide(1, COR_BORDA),
+                        top=ft.BorderSide(1, COR_BORDA),
+                        right=ft.BorderSide(1, COR_BORDA),
+                        bottom=ft.BorderSide(1, COR_BORDA)
+                    ),
+                    content=ft.Column([
+                        ft.Text("Sistema de Avaliação Institucional", weight="bold", size=20,
+                                color="white" if dark_mode else "black"),
+                        ft.ElevatedButton("Iniciar nova avaliação", bgcolor=COR_PRIMARIA, color="white")
+                    ])
+                ),
+                ft.Container(height=20),
+                ft.Row(
+                    wrap=True,
+                    spacing=20,
+                    run_spacing=20,
+                    controls=[
+                        criar_card("Nova Avaliação", "Criar um novo instrumento.", ft.Icons.ADD),
+                        criar_card("Dashboard", "Visão geral dos indicadores.", ft.Icons.GRID_VIEW),
+                        criar_card("Professores", "Gerenciar corpo docente.", ft.Icons.SCHOOL),
+                        criar_card("Cursos", "Consultar e organizar cursos.", ft.Icons.MENU_BOOK),
+                        criar_card("Relatórios", "Gerar relatórios.", ft.Icons.PIE_CHART),
                     ]
                 )
             ]
         )
     )
-    
-    # === 3. COMPONENTE: ATIVIDADE RECENTE ===
-    def criar_item_atividade(icone, cor, texto, tempo):
-        return ft.Row(
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            controls=[
-                ft.Row([
-                    ft.Icon(icone, color=cor, size=18),
-                    ft.Text(texto, size=14, color="black87")
-                ]),
-                ft.Text(tempo, size=12, color="grey500", italic=True)
-            ]
-        )
 
-    card_atividade = ft.Container(
-        expand=True, # Ocupa o restante do espaço ao lado do status
-        bgcolor="white",
-        padding=25,
-        border_radius=10,
-        border=ft.Border.all(1, "grey300"),
-        content=ft.Column(
-            spacing=15,
-            controls=[
-                ft.Text("Atividade Recente", size=18, weight="bold", color="black87"),
-                ft.Divider(color="grey200", height=5),
-                criar_item_atividade(ft.Icons.PERSON_ADD, "blue600", "12 novas avaliações recebidas", "Há 2 horas"),
-                criar_item_atividade(ft.Icons.SETTINGS, "orange600", "Indicadores do Eixo 2 atualizados", "Ontem"),
-                criar_item_atividade(ft.Icons.PLAY_CIRCLE, "green600", "Ciclo 2026.1 iniciado", "Há 3 dias"),
-            ]
-        )
-    )
-
-    # Painel inferior dividindo o Status e a Atividade Recente
-    painel_inferior = ft.Row(
-        spacing=20,
-        controls=[
-            card_status,
-            card_atividade
-        ]
-    )
-
-    area_painel = ft.Column(
-        spacing=30,
-        controls=[
-            linha_atalhos,
-            painel_inferior
-        ]
-    )
-
-    # === 3. SIDEBAR PADRÃO ===
-    estilo_botao_menu = ft.ButtonStyle(
-        color={"":"white70", "hovered":"white"},
-        bgcolor={"":"transparent", "hovered":"white10"},
-        shape=ft.RoundedRectangleBorder(radius=8),
-        padding=15,
-        alignment=ft.Alignment(-1, 0) 
-    )
-    
-    def sair(e):
-        mudar_tela("/")
-
-    sidebar = ft.Container(
-        width=260,
-        bgcolor="blue900",
+    # === SIDEBAR DESKTOP ===
+    sidebar_desktop = ft.Container(
+        width=250,
+        bgcolor="white" if not dark_mode else "#2C2C2C",
+        border=ft.Border(right=ft.BorderSide(1, COR_BORDA)),
         padding=20,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
-                        ft.Text("Evalytics", size=24, weight="bold", color="white"),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(color="white24", height=30),
-                ft.TextButton("Dashboard", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
-                ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
-                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
-                
-                ft.Container(expand=True), 
-                ft.TextButton("Sair do Sistema", icon=ft.Icons.LOGOUT, style=estilo_botao_menu, on_click=sair)
-            ]
-        )
+        content=ft.Column([
+            ft.Row([ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA), ft.Text("Evalytics", size=20, weight="bold")]),
+            ft.Divider(),
+            ft.Text("Início", size=14),
+            ft.Text("Nova Avaliação", size=14),
+            ft.Text("Dashboard", size=14),
+            ft.Text("Professores", size=14),
+            ft.Text("Cursos", size=14),
+            ft.Text("Relatórios", size=14),
+            ft.Text("Configurações", size=14),
+        ])
     )
 
-    # Lógica de Responsividade (Padrão)
-    def alternar_sidebar(e=None):
-        sidebar.visible = not sidebar.visible
+    # === RESPONSIVIDADE ===
+    def on_resize(e=None):
+        if page.width >= 1100:
+            sidebar_desktop.visible = True
+            sidebar.visible = False
+            menu_button.visible = False
+            overlay.visible = False
+        elif page.width >= 700:
+            sidebar_desktop.visible = True
+            sidebar_desktop.width = 72
+            sidebar.visible = False
+            menu_button.visible = False
+        else:
+            sidebar_desktop.visible = False
+            sidebar.visible = True
+            menu_button.visible = True
         page.update()
 
-    btn_menu = ft.IconButton(icon=ft.Icons.MENU, icon_size=30, icon_color="black87", on_click=alternar_sidebar, visible=False)
+    page.on_resize = on_resize
+    on_resize()
 
-    def verificar_tamanho_tela(e=None):
-        try:
-            _ = sidebar.page
-        except Exception:
-            return 
-        
-        if page.width < 900:
-            sidebar.visible = False
-            btn_menu.visible = True
-        else:
-            sidebar.visible = True
-            btn_menu.visible = False
-            
-        try:
-            page.update()
-        except Exception:
-            pass
-
-    page.on_resize = verificar_tamanho_tela
-
-    # === 4. ÁREA DE CONTEÚDO PRINCIPAL ===
-    area_conteudo = ft.Container(
-        expand=True,
-        padding=40,
-        bgcolor="#F4F6F9",
-        content=ft.Column(
-            expand=True,
-            spacing=30,
-            scroll=ft.ScrollMode.AUTO,
-            controls=[
-                ft.Row(
-                    spacing=10,
-                    controls=[
-                        btn_menu,
-                        ft.Column(
-                            spacing=5,
-                            controls=[
-                                ft.Text(f"{saudacao}, Administrador!", size=32, weight="bold", color="black87"),
-                                ft.Text("Selecione uma ação abaixo para começar a gerenciar o Evalytics.", size=16, color="black54"),
-                            ]
-                        )
-                    ]
-                ),
-                ft.Divider(color="transparent", height=10),
-                linha_atalhos,
-                painel_inferior
-            ]
-        )
-    )
-
-    if page.width:
-        if page.width < 900:
-            sidebar.visible = False
-            btn_menu.visible = True
-        else:
-            sidebar.visible = True
-            btn_menu.visible = False
-
+    # === LAYOUT FINAL COM STACK ===
     return ft.View(
         route="/inicio",
         padding=0,
-        bgcolor="white",
-        controls=[ft.Row(expand=True, spacing=0, controls=[sidebar, area_conteudo])]
+        bgcolor=COR_FUNDO,
+        controls=[
+            ft.Stack(
+                expand=True,
+                controls=[
+                    ft.Row(
+                        expand=True,
+                        spacing=0,
+                        controls=[
+                            ft.Container(content=sidebar_desktop, width=250, bgcolor="white" if not dark_mode else "#2C2C2C"),
+                            ft.Container(
+                                expand=True,
+                                padding=20,
+                                content=ft.Column([topbar, conteudo], expand=True, scroll=ft.ScrollMode.AUTO)
+                            )
+                        ]
+                    ),
+                    overlay,
+                    sidebar
+                ]
+            )
+        ]
     )
