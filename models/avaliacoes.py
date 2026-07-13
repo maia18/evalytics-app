@@ -4,6 +4,7 @@ import csv
 from datetime import datetime
 
 import flet as ft # Biblioteca Flet para UI
+from components.responsive_layout import ResponsiveLayout
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
@@ -11,6 +12,9 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     View responsável pela tela de Avaliações.
     Inclui exportação de dados, cards de controle e tabela de respostas.
     """
+    
+    # Criar o layout responsivo
+    layout = ResponsiveLayout(page, "Avaliações", "Acompanhe respostas e métricas em tempo real.")
     
     # === 1. LÓGICA DE EXPORTAÇÃO DE DADOS ===
     def exportar_csv(e):
@@ -57,7 +61,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     )
 
     card_controle_ciclo = ft.Container(
-        bgcolor="white",
+        bgcolor=layout.COR_CARD,
         padding=25,
         border_radius=10,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
@@ -71,7 +75,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                             spacing=2,
                             controls=[
                                 ft.Text("Ciclo de Avaliação Ativo", size=14, color="grey600"),
-                                ft.Row([ft.Text("Semestre 2026.1", size=22, weight="bold", color="blue900"), status_ciclo])
+                                ft.Row([ft.Text("Semestre 2026.1", size=22, weight="bold", color=layout.COR_PRIMARIA), status_ciclo])
                             ]
                         ),
                         ft.Row(
@@ -149,7 +153,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
 
     card_tabela_dados = ft.Container(
         expand=True,
-        bgcolor="white",
+        bgcolor=layout.COR_CARD,
         padding=25,
         border_radius=10,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
@@ -159,7 +163,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
-                        ft.Text("Respostas Recentes (Raw Data)", size=18, weight="bold", color="black87"),
+                        ft.Text("Respostas Recentes (Raw Data)", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
                         ft.ElevatedButton("Exportar CSV", icon=ft.Icons.DOWNLOAD, bgcolor="blue700", color="white", on_click=exportar_csv)
                     ]
                 ),
@@ -169,88 +173,25 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         )
     )
 
-    # === 3. SIDEBAR PADRÃO ===
-    estilo_botao_menu = ft.ButtonStyle(
-        color={"":"white70", "hovered":"white"},
-        bgcolor={"":"transparent", "hovered":"white10"},
-        shape=ft.RoundedRectangleBorder(radius=8),
-        padding=15,
-        alignment=ft.Alignment(-1, 0) 
-    )
-    
-    def sair(e):
-        mudar_tela("/")
-
-    sidebar = ft.Container(
-        width=260,
-        bgcolor="blue900",
-        padding=20,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
-                        ft.Text("Evalytics", size=24, weight="bold", color="white"),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.HOME, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
-                ft.TextButton("Dashboard", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
-                ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
-                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
-                
-                ft.Container(expand=True), 
-                
-                # Botão de Logout
-                ft.TextButton(
-                    "Sair do Sistema", 
-                    icon=ft.Icons.LOGOUT, 
-                    style=estilo_botao_menu,
-                    on_click=sair
-                )
-            ]
-        )
-    )
-
-    # === 4. ÁREA DE CONTEÚDO PRINCIPAL ===
-    area_conteudo = ft.Container(
-        expand=True,          # Ocupa todo o espaço disponível
-        padding=40,           # Espaçamento interno
-        bgcolor="#F4F6F9",  # Cor de fundo clara para contraste
-        content=ft.Column(
-            expand=True,
-            spacing=20,
-            controls=[
-                # Cabeçalho da página
-                ft.Column(
-                    spacing=5,
-                    controls=[
-                        ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color="black87"),
-                        ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="black54"),
-                    ]
-                ),
-                card_controle_ciclo,    # Card de controle do ciclo
-                card_tabela_dados       # Card com tabela de dados brutos
-            ]
-        )
-    )
-    
-    """ Retorna a View completa para a rota "/avaliacoes """
-    return ft.View(
-        route="/avaliacoes",    # Define a rota
-        padding=0,              # Remove padding externo
-        bgcolor="white",        # Cor de fundo da view
+    # === 3. CONTEÚDO PRINCIPAL ===
+    conteudo = ft.Column(
+        expand=True,
+        spacing=20,
         controls=[
-            ft.Row(
-                expand=True,
-                spacing=0,
+            ft.Column(
+                spacing=5,
                 controls=[
-                    sidebar,        # Sidebar de navegação
-                    area_conteudo   # Área principal com cards e tabela
-                    ]
-            )
+                    ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                    ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="grey"),
+                ]
+            ),
+            card_controle_ciclo,
+            card_tabela_dados
         ]
     )
+    
+    # Adicionar conteúdo ao layout
+    layout.add_content(conteudo)
+    
+    # === RETORNO FINAL DA VIEW ===
+    return layout.criar_view("/avaliacoes")

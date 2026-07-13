@@ -1,5 +1,6 @@
 """ Importações """  
 import flet as ft
+from components.responsive_layout import ResponsiveLayout
 from database.conexao import adicionar_curso_db, obter_cursos_db, atualizar_curso_db, excluir_curso_db 
 
 def ViewCursos(page: ft.Page, mudar_tela):
@@ -8,6 +9,9 @@ def ViewCursos(page: ft.Page, mudar_tela):
     Tela de gerenciamento de cursos.
     Permite cadastrar, editar e excluir cursos integrados ao banco Firebase.
     """
+    
+    # Criar o layout responsivo
+    layout = ResponsiveLayout(page, "Gestão de Cursos", "Adicione, edite ou remova os cursos da instituição.")
     
     # === 1. CAMPOS DE FORMULÁRIO (Adicionar e Editar) ===
     
@@ -189,115 +193,68 @@ def ViewCursos(page: ft.Page, mudar_tela):
         ],
     )
 
-    # === 7. SIDEBAR ===
-    estilo_botao_menu = ft.ButtonStyle(
-        color={"":"white70", "hovered":"white"},
-        bgcolor={"":"transparent", "hovered":"white10"},
-        shape=ft.RoundedRectangleBorder(radius=8),
-        padding=15,
-        alignment=ft.Alignment(-1, 0) 
-    )
-    
-    def sair(e):
-        mudar_tela("/") # Redireciona para tela inicial
-
-    sidebar = ft.Container(
-        width=260,
-        bgcolor="blue900",
-        padding=20,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
-                        ft.Text("Evalytics", size=24, weight="bold", color="white"),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.HOME, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
-                ft.TextButton("Dashboard", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
-                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
-                
-                ft.Container(expand=True), 
-                
-                # Botão de Logout
-                ft.TextButton(
-                    "Sair do Sistema", 
-                    icon=ft.Icons.LOGOUT, 
-                    style=estilo_botao_menu,
-                    on_click=sair
-                )
-            ]
-        )
-    )
-
-    # === 8. CONTEÚDO PRINCIPAL ===
-    area_conteudo = ft.Container(
+    # === 7. CONTEÚDO PRINCIPAL ===
+    conteudo = ft.Column(
         expand=True,
-        padding=40,
-        bgcolor="#F4F6F9",
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        controls=[
+            ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                controls=[
+                    ft.Column(
+                        spacing=5,
+                        controls=[
+                            ft.Text("Gestão de Cursos", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                            ft.Text("Adicione, edite ou remova os cursos da instituição.", size=16, color="grey"),
+                        ]
+                    ),
+                    ft.ElevatedButton(
+                        "Adicionar Curso", 
+                        icon=ft.Icons.ADD, 
+                        bgcolor="blue700", 
+                        color="white",
+                        height=45,
+                        on_click=abrir_modal_add
+                    )
+                ]
+            ),
+            ft.Divider(height=30, color="transparent"),
+            
+            ft.Container(
+                expand=True,
+                bgcolor=layout.COR_CARD,
+                border_radius=10,
+                padding=25,
+                shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+                content=ft.Column(
+                    expand=True,
                     controls=[
-                        ft.Column(
-                            spacing=5,
-                            controls=[
-                                ft.Text("Gestão de Cursos", size=28, weight="bold", color="black87"),
-                                ft.Text("Adicione, edite ou remova os cursos da instituição.", size=16, color="black54"),
-                            ]
-                        ),
-                        ft.ElevatedButton(
-                            "Adicionar Curso", 
-                            icon=ft.Icons.ADD, 
-                            bgcolor="blue700", 
-                            color="white",
+                        ft.TextField(
+                            prefix_icon=ft.Icons.SEARCH,
+                            hint_text="Buscar curso pelo nome...",
+                            border_color="blue200",
                             height=45,
-                            on_click=abrir_modal_add # Botão devidamente renomeado!
+                            text_size=14,
+                            expand=False
+                        ),
+                        ft.Divider(height=20, color="transparent"),
+                        
+                        ft.ListView(
+                            expand=True,
+                            controls=[
+                                tabela_cursos
+                            ]
                         )
                     ]
-                ),
-                ft.Divider(height=30, color="transparent"),
-                
-                ft.Container(
-                    expand=True,
-                    bgcolor="white",
-                    border_radius=10,
-                    padding=25,
-                    shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-                    content=ft.Column(
-                        expand=True,
-                        controls=[
-                            ft.TextField(
-                                prefix_icon=ft.Icons.SEARCH,
-                                hint_text="Buscar curso pelo nome...",
-                                border_color="blue200",
-                                height=45,
-                                text_size=14,
-                                expand=False
-                            ),
-                            ft.Divider(height=20, color="transparent"),
-                            
-                            ft.ListView(
-                                expand=True,
-                                controls=[
-                                    tabela_cursos # Tabela dinâmica de cursos
-                                ]
-                            )
-                        ]
-                    )
                 )
-            ]
-        )
+            )
+        ]
     )
-
+    
+    # Adicionar conteúdo ao layout
+    layout.add_content(conteudo)
+    
     # === RETORNO FINAL DA VIEW ===
+    return layout.criar_view("/cursos")
     return ft.View(
         route="/cursos",
         padding=0,

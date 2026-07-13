@@ -1,5 +1,6 @@
 """ Importações """  
 import flet as ft
+from components.responsive_layout import ResponsiveLayout
 
 def ViewDashboard(page: ft.Page, mudar_tela):
     
@@ -8,6 +9,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     Mostra KPIs, gráficos de desempenho e participação, com sidebar responsiva.
     """
     
+    # Criar o layout responsivo
+    layout = ResponsiveLayout(page, "Dashboard", "Acompanhe o engajamento e os resultados.")
+    
     # === 1. COMPONENTE: CARDS DE KPI ===
     def criar_kpi_card(titulo, valor, icone, cor_icone, subtitulo):
         """
@@ -15,7 +19,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         """
         return ft.Container(
             width=260,
-            bgcolor="white",
+            bgcolor=layout.COR_CARD,
             padding=20, 
             border_radius=10,
             shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
@@ -26,7 +30,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                         spacing=5,
                         controls=[
                             ft.Text(titulo, size=14, color="grey600", weight="bold"),
-                            ft.Text(valor, size=28, weight="bold", color="black87"),
+                            ft.Text(valor, size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
                             ft.Text(subtitulo, size=12, color="green600" if "↑" in subtitulo else "grey500")
                         ]
                     ),
@@ -64,7 +68,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
-                        ft.Text(rotulo, size=14, weight="bold", color="black87"),
+                        ft.Text(rotulo, size=14, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
                         ft.Text(f"{nota} / 5.0", size=14, color="grey700", weight="bold")
                     ]
                 ),
@@ -74,14 +78,14 @@ def ViewDashboard(page: ft.Page, mudar_tela):
 
     card_grafico_barras = ft.Container(
         width=600,
-        bgcolor="white",
+        bgcolor=layout.COR_CARD,
         padding=25,
         border_radius=10,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
         content=ft.Column(
             spacing=20,
             controls=[
-                ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color="black87"),
+                ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
                 ft.Divider(color="transparent", height=5),
                 criar_barra_progresso("Organização Didático-Pedagógica", 4.5, "blue700"),
                 criar_barra_progresso("Corpo Docente e Tutorial", 4.1, "blue500"),
@@ -111,14 +115,14 @@ def ViewDashboard(page: ft.Page, mudar_tela):
 
     card_grafico_pizza = ft.Container(
         width=300,
-        bgcolor="white",
+        bgcolor=layout.COR_CARD,
         padding=25,
         border_radius=10,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
         content=ft.Column(
             spacing=20,
             controls=[
-                ft.Text("Participação por Área", size=18, weight="bold", color="black87"),
+                ft.Text("Participação por Área", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
                 ft.Divider(color="transparent", height=5),
                 criar_demografia("Engenharias", 0.61, "blue700"),
                 criar_demografia("Tecnologia", 0.25, "blue400"),
@@ -134,149 +138,27 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         controls=[card_grafico_barras, card_grafico_pizza]
     )
 
-    # === 4. SIDEBAR E RESPONSIVIDADE ===
-    estilo_botao_menu = ft.ButtonStyle(
-        color={"":"white70", "hovered":"white"},
-        bgcolor={"":"transparent", "hovered":"white10"},
-        shape=ft.RoundedRectangleBorder(radius=8),
-        padding=15,
-        alignment=ft.Alignment(-1, 0) 
+    # === CONTEÚDO PRINCIPAL ===
+    conteudo = ft.Column(
+        expand=True,
+        spacing=25,
+        scroll=ft.ScrollMode.AUTO,
+        controls=[
+            ft.Column(
+                spacing=5,
+                controls=[
+                    ft.Text("Dashboard do Sistema", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                    ft.Text("Acompanhe o engajamento e os resultados.", size=16, color="grey"),
+                ]
+            ),
+            ft.Divider(color="transparent", height=5),
+            linha_kpis,
+            linha_graficos
+        ]
     )
     
-    def sair(e):
-        mudar_tela("/")  # Redireciona para tela inicial
-
-    sidebar = ft.Container(
-        width=260,
-        bgcolor="blue900",
-        padding=20,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
-                        ft.Text("Evalytics", size=24, weight="bold", color="white"),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.HOME, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
-                ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
-                ft.TextButton("Configurações", icon=ft.Icons.SETTINGS, on_click=lambda _: mudar_tela("/configuracoes"), style=estilo_botao_menu),
-                
-                ft.Container(expand=True), 
-                ft.TextButton("Sair do Sistema", icon=ft.Icons.LOGOUT, style=estilo_botao_menu, on_click=sair)
-            ]
-        )
-    )
-
-    # Botão de menu para telas pequenas
-    def alternar_sidebar(e=None):
-        sidebar.visible = not sidebar.visible
-        page.update()
-
-    btn_menu = ft.IconButton(
-        icon=ft.Icons.MENU,
-        icon_size=30,
-        icon_color="black87",
-        on_click=alternar_sidebar,
-        visible=False
-    )
-
-    # Função de responsividade
-    def verificar_tamanho_tela(e=None):
-        """
-        Ajusta visibilidade da sidebar e largura dos gráficos conforme tamanho da tela.
-        """
-        try:
-            """ 
-            Tenta acessar a página. Se o componente ainda não estiver na tela,
-            # ele cai no except silenciosamente sem quebrar o sistema.
-            """
-            _ = sidebar.page
-        except Exception:
-            return 
-        
-        largura = page.width 
-        
-        # Sidebar responsiva
-        if largura < 900:
-            sidebar.visible = False
-            btn_menu.visible = True
-        else:
-            sidebar.visible = True
-            btn_menu.visible = False
-            
-        # Ajuste do gráfico de barras
-        largura_util = largura - 80
-        if sidebar.visible:
-            largura_util -= 260
-            
-        card_grafico_barras.width = largura_util if largura_util < 600 else 600
-            
-        try:
-            page.update()
-        except Exception:
-            pass
-
-    page.on_resize = verificar_tamanho_tela
-
-    # === 5. ÁREA DE CONTEÚDO PRINCIPAL ===
-    area_conteudo = ft.Container(
-        expand=True,
-        padding=40,
-        bgcolor="#F4F6F9",
-        content=ft.Column(
-            expand=True,
-            spacing=25,
-            scroll=ft.ScrollMode.AUTO, # permite rolagem caso o conteúdo ultrapasse a altura
-            controls=[
-                ft.Row(
-                    spacing=10,
-                    controls=[
-                        btn_menu, # botão de menu aparece em telas pequenas
-                        ft.Column(
-                            spacing=5,
-                            controls=[
-                                ft.Text("Dashboard do Sistema", size=28, weight="bold", color="black87"),
-                                ft.Text("Acompanhe o engajamento e os resultados.", size=16, color="black54"),
-                            ]
-                        )
-                    ]
-                ),
-                ft.Divider(color="transparent", height=5),
-                linha_kpis, # cards de KPI
-                linha_graficos # gráficos de barras e demografia
-            ]
-        )
-    )
-
-    # Força a checagem matemática ao carregar a tela pela primeira vez
-    if page.width:
-        if page.width < 900:
-            sidebar.visible = False
-            btn_menu.visible = True
-        else:
-            sidebar.visible = True
-            btn_menu.visible = False
-            
-        largura_util = page.width - 80 # desconta padding lateral
-        if sidebar.visible:
-            largura_util -= 260  # desconta largura da sidebar
-            
-        # Ajusta largura do gráfico de barras conforme espaço disponível
-        if largura_util < 600:
-            card_grafico_barras.width = largura_util
-        else:
-            card_grafico_barras.width = 600
-
-    # === RETORNO FINAL DA VIEW ===
-    return ft.View(
-        route="/dashboard",
-        padding=0,
-        bgcolor="white",
-        controls=[ft.Row(expand=True, spacing=0, controls=[sidebar, area_conteudo])]
-    )
+    # Adicionar conteúdo ao layout
+    layout.add_content(conteudo)
+    
+    # Retornar a view
+    return layout.criar_view("/dashboard")

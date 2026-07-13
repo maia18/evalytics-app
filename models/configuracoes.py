@@ -1,6 +1,7 @@
 """ Importações """  
 import json
 import flet as ft
+from components.responsive_layout import ResponsiveLayout
 from database.indicadores import INDICADORES
 
 def ViewConfiguracoes(page: ft.Page, mudar_tela):
@@ -10,59 +11,13 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     Contém a sidebar de navegação e modais para edição, exclusão e critérios dos indicadores.
     """
     
-    # === 1. SIDEBAR E NAVEGAÇÃO ===
-    # Estilo padrão para os botões do menu lateral
-    estilo_botao_menu = ft.ButtonStyle(
-        color={"":"white70", "hovered":"white"},
-        bgcolor={"":"transparent", "hovered":"white10"},
-        shape=ft.RoundedRectangleBorder(radius=8),
-        padding=15,
-        alignment=ft.Alignment(-1, 0)
-    )
-    
-    # Função de logout
-    def sair(e):
-        mudar_tela("/")
-        
-    # Sidebar com logo, opções de navegação e botão de sair
-    sidebar = ft.Container(
-        width=260,
-        bgcolor="blue900",
-        padding=20,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.Icons.ANALYTICS, color="white", size=32),
-                        ft.Text("Evalytics", size=24, weight="bold", color="white"),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(color="white24", height=30),
-                ft.TextButton("Visão Geral", icon=ft.Icons.HOME, on_click=lambda _: mudar_tela("/inicio"), style=estilo_botao_menu),
-                ft.TextButton("Dashboard", icon=ft.Icons.DASHBOARD, on_click=lambda _: mudar_tela("/dashboard"), style=estilo_botao_menu),
-                ft.TextButton("Avaliações", icon=ft.Icons.ASSIGNMENT, on_click=lambda _: mudar_tela("/avaliacoes"), style=estilo_botao_menu),
-                ft.TextButton("Relatórios", icon=ft.Icons.PIE_CHART, on_click=lambda _: mudar_tela("/relatorios"), style=estilo_botao_menu),
-                ft.TextButton("Cursos", icon=ft.Icons.BOOK, on_click=lambda _: mudar_tela("/cursos"), style=estilo_botao_menu),
-
-                ft.Container(expand=True), # Espaço flexível para empurrar o botão de sair para baixo
-                
-                # Botão de Logout
-                ft.TextButton(
-                    "Sair do Sistema", 
-                    icon=ft.Icons.LOGOUT, 
-                    style=estilo_botao_menu,
-                    on_click=sair
-                )
-            ]
-        )
-    )
+    # Criar o layout responsivo
+    layout = ResponsiveLayout(page, "Configurações", "Gerencie indicadores e critérios de avaliação.")
 
     # === 2. ESTADO AUXILIAR DA TELA ===
     # Variáveis auxiliares para controlar qual pasta está aberta e qual item está sendo editado/excluído
-    pasta_aberta_atualmente = {"titulo": "", "eixo": 0}
-    item_alvo_acao = {}
+    pasta_aberta_atualmente = {"titulo": "", "eixo": 0}    
+    # Preparar conteúdo principal para ser adicionado ao layout responsivo    item_alvo_acao = {}
 
     # =====================================================================
     # === 3. LÓGICA DO MODAL: EDIÇÃO DE TÍTULO E DESCRIÇÃO ========
@@ -599,52 +554,43 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     # Linha com os botões de abas
     menu_abas = ft.Row([btn_indicadores, btn_seguranca, btn_banco], spacing=10)
 
-    # =====================================================================
-    # === 11. CONTEÚDO PRINCIPAL DA TELA ==================================
-    # =====================================================================
-    area_conteudo = ft.Container(
+    # === CONTEÚDO PARA LAYOUT RESPONSIVO ===
+    conteudo = ft.Column(
         expand=True,
-        padding=40,
-        bgcolor="#F4F6F9",
-        content=ft.Column(
-            expand=True,
-            controls=[
-                ft.Column(
-                    spacing=5,
-                    controls=[
-                        ft.Text("Configurações do Sistema", size=28, weight="bold", color="black87"),
-                        ft.Text("Gerencie indicadores, acessos e manutenção de dados.", size=16, color="black54"),
-                    ]
-                ),
-                ft.Divider(height=20, color="transparent"),
-                
-                ft.Container(
+        controls=[
+            ft.Column(
+                spacing=5,
+                controls=[
+                    ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                    ft.Text("Gerencie indicadores, acessos e manutenção de dados.", size=16, color="grey"),
+                ]
+            ),
+            ft.Divider(height=20, color="transparent"),
+            
+            ft.Container(
+                expand=True,
+                bgcolor=layout.COR_CARD,
+                border_radius=10,
+                padding=20,
+                shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+                content=ft.Column(
                     expand=True,
-                    bgcolor="white",
-                    border_radius=10,
-                    padding=20,
-                    shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-                    content=ft.Column(
-                        expand=True,
-                        controls=[
-                            menu_abas,
-                            ft.Divider(height=20, color="grey200"),
-                            ft.Container(
-                                expand=True,
-                                padding=10,
-                                content=area_conteudo_aba
-                            )
-                        ]
-                    )
+                    controls=[
+                        menu_abas,
+                        ft.Divider(height=20, color="grey200"),
+                        ft.Container(
+                            expand=True,
+                            padding=10,
+                            content=area_conteudo_aba
+                        )
+                    ]
                 )
-            ]
-        )
+            )
+        ]
     )
     
+    # Adicionar conteúdo ao layout
+    layout.add_content(conteudo)
+    
     # Retorno final da View
-    return ft.View(
-        route="/configuracoes",
-        padding=0,
-        bgcolor="white",
-        controls=[ft.Row(expand=True, spacing=0, controls=[sidebar, area_conteudo])]
-    )
+    return layout.criar_view("/configuracoes")
