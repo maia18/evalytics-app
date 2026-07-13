@@ -72,7 +72,6 @@ def ViewInicio(page: ft.Page, mudar_tela):
                 controls=[
                     criar_card("Nova Avaliação", "Criar um novo instrumento.", ft.Icons.ADD, "/formulario"),
                     criar_card("Dashboard", "Visão geral dos indicadores.", ft.Icons.GRID_VIEW, "/dashboard"),
-                    criar_card("Professores", "Gerenciar corpo docente.", ft.Icons.SCHOOL, "/professores"),
                     criar_card("Cursos", "Consultar e organizar cursos.", ft.Icons.MENU_BOOK, "/cursos"),
                     criar_card("Relatórios", "Gerar relatórios.", ft.Icons.PIE_CHART, "/relatorios"),
                 ]
