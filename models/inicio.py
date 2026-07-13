@@ -178,39 +178,43 @@ def ViewInicio(page: ft.Page, mudar_tela):
 
     # === SIDEBAR DESKTOP ===
     sidebar_desktop = ft.Container(
-        width=250,
         bgcolor="white" if not dark_mode else "#2C2C2C",
         border=ft.Border(right=ft.BorderSide(1, COR_BORDA)),
         padding=20,
         content=ft.Column([
-            ft.Row([ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA), ft.Text("Evalytics", size=20, weight="bold")]),
+            ft.Row([
+                ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA), 
+                ft.Text("Evalytics", size=20, weight="bold")
+            ]),
             ft.Divider(),
-            ft.Text("Início", size=14),
-            ft.Text("Nova Avaliação", size=14),
-            ft.Text("Dashboard", size=14),
-            ft.Text("Professores", size=14),
-            ft.Text("Cursos", size=14),
-            ft.Text("Relatórios", size=14),
-            ft.Text("Configurações", size=14),
+            ft.Text("Início", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
+            ft.Text("Nova Avaliação", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
+            ft.Text("Dashboard", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
+            ft.Text("Professores", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
+            ft.Text("Cursos", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
+            ft.Text("Relatórios", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
+            ft.Text("Configurações", size=14, overflow=ft.TextOverflow.ELLIPSIS, max_lines=1),
         ])
     )
 
     # === RESPONSIVIDADE ===
     def on_resize(e=None):
-        if page.width >= 1100:
-            sidebar_desktop.visible = True
-            sidebar.visible = False
-            menu_button.visible = False
-            overlay.visible = False
-        elif page.width >= 700:
-            sidebar_desktop.visible = True
-            sidebar_desktop.width = 72
-            sidebar.visible = False
-            menu_button.visible = False
-        else:
+        # Lógica de visibilidade do menu (Mobile)
+        if page.width < 700:
             sidebar_desktop.visible = False
-            sidebar.visible = True
+            sidebar_desktop.width = 0
             menu_button.visible = True
+        else:
+            sidebar_desktop.visible = True
+            menu_button.visible = False
+            fechar_sidebar() # Garante que a mobile feche ao expandir
+            
+            # Lógica de largura (Desktop/Tablet)
+            if page.width >= 1100:
+                sidebar_desktop.width = 250
+            else: # Entre 700 e 1100
+                sidebar_desktop.width = 72
+
         page.update()
 
     page.on_resize = on_resize
@@ -229,7 +233,7 @@ def ViewInicio(page: ft.Page, mudar_tela):
                         expand=True,
                         spacing=0,
                         controls=[
-                            ft.Container(content=sidebar_desktop, width=250, bgcolor="white" if not dark_mode else "#2C2C2C"),
+                            sidebar_desktop, # A sidebar já altera seu próprio width via on_resize
                             ft.Container(
                                 expand=True,
                                 padding=20,
@@ -238,7 +242,7 @@ def ViewInicio(page: ft.Page, mudar_tela):
                         ]
                     ),
                     overlay,
-                    sidebar
+                    sidebar # Esta é a sidebar mobile flutuante
                 ]
             )
         ]
