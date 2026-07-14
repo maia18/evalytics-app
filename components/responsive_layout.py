@@ -103,20 +103,34 @@ class ResponsiveLayout:
             height=60
         )
         
-        # Função auxiliar para criar itens do menu COM ícones
+        # Função auxiliar para criar itens do menu
         def criar_item_menu(icone: str, texto: str, rota: str) -> ft.Container:
             return ft.Container(
-                content=ft.Row(
-                    spacing=12,
-                    controls=[
-                        ft.Icon(icone, size=20, color="grey700" if not self.dark_mode else "grey300"),
-                        ft.Text(texto, size=14, weight="w500", color=self.COR_TEXTO_PRINCIPAL),
-                    ]
-                ),
-                padding=10,
                 height=45,
-                border_radius=8,
-                on_click=lambda _: self.mudar_tela(rota) if self.mudar_tela else None
+                content=ft.TextButton(
+                    content=ft.Row(
+                        spacing=12,
+                        controls=[
+                            ft.Icon(
+                                icone,
+                                size=20,
+                                color="grey700" if not self.dark_mode else "grey300",
+                            ),
+                            ft.Text(
+                                texto,
+                                size=14,
+                                weight="w500",
+                                color=self.COR_TEXTO_PRINCIPAL,
+                            ),
+                        ],
+                    ),
+                    style=ft.ButtonStyle(
+                        padding=10,
+                        shape=ft.RoundedRectangleBorder(radius=8),
+                        overlay_color="#3C3C3C" if self.dark_mode else "#CCCCCC",
+                    ),
+                    on_click=lambda _: self.mudar_tela(rota) if self.mudar_tela else None,
+                ),
             )
         
         # Labels de seção corrigidos (padding usando valor inteiro simples)
@@ -147,14 +161,28 @@ class ResponsiveLayout:
         ], scroll=ft.ScrollMode.AUTO, spacing=0, expand=False)
     
     def _criar_sidebar_colapsada(self):
+        
         """Retorna conteúdo da sidebar apenas com ícones (modo colapsado)"""
+        
         def criar_botao_icon(icone: str, tooltip_text: str, rota: str) -> ft.Container:
             return ft.Container(
-                content=ft.Icon(icone, color=self.COR_TEXTO_PRINCIPAL, size=24, tooltip=tooltip_text),
-                padding=8,
-                alignment=ft.Alignment.CENTER,
-                border_radius=8,
-                on_click=lambda _: self.mudar_tela(rota) if self.mudar_tela else None
+                height=45,
+                alignment=ft.alignment.center,
+                content=ft.TextButton(
+                    expand=True,
+                    content=ft.Icon(
+                        icone,
+                        color=self.COR_TEXTO_PRINCIPAL,
+                        size=24,
+                        tooltip=tooltip_text,
+                    ),
+                    style=ft.ButtonStyle(
+                        padding=10,
+                        shape=ft.RoundedRectangleBorder(radius=8),
+                        overlay_color="#3C3C3C" if self.dark_mode else "#CCCCCC",
+                    ),
+                    on_click=lambda _: self.mudar_tela(rota) if self.mudar_tela else None,
+                ),
             )
         
         return ft.Column([
