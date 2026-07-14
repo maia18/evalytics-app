@@ -196,8 +196,8 @@ class ResponsiveLayout:
             criar_botao_icon(ft.Icons.DASHBOARD, "Dashboard", "/dashboard"),
             criar_botao_icon(ft.Icons.BOOK, "Cursos", "/cursos"),
             criar_botao_icon(ft.Icons.PIE_CHART, "Relatórios", "/relatorios"),
-            ft.Divider(height=1),
             criar_botao_icon(ft.Icons.SETTINGS, "Configurações", "/configuracoes"),
+            ft.Divider(height=1),
         ], scroll=ft.ScrollMode.AUTO, spacing=0, alignment=ft.MainAxisAlignment.START)
     
     def _criar_topbar_content(self):
@@ -246,7 +246,7 @@ class ResponsiveLayout:
                             ),
                             padding=10, 
                             border_radius=8,
-                            bgcolor="#3C3C3C" if self.dark_mode else "#E5E7EB", # Códigos HEX absolutos no lugar do ft.colors
+                            bgcolor="#3C3C3C" if self.dark_mode else "#E5E7EB",
 
                         ),
                         ft.IconButton(icone_tema, on_click=toggle_dark_mode),
