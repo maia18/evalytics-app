@@ -46,6 +46,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
         txt_nome = ft.Text(nome_val, weight="bold")
         txt_depto = ft.Text(depto_val)
         txt_coord = ft.Text(coord_val)
+        
 
         linha = ft.DataRow(
             cells=[
@@ -63,6 +64,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
             if sucesso:
                 tabela_cursos.rows.remove(linha) # remove da tabela
                 page.update()
+                atualizar_interface()
                 
         # Ação de editar curso
         def acao_editar(e):
@@ -91,22 +93,90 @@ def ViewCursos(page: ft.Page, mudar_tela):
     # === 3. TABELA DE CURSOS (Inicialmente vazia) ===
     
     tabela_cursos = ft.DataTable(
-        heading_row_color="blue50",
+        heading_row_color="#3C3C3C",
         columns=[
-            ft.DataColumn(ft.Text("Código", weight="bold")),
-            ft.DataColumn(ft.Text("Nome do Curso", weight="bold")),
-            ft.DataColumn(ft.Text("Departamento", weight="bold")),
-            ft.DataColumn(ft.Text("Coordenador", weight="bold")),
-            ft.DataColumn(ft.Text("Ações", weight="bold")),
+            ft.DataColumn(ft.Text("Código", color="white", weight="bold")),
+            ft.DataColumn(ft.Text("Nome do Curso", color="white", weight="bold")),
+            ft.DataColumn(ft.Text("Departamento", color="white", weight="bold")),
+            ft.DataColumn(ft.Text("Coordenador", color="white", weight="bold")),
+            ft.DataColumn(ft.Text("Ações", color="white", weight="bold")),
         ],
         rows=[],
     )
+    
+    area_tabela = ft.Container(
+        alignment=ft.Alignment.CENTER,
+        content=tabela_cursos
+    )
+    
+    # Borda do card
+    borda_container = ft.Border(
+    top=ft.BorderSide(1, layout.COR_BORDA),
+    bottom=ft.BorderSide(1, layout.COR_BORDA),
+    left=ft.BorderSide(1, layout.COR_BORDA),
+    right=ft.BorderSide(1, layout.COR_BORDA),
+    )
+    
+    def criar_stats_card(titulo, controle_valor):
+        return ft.Container(
+            expand=1,
+            padding=15,
+            border_radius=8,
+            bgcolor=layout.COR_CARD,
+            border=borda_container,
+            content=ft.Column(
+                spacing=5,
+                controls=[
+                    ft.Text(titulo, size=12, color="grey"),
+                    controle_valor,
+                ]
+            )
+        )
+        
+    # Adicione isto aqui:
+    txt_total = ft.Text(str(len(tabela_cursos.rows)), size=20, weight="bold", color=layout.COR_TEXTO_PRINCIPAL)
+    
+    # Defina esta variável antes de criar a linha_stats
+    txt_depto_card = ft.Text("0", size=20, weight="bold", color=layout.COR_TEXTO_PRINCIPAL)
+    
+    linha_stats = ft.Row(
+        spacing=20,
+        controls=[
+            criar_stats_card("Total de Cursos", txt_total),
+            criar_stats_card(
+                "Cursos Ativos", 
+                ft.Text(
+                    "0", 
+                    size=20, 
+                    weight="bold", 
+                    color=layout.COR_TEXTO_PRINCIPAL
+                    )
+                ),
+            criar_stats_card("Departamentos", txt_depto_card),
+        ]
+    )
+    
+    def atualizar_interface():
+        txt_total.value = str(len(tabela_cursos.rows)) # Atualiza o total de cursos
+        departamentos_unicos = {
+            linha.cells[2].content.value.strip()
+            for linha in tabela_cursos.rows
+            if linha.cells[2].content.value.strip()
+        }
+
+        txt_depto_card.value = str(len(departamentos_unicos)) # Atualiza o total de departamentos
+    
+        area_tabela.content = tabela_cursos if len(tabela_cursos.rows) > 0 else ft.Text("Nenhum curso cadastrado ainda.", color="grey", size=14)
+        
+        page.update()
 
     # === 4. CARREGAR CURSOS DO BANCO ===
     def carregar_cursos_iniciais():
+        
         """
         Busca cursos no Firebase e popula a tabela.
         """
+        
         cursos_do_banco = obter_cursos_db()
         tabela_cursos.rows.clear() # limpa linhas antigas
         for c in cursos_do_banco:
@@ -117,6 +187,8 @@ def ViewCursos(page: ft.Page, mudar_tela):
             doc_id = c.get("id")
             nova_linha = criar_linha_curso(doc_id, codigo, nome, depto, coord)
             tabela_cursos.rows.append(nova_linha)
+            
+        atualizar_interface()
     
     carregar_cursos_iniciais()
 
@@ -138,18 +210,25 @@ def ViewCursos(page: ft.Page, mudar_tela):
         coord = campo_coordenador.value
         codigo_novo = "NOVO"  # placeholder para código
 
-        if nome and depto:
+        if nome:
             novo_id = adicionar_curso_db(codigo_novo, nome, depto, coord)
-            
+
             if novo_id:
-                nova_linha = criar_linha_curso(novo_id, codigo_novo, nome, depto, coord)
+                nova_linha = criar_linha_curso(
+                    novo_id,
+                    codigo_novo,
+                    nome,
+                    depto,
+                    coord,
+                )
                 tabela_cursos.rows.append(nova_linha)
-                
-                # limpa campos e fecha modal
+
                 campo_nome.value = ""
                 campo_departamento.value = ""
                 campo_coordenador.value = ""
+
                 fechar_modal_add(e)
+                atualizar_interface()
 
     def salvar_edicao(e):
         """
@@ -198,78 +277,50 @@ def ViewCursos(page: ft.Page, mudar_tela):
             ft.ElevatedButton("Atualizar", on_click=salvar_edicao, bgcolor="blue700", color="white"),
         ],
     )
-
-    # === 7. CONTEÚDO PRINCIPAL ===
+        
+    area_tabela = ft.Container(
+        alignment=ft.Alignment.CENTER,
+        content=tabela_cursos if len(tabela_cursos.rows) > 0 else ft.Text("Nenhum curso cadastrado ainda.", color="grey", size=14)
+    )
+    
+    # === 2. CONTEÚDO PRINCIPAL (Atualizado) ===
     conteudo = ft.Column(
         expand=True,
+        spacing=25,
+        scroll=ft.ScrollMode.AUTO,
         controls=[
             ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                alignment=ft.MainAxisAlignment.END,
                 controls=[
-                    ft.Column(
-                        spacing=5,
-                        controls=[
-                            ft.Text("Gestão de Cursos", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
-                            ft.Text("Adicione, edite ou remova os cursos da instituição.", size=16, color="grey"),
-                        ]
-                    ),
                     ft.ElevatedButton(
-                        "Adicionar Curso", 
+                        "Novo curso", 
                         icon=ft.Icons.ADD, 
-                        bgcolor="blue700", 
+                        bgcolor=layout.COR_PRIMARIA, 
                         color="white",
-                        height=45,
                         on_click=abrir_modal_add
                     )
                 ]
             ),
-            ft.Divider(height=30, color="transparent"),
-            
+            linha_stats, 
             ft.Container(
-                expand=True,
                 bgcolor=layout.COR_CARD,
-                border_radius=10,
-                padding=25,
-                shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+                padding=30,
+                border_radius=8,
+                border=borda_container,
                 content=ft.Column(
-                    expand=True,
+                    spacing=20,
                     controls=[
-                        ft.TextField(
-                            prefix_icon=ft.Icons.SEARCH,
-                            hint_text="Buscar curso pelo nome...",
-                            border_color="blue200",
-                            height=45,
-                            text_size=14,
-                            expand=False
-                        ),
-                        ft.Divider(height=20, color="transparent"),
-                        
-                        ft.ListView(
-                            expand=True,
-                            controls=[
-                                tabela_cursos
-                            ]
-                        )
+                        ft.Text("Lista de Cursos", size=16, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                        area_tabela
                     ]
                 )
             )
         ]
     )
+      
     
     # Adicionar conteúdo ao layout
     layout.add_content(conteudo)
     
     # === RETORNO FINAL DA VIEW ===
     return layout.criar_view("/cursos")
-    return ft.View(
-        route="/cursos",
-        padding=0,
-        bgcolor="white",
-        controls=[
-            ft.Row(
-                expand=True,
-                spacing=0,
-                controls=[sidebar, area_conteudo]
-            )
-        ]
-    )
