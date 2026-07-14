@@ -7,22 +7,20 @@ import flet as ft
 
 
 class ResponsiveLayout:
+    
     """
     Cria um layout responsivo com sidebar, topbar e conteúdo adaptável a qualquer tamanho de tela.
     """
     
-    # Adicionamos o mudar_tela=None aqui!
     def __init__(self, page: ft.Page, titulo_pagina: str, subtitulo: str = "", dark_mode: bool = False, mudar_tela=None):
         self.page = page
         self.titulo_pagina = titulo_pagina
         self.subtitulo = subtitulo
         self.mudar_tela = mudar_tela
         
-        # Lê a preferência salva ou usa falso (Light Mode) por padrão
-        self.dark_mode = getattr(self.page, "is_dark_mode", False)
+        self.dark_mode = getattr(self.page, "is_dark_mode", False) # Lê a preferência salva ou usa falso (Light Mode) por padrão
         
-        # Aplica o tema nativo do Flet
-        self.page.theme_mode = ft.ThemeMode.DARK if self.dark_mode else ft.ThemeMode.LIGHT
+        self.page.theme_mode = ft.ThemeMode.DARK if self.dark_mode else ft.ThemeMode.LIGHT # Aplica o tema nativo do Flet
         
         # Paleta de cores dinâmica
         self.COR_FUNDO = "#1E1E1E" if self.dark_mode else "#F9FAFB"
@@ -40,6 +38,7 @@ class ResponsiveLayout:
         self._criar_componentes()
     
     def _criar_componentes(self):
+        
         """Cria os componentes básicos do layout"""
         
         # === OVERLAY ===
@@ -82,6 +81,7 @@ class ResponsiveLayout:
         )
     
     def _criar_sidebar_content(self):
+        
         """Retorna o conteúdo da sidebar com suporte a colapsamento"""
         
         # Container para logo/título corrigido (padding usando valor inteiro simples)
@@ -133,7 +133,7 @@ class ResponsiveLayout:
                 ),
             )
         
-        # Labels de seção corrigidos (padding usando valor inteiro simples)
+        # Labels de seção
         label_menu = ft.Container(
             content=ft.Text("Menu Principal", size=12, weight="bold", color=self.COR_TEXTO_PRINCIPAL),
             padding=10,
@@ -209,7 +209,7 @@ class ResponsiveLayout:
             self.dark_mode = not self.dark_mode
             self._atualizar_tema()
             
-        # Define se mostra a Lua (modo claro atual) ou Sol (modo escuro atual)
+        # Define se mostra a Lua (modo claro) ou Sol (modo escuro)
         icone_tema = ft.Icons.LIGHT_MODE_OUTLINED if self.dark_mode else ft.Icons.DARK_MODE_OUTLINED
         
         return ft.Row(
@@ -328,13 +328,11 @@ class ResponsiveLayout:
                             spacing=0,
                             controls=[
                                 self.sidebar_desktop,
-                                # Coluna que abraça toda a direita
                                 ft.Column(
                                     expand=True,
-                                    spacing=0, # Garante que a Topbar cole no topo e no conteúdo
+                                    spacing=0,
                                     controls=[
-                                        self.topbar, # Topbar sem margens externas
-                                        # Conteúdo principal com o padding correto de 20px
+                                        self.topbar,
                                         ft.Container(
                                             expand=True,
                                             padding=20,
