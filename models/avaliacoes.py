@@ -4,7 +4,7 @@ import csv
 from datetime import datetime
 
 import flet as ft # Biblioteca Flet para UI
-from components.responsive_layout import ResponsiveLayout
+from components.layout.responsive_layout import ResponsiveLayout
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     

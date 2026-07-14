@@ -1,7 +1,7 @@
 """ Importações """  
 import json
 import flet as ft
-from components.responsive_layout import ResponsiveLayout
+from components.layout.responsive_layout import ResponsiveLayout
 from database.indicadores import INDICADORES
 
 def ViewConfiguracoes(page: ft.Page, mudar_tela):

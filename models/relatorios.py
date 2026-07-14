@@ -1,6 +1,6 @@
 """ Importações """  
 import flet as ft
-from components.responsive_layout import ResponsiveLayout
+from components.layout.responsive_layout import ResponsiveLayout
 
 def ViewRelatorios(page: ft.Page, mudar_tela):
     """

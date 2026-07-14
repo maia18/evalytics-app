@@ -29,5 +29,6 @@ def configurar_aplicacao(page: ft.Page):
     page.window.icon = os.path.join(
         os.path.dirname(os.path.dirname(__file__)),     # Caminho até a raiz do projeto
         "assets",                                       # Pasta onde está o ícone
+        "imgs",
         "logo.ico"                                      # Nome do arquivo do ícone
     )

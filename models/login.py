@@ -24,7 +24,7 @@ def ViewLogin(page: ft.Page, mudar_tela):
             ft.Container(
                 # padding=5,
                 content=ft.Image(
-                    src="logo.png",
+                    src="imgs/logo.png",
                     width=60,
                     height=60,
                     fit="CONTAIN",
