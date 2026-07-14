@@ -4,6 +4,24 @@ Encapsula a lógica de sidebar, topbar e overlay para responsividade geral
 """
 
 import flet as ft
+import urllib.request
+import json
+
+def obter_localizacao() -> str:
+    """Busca a cidade e estado baseados no IP do usuário."""
+    try:
+        # Consulta uma API gratuita de geolocalização
+        with urllib.request.urlopen("http://ip-api.com/json/", timeout=3) as resposta:
+            dados = json.loads(resposta.read().decode())
+            if dados.get("status") == "success":
+                cidade = dados.get("city", "")
+                estado = dados.get("region", "")
+                return f"{cidade} - {estado}"
+    except Exception:
+        # Se estiver sem internet ou a API falhar, usa este valor padrão
+        pass
+    
+    return "Paracuru - CE"
 
 
 class ResponsiveLayout:
@@ -212,6 +230,9 @@ class ResponsiveLayout:
         # Define se mostra a Lua (modo claro) ou Sol (modo escuro)
         icone_tema = ft.Icons.LIGHT_MODE_OUTLINED if self.dark_mode else ft.Icons.DARK_MODE_OUTLINED
         
+        # Busca a localização real de forma automática no momento em que a Topbar é criada
+        local_atual = obter_localizacao()
+
         return ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             controls=[
@@ -230,11 +251,19 @@ class ResponsiveLayout:
                 ),
                 ft.Row(
                     controls=[
-                        ft.Dropdown(
-                            width=200, height=40, value="San Francisco HQ",
-                            options=[ft.dropdown.Option("San Francisco HQ")]
+                        ft.Container(
+                            content=ft.Row(
+                                spacing=6,
+                                controls=[
+                                    ft.Icon(ft.Icons.LOCATION_ON_OUTLINED, size=18, color=self.COR_PRIMARIA),
+                                    ft.Text(local_atual, size=14, weight="w500", color=self.COR_TEXTO_PRINCIPAL),
+                                ]
+                            ),
+                            padding=10, 
+                            border_radius=8,
+                            bgcolor="#3C3C3C" if self.dark_mode else "#E5E7EB", # Códigos HEX absolutos no lugar do ft.colors
+
                         ),
-                        # Botão com evento ativo e ícone dinâmico
                         ft.IconButton(icone_tema, on_click=toggle_dark_mode),
                         ft.IconButton(ft.Icons.NOTIFICATIONS_NONE),
                         ft.CircleAvatar(content=ft.Text("AC"), bgcolor=self.COR_PRIMARIA, radius=18),
