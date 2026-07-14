@@ -1,169 +1,173 @@
-""" Importações """  
 import flet as ft
 from components.responsive_layout import ResponsiveLayout
 
 def ViewDashboard(page: ft.Page, mudar_tela):
-    
     """
     Tela de Dashboard do sistema Evalytics.
-    Mostra KPIs, gráficos de desempenho e participação, com sidebar responsiva.
     """
     
-    # Criar o layout responsivo
     layout = ResponsiveLayout(
         page, 
         titulo_pagina="Dashboard", 
-        subtitulo="Visão geral dos indicadores institucionais.", 
+        subtitulo="Indicadores de avaliação institucional", 
         mudar_tela=mudar_tela
     )
     
-    # === 1. COMPONENTE: CARDS DE KPI ===
-    def criar_kpi_card(titulo, valor, icone, cor_icone, subtitulo):
-        """
-        Cria um card de KPI com título, valor, subtítulo e ícone.
-        """
+    # ==========================================
+    # 1. DADOS REAIS
+    # ==========================================
+    dados_kpi = {
+        "avaliacoes_ativas": "4",
+        "respostas_coletadas": "1.248",
+        "professores_avaliados": "82",
+        "participacao": "74%"
+    }
+    
+    medias_eixos = {
+        1: 4.5,
+        2: 4.1,
+        3: 3.4
+    }
+    
+    nomes_eixos = {
+        1: "Didático",
+        2: "Docente",
+        3: "Infra."
+    }
+    
+    # ==========================================
+    # 2. COMPONENTE: CARDS DE KPI 
+    # ==========================================
+    def criar_kpi_card(titulo, valor, icone, cor_icone):
+        borda_card = ft.Border(
+            top=ft.BorderSide(1, layout.COR_BORDA),
+            bottom=ft.BorderSide(1, layout.COR_BORDA),
+            left=ft.BorderSide(1, layout.COR_BORDA),
+            right=ft.BorderSide(1, layout.COR_BORDA)
+        )
+        
         return ft.Container(
-            width=260,
+            width=240,
             bgcolor=layout.COR_CARD,
             padding=20, 
-            border_radius=10,
-            shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-            content=ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            border_radius=8,
+            border=borda_card,
+            content=ft.Column(
+                spacing=15,
                 controls=[
-                    ft.Column(
-                        spacing=5,
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         controls=[
-                            ft.Text(titulo, size=14, color="grey600", weight="bold"),
-                            ft.Text(valor, size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
-                            ft.Text(subtitulo, size=12, color="green600" if "↑" in subtitulo else "grey500")
+                            ft.Text(titulo, size=14, color="grey600", weight="w500"),
+                            ft.Icon(icone, color=cor_icone, size=18)
                         ]
                     ),
-                    ft.Container(
-                        padding=15,
-                        bgcolor=f"{cor_icone}50",
-                        border_radius=50,
-                        content=ft.Icon(icone, color=cor_icone, size=28)
-                    )
+                    ft.Text(valor, size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
                 ]
             )
         )
 
-    # Linha de KPIs com wrap para responsividade
     linha_kpis = ft.Row(
         wrap=True,
         spacing=20,
         run_spacing=20,
         controls=[
-            criar_kpi_card("Total de Respostas", "342", ft.Icons.PEOPLE, "blue700", "↑ 12% este mês"),
-            criar_kpi_card("Média Institucional", "4.2", ft.Icons.STAR, "amber600", "Meta: 4.0"),
-            criar_kpi_card("Melhor Desempenho", "Eixo 1", ft.Icons.TRENDING_UP, "green700", "Didático-Pedagógica"),
-            criar_kpi_card("Atenção Necessária", "Eixo 3", ft.Icons.WARNING, "red700", "Infraestrutura (Nota 3.4)")
+            criar_kpi_card("Avaliações ativas", dados_kpi["avaliacoes_ativas"], ft.Icons.ASSIGNMENT_OUTLINED, layout.COR_PRIMARIA),
+            criar_kpi_card("Respostas coletadas", dados_kpi["respostas_coletadas"], ft.Icons.TRENDING_UP, layout.COR_PRIMARIA),
+            criar_kpi_card("Professores avaliados", dados_kpi["professores_avaliados"], ft.Icons.SCHOOL_OUTLINED, layout.COR_PRIMARIA),
+            criar_kpi_card("Participação", dados_kpi["participacao"], ft.Icons.PEOPLE_OUTLINE, layout.COR_PRIMARIA)
         ]
     )
 
-    # === 2. COMPONENTE: DESEMPENHO (BARRAS HORIZONTAIS) ===
-    def criar_barra_progresso(rotulo, nota, cor):
-        """
-        Cria uma barra de progresso horizontal representando a nota média de um eixo.
-        """
+    # ==========================================
+    # 3. GRÁFICO CUSTOMIZADO (À Prova de Falhas)
+    # ==========================================
+    cores_barras = [layout.COR_PRIMARIA, "#34D399", "#F87171"] 
+    
+    def criar_coluna_grafico(nome, nota, cor):
+        # A altura máxima da barra será 200 pixels (equivalente à nota 5.0)
+        altura_max = 200
+        altura_barra = (nota / 5.0) * altura_max
+        
         return ft.Column(
-            spacing=5,
+            alignment=ft.MainAxisAlignment.END, # Alinha os itens pelo fundo
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=8,
             controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        ft.Text(rotulo, size=14, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
-                        ft.Text(f"{nota} / 5.0", size=14, color="grey700", weight="bold")
-                    ]
+                # Valor numérico em cima da barra
+                ft.Text(f"{nota:.1f}", size=12, weight="bold", color="grey"),
+                # A barra visual construída com Container
+                ft.Container(
+                    width=40,
+                    height=altura_barra,
+                    bgcolor=cor,
+                    border_radius=4,
+                    tooltip=f"{nome}: {nota:.1f} / 5.0" # Mantém a interatividade
                 ),
-                ft.ProgressBar(value=nota/5.0, color=cor, bgcolor="grey200", height=10)
+                # Nome do eixo na base
+                ft.Text(nome, size=12, weight="w500", color=layout.COR_TEXTO_PRINCIPAL)
             ]
         )
 
-    card_grafico_barras = ft.Container(
-        width=600,
+    # Monta a lista de colunas dinamicamente
+    barras_grafico = []
+    for i, (eixo_id, nota) in enumerate(medias_eixos.items()):
+        nome = nomes_eixos.get(eixo_id, f"Eixo {eixo_id}")
+        cor = cores_barras[i % len(cores_barras)]
+        barras_grafico.append(criar_coluna_grafico(nome, nota, cor))
+
+    # Agrupa todas as colunas numa Row para simular o gráfico de barras
+    grafico_desempenho = ft.Container(
+        height=260,
+        padding=20,
+        content=ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            # Corrigido: 'vertical_alignment' é o nome correto para Row na sua versão
+            vertical_alignment=ft.CrossAxisAlignment.END, 
+            controls=barras_grafico
+        )
+    )
+
+    borda_grafico = ft.Border(
+        top=ft.BorderSide(1, layout.COR_BORDA),
+        bottom=ft.BorderSide(1, layout.COR_BORDA),
+        left=ft.BorderSide(1, layout.COR_BORDA),
+        right=ft.BorderSide(1, layout.COR_BORDA)
+    )
+
+    area_graficos = ft.Container(
         bgcolor=layout.COR_CARD,
-        padding=25,
-        border_radius=10,
-        shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
+        padding=30,
+        border_radius=8,
+        border=borda_grafico,
         content=ft.Column(
             spacing=20,
             controls=[
-                ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
-                ft.Divider(color="transparent", height=5),
-                criar_barra_progresso("Organização Didático-Pedagógica", 4.5, "blue700"),
-                criar_barra_progresso("Corpo Docente e Tutorial", 4.1, "blue500"),
-                criar_barra_progresso("Infraestrutura", 3.4, "orange700"),
-            ]
-        )
-    )
-
-    # === 3. COMPONENTE: DEMOGRAFIA (LISTA DE PROGRESSO) ===
-    def criar_demografia(curso, porcentagem, cor):
-        """
-        Cria uma linha de demografia com porcentagem de participação por área.
-        """
-        return ft.Column(
-            spacing=5,
-            controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ft.Column(
+                    spacing=5,
                     controls=[
-                        ft.Row([ft.Icon(ft.Icons.CIRCLE, color=cor, size=12), ft.Text(curso, size=14)]),
-                        ft.Text(f"{int(porcentagem*100)}%", size=14, weight="bold")
+                        ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                        ft.Text("Médias das avaliações separadas por categoria (Escala 5.0).", size=14, color="grey"),
                     ]
                 ),
-                ft.ProgressBar(value=porcentagem, color=cor, bgcolor="grey200", height=6)
-            ]
-        )
-
-    card_grafico_pizza = ft.Container(
-        width=300,
-        bgcolor=layout.COR_CARD,
-        padding=25,
-        border_radius=10,
-        shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
-        content=ft.Column(
-            spacing=20,
-            controls=[
-                ft.Text("Participação por Área", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
-                ft.Divider(color="transparent", height=5),
-                criar_demografia("Engenharias", 0.61, "blue700"),
-                criar_demografia("Tecnologia", 0.25, "blue400"),
-                criar_demografia("Administração", 0.14, "cyan300"),
+                # Insere o nosso gráfico desenhado à mão
+                grafico_desempenho
             ]
         )
     )
 
-    linha_graficos = ft.Row(
-        wrap=True,
-        spacing=20,
-        run_spacing=20,
-        controls=[card_grafico_barras, card_grafico_pizza]
-    )
-
-    # === CONTEÚDO PRINCIPAL ===
+    # ==========================================
+    # 4. MONTAGEM FINAL DO LAYOUT
+    # ==========================================
     conteudo = ft.Column(
         expand=True,
         spacing=25,
         scroll=ft.ScrollMode.AUTO,
         controls=[
-            ft.Column(
-                spacing=5,
-                controls=[
-                    ft.Text("Dashboard do Sistema", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
-                    ft.Text("Acompanhe o engajamento e os resultados.", size=16, color="grey"),
-                ]
-            ),
-            ft.Divider(color="transparent", height=5),
             linha_kpis,
-            linha_graficos
+            area_graficos
         ]
     )
     
-    # Adicionar conteúdo ao layout
     layout.add_content(conteudo)
-    
-    # Retornar a view
     return layout.criar_view("/dashboard")
