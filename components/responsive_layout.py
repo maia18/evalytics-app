@@ -151,30 +151,15 @@ class ResponsiveLayout:
                 ),
             )
         
-        # Labels de seção
-        label_menu = ft.Container(
-            content=ft.Text("Menu Principal", size=12, weight="bold", color=self.COR_TEXTO_PRINCIPAL),
-            padding=10,
-            height=40,
-        )
-        
-        label_config = ft.Container(
-            content=ft.Text("Configurações", size=12, weight="bold", color=self.COR_TEXTO_PRINCIPAL),
-            padding=10,
-            height=40,
-        )
-        
         return ft.Column([
             logo_container,
             ft.Divider(height=2),
-            label_menu,
             criar_item_menu(ft.Icons.HOME, "Início", "/inicio"),
             criar_item_menu(ft.Icons.ADD_BOX_OUTLINED, "Avaliação", "/avaliacoes"),
             criar_item_menu(ft.Icons.GRID_VIEW_OUTLINED, "Dashboard", "/dashboard"),
             criar_item_menu(ft.Icons.MENU_BOOK_OUTLINED, "Cursos", "/cursos"),
             criar_item_menu(ft.Icons.PIE_CHART_OUTLINE, "Relatórios", "/relatorios"),
             ft.Divider(height=2),
-            label_config,
             criar_item_menu(ft.Icons.SETTINGS_OUTLINED, "Configurações", "/configuracoes"),
         ], scroll=ft.ScrollMode.AUTO, spacing=0, expand=False)
     

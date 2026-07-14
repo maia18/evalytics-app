@@ -93,13 +93,13 @@ def ViewCursos(page: ft.Page, mudar_tela):
     # === 3. TABELA DE CURSOS (Inicialmente vazia) ===
     
     tabela_cursos = ft.DataTable(
-        heading_row_color="#3C3C3C",
+        heading_row_color=ft.Colors.BLUE_GREY_900 if page.theme_mode == ft.ThemeMode.DARK else "blue50",
         columns=[
-            ft.DataColumn(ft.Text("Código", color="white", weight="bold")),
-            ft.DataColumn(ft.Text("Nome do Curso", color="white", weight="bold")),
-            ft.DataColumn(ft.Text("Departamento", color="white", weight="bold")),
-            ft.DataColumn(ft.Text("Coordenador", color="white", weight="bold")),
-            ft.DataColumn(ft.Text("Ações", color="white", weight="bold")),
+            ft.DataColumn(ft.Text("Código", weight="bold", color=ft.Colors.ON_SURFACE)),
+            ft.DataColumn(ft.Text("Nome do Curso", weight="bold", color=ft.Colors.ON_SURFACE)),
+            ft.DataColumn(ft.Text("Departamento", weight="bold", color=ft.Colors.ON_SURFACE)),
+            ft.DataColumn(ft.Text("Coordenador", weight="bold", color=ft.Colors.ON_SURFACE)),
+            ft.DataColumn(ft.Text("Ações", weight="bold", color=ft.Colors.ON_SURFACE)),
         ],
         rows=[],
     )
