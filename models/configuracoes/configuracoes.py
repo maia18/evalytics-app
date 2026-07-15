@@ -1,6 +1,5 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.theme.theme import AppColors
 from database.indicadores import INDICADORES
 
 # Importa modais e painéis
@@ -105,7 +104,6 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
 
     area_dinamica_indicadores.content = layout_pastas
 
-    # Abas
     painel_seguranca = criar_painel_seguranca()
     painel_banco = criar_painel_banco()
     area_conteudo_aba = ft.Container(content=area_dinamica_indicadores, expand=True, padding=20)
