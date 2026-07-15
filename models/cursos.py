@@ -1,9 +1,10 @@
 """ Importações """  
 import flet as ft
 
-from database.conexao import adicionar_curso_db, obter_cursos_db, atualizar_curso_db, excluir_curso_db 
-from components.layout.responsive import ResponsiveLayout
-from components.core.theme import AppColors
+from database.services.firestore_courses import adicionar_curso_db, atualizar_curso_db, excluir_curso_db, obter_cursos_db
+
+from components.layout.responsive.responsive import ResponsiveLayout
+from components.core.theme.theme import AppColors
 
 def ViewCursos(page: ft.Page, mudar_tela):
     

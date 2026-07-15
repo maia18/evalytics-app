@@ -1,11 +1,8 @@
 """ Importações """  
-import os
-import csv
-from datetime import datetime
-
 import flet as ft
-from components.layout.responsive import ResponsiveLayout
-from components.core.theme import AppColors
+from components.layout.responsive.responsive import ResponsiveLayout
+from components.core.theme.theme import AppColors
+from models.avaliacoes.export_csv import exportar_csv
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
@@ -21,42 +18,8 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         subtitulo="Acompanhe respostas e métricas em tempo real.", 
         mudar_tela=mudar_tela
     )
-    
-    # === 1. LÓGICA DE EXPORTAÇÃO DE DADOS ===
-    def exportar_csv(e):
-        
-        """
-        Exporta dados simulados para um arquivo CSV.
-        O nome do arquivo inclui timestamp para evitar sobrescrita.
-        """
-        
-        dados_exportacao = [
-            ["ID_Resposta", "Data_Hora", "Curso", "Eixo_Avaliado", "Nota_Geral", "Comentario"],
-            ["RES-001", "2026-07-10 14:30", "Engenharia", "Didática", "4.5", "Ótima metodologia."],
-            ["RES-002", "2026-07-10 15:45", "Engenharia", "Infraestrutura", "3.0", "Laboratórios precisam de atualização."],
-            ["RES-003", "2026-07-11 09:15", "Administração", "Didática", "5.0", ""],
-            ["RES-004", "2026-07-11 10:20", "Engenharia", "Inovação", "4.8", "Uso excelente de simulações em Python."],
-        ]
-        
-        nome_arquivo = f"dados_brutos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        caminho_arquivo = os.path.join(os.getcwd(), nome_arquivo)
-        
-        try:
-            with open(caminho_arquivo, mode='w', newline='', encoding='utf-8') as arquivo_csv:
-                escritor = csv.writer(arquivo_csv, delimiter=';')
-                escritor.writerows(dados_exportacao)
 
-            # Feedback visual ao usuário
-            page.snack_bar = ft.SnackBar(ft.Text(f"Arquivo CSV exportado com sucesso: {nome_arquivo}", color="green"))
-            page.snack_bar.open = True
-        except Exception as erro:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao exportar: {erro}", color="red"))
-            page.snack_bar.open = True
-            
-        page.update()
-
-
-    # === 2. COMPONENTES VISUAIS ===
+    """ COMPONENTES VISUAIS """
     
     # --- Card 1: Controle do Ciclo de Avaliação ---
     status_ciclo = ft.Container(
@@ -179,7 +142,8 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         )
     )
 
-    # === 3. CONTEÚDO PRINCIPAL ===
+    """ CONTEÚDO PRINCIPAL """
+    
     conteudo = ft.Column(
         expand=True,
         spacing=20,
@@ -196,8 +160,5 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
         ]
     )
     
-    # Adicionar conteúdo ao layout
-    layout.add_content(conteudo)
-    
-    # === RETORNO FINAL DA VIEW ===
+    layout.add_content(conteudo)    
     return layout.criar_view("/avaliacoes")

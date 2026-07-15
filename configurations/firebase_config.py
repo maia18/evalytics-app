@@ -11,6 +11,7 @@ try:
     Verifica se já existe uma instância inicializada do Firebase.
     Se não houver, inicializa a aplicação com as credenciais
     """
+    
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
         

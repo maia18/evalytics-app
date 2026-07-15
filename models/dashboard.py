@@ -1,6 +1,6 @@
 import flet as ft
-from components.layout.responsive import ResponsiveLayout
-from components.core.theme import AppColors
+from components.layout.responsive.responsive import ResponsiveLayout
+from components.core.theme.theme import AppColors
 
 def ViewDashboard(page: ft.Page, mudar_tela):
     

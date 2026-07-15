@@ -9,10 +9,8 @@ def ViewFormulario(page: ft.Page, mudar_tela):
     Percorre os indicadores ativos, permitindo notas de 1 a 5 com critérios explicativos.
     """
 
-    # === 1. ESTADO DO FORMULÁRIO ===
     indicadores_ativos = [ind for ind in INDICADORES if ind.get("status", "ATIVO") == "ATIVO"]
     
-    # Estado guarda índice da pergunta atual e respostas do usuário
     estado = {
         "indice_atual": 0,
         "respostas": {} 
@@ -24,7 +22,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
         3: "Infraestrutura"
     }
 
-    # === 2. COMPONENTE: CARD DE PERGUNTA ===
+    # === COMPONENTE: CARD DE PERGUNTA ===
     def criar_card_pergunta(indicador):
         """
         Cria o card de uma pergunta única com slider de nota e critério dinâmico.

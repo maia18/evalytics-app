@@ -1,7 +1,7 @@
 import flet as ft
-from components.layout.responsive import ResponsiveLayout
+from components.layout.responsive.responsive import ResponsiveLayout
 
-from components.core.theme import AppColors
+from components.core.theme.theme import AppColors
 
 def ViewInicio(page: ft.Page, mudar_tela):
     
