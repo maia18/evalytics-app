@@ -18,10 +18,10 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     
     # === 0. DEFINIÇÕES DE ESTILO (Necessário para a borda) ===
     borda_container = ft.Border(
-        top=ft.BorderSide(1, layout.COR_BORDA),
-        bottom=ft.BorderSide(1, layout.COR_BORDA),
-        left=ft.BorderSide(1, layout.COR_BORDA),
-        right=ft.BorderSide(1, layout.COR_BORDA),
+        top=ft.BorderSide(1, layout.cores["BORDA"]),
+        bottom=ft.BorderSide(1, layout.cores["BORDA"]),
+        left=ft.BorderSide(1, layout.cores["BORDA"]),
+        right=ft.BorderSide(1, layout.cores["BORDA"]),
     )
     
     # === 1. COMPONENTES DE FILTRO ===
@@ -45,7 +45,7 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
 
     # === 2. SEÇÃO ÚNICA DE FILTROS E AÇÕES ===
     secao_filtros = ft.Container(
-        bgcolor=layout.COR_CARD,
+        bgcolor=layout.cores["CARD"],
         padding=20,
         border_radius=8,
         border=borda_container,
@@ -65,7 +65,7 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     conteudo = ft.Column(
         expand=True,
         controls=[
-            ft.Text("Relatórios e Exportações", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+            ft.Text("Relatórios e Exportações", size=28, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
             ft.Text("Gere visualizações dinâmicas, analise os critérios e exporte os resultados.", size=16, color="grey"),
             ft.Divider(height=30, color="transparent"),
             secao_filtros, # Filtros e ações em um único lugar
@@ -74,13 +74,13 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
             # Container para resultados
             ft.Container(
                 expand=True,
-                bgcolor=layout.COR_CARD,
+                bgcolor=layout.cores["CARD"],
                 padding=25,
                 border=borda_container,
                 border_radius=10,
                 content=ft.Column(
                     controls=[
-                        ft.Text("Resultados Consolidados", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                        ft.Text("Resultados Consolidados", size=18, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                         ft.DataTable(
                             heading_row_color=ft.Colors.BLUE_GREY_900 if page.theme_mode == ft.ThemeMode.DARK else "blue50",
                             columns=[

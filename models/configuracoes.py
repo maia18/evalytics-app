@@ -11,25 +11,17 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     Contém a sidebar de navegação e modais para edição, exclusão e critérios dos indicadores.
     """
     
-    # Criar o layout responsivo
+    # === 1. RESPONSIVIDADE ===
     
-    layout = ResponsiveLayout(
-        page, 
-        titulo_pagina="Configurações", 
-        subtitulo="Gerencie indicadores e critérios de avaliação.", 
-        mudar_tela=mudar_tela
-    )
+    layout = ResponsiveLayout(page, titulo_pagina="Configurações",  subtitulo="Gerencie indicadores e critérios de avaliação.",  mudar_tela=mudar_tela)
 
     # === 2. ESTADO AUXILIAR DA TELA ===
-    # Variáveis auxiliares para controlar qual pasta está aberta e qual item está sendo editado/excluído
-    pasta_aberta_atualmente = {"titulo": "", "eixo": 0}    
-    # Preparar conteúdo principal para ser adicionado ao layout responsivo    
-    item_alvo_acao = {}
-
-    # =====================================================================
-    # === 3. LÓGICA DO MODAL: EDIÇÃO DE TÍTULO E DESCRIÇÃO ========
-    # =====================================================================
     
+    pasta_aberta_atualmente = {"titulo": "", "eixo": 0}    
+    item_alvo_acao = {}
+    
+    # === 3. LÓGICA DO MODAL: EDIÇÃO DE TÍTULO E DESCRIÇÃO ========
+   
     campo_edicao_titulo = ft.TextField(label="Título", min_lines=1, max_lines=2, border_color="blue200")
     campo_edicao_descricao = ft.TextField(label="Descrição / Observação", min_lines=2, max_lines=4, border_color="blue200")
 
@@ -86,9 +78,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         modal_edicao.open = True
         page.update()
 
-    # =====================================================================
     # === 4. LÓGICA DO MODAL: CRITÉRIOS DE AVALIAÇÃO ===
-    # =====================================================================
     
     # Campos para até 5 critérios
     c1 = ft.TextField(label="Critério 1", multiline=True, expand=True, border_color="blue200")
@@ -168,10 +158,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         modal_criterios.open = True
         page.update()
 
-
-    # =====================================================================
     # === 5. MODAL DE EXCLUSÃO DE INDICADOR ==========================
-    # =====================================================================
     
     def fechar_modal_exclusao(e):
         """Fecha o modal de exclusão sem realizar nenhuma ação."""
@@ -218,10 +205,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         modal_exclusao.open = True
         page.update()
 
-
-    # =====================================================================
     # === 6. MODAL DE NOVO INDICADOR =================
-    # =====================================================================
     
     # Campos de entrada para novo indicador
     campo_titulo = ft.TextField(label="Título do Indicador", border_color="blue200")
@@ -295,9 +279,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     # Área dinâmica onde os indicadores serão renderizados
     area_dinamica_indicadores = ft.Container(expand=True)
     
-    # =====================================================================
     # === 7. TELA SECUNDÁRIA: LISTA DE INDICADORES ========================
-    # =====================================================================
     
     def criar_linha_indicador(item, status):
         
@@ -418,9 +400,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
         area_conteudo_aba.content = layout_pastas
         page.update()
 
-    # =====================================================================
-    # === 8. TELA INICIAL: PASTAS (EIXOS) =================================
-    # =====================================================================
+    # === 8. TELA INICIAL =================================
     
     def criar_pasta_indicador(titulo_pasta, qtd_indicadores):
         
@@ -476,9 +456,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     # Estado inicial da aba: mostra as pastas
     area_dinamica_indicadores.content = layout_pastas    
     
-    # =====================================================================
     # === 9. OUTRAS ABAS: SEGURANÇA E BANCO DE DADOS ======================
-    # =====================================================================
     
     # Aba de Segurança
     painel_seguranca = ft.Container(
@@ -529,10 +507,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             ]
         )
     )
-
-    # =====================================================================
+  
     # === 10. SISTEMA DE ABAS CUSTOMIZADO =================================
-    # =====================================================================
     
     # Container que troca o conteúdo conforme aba selecionada
     area_conteudo_aba = ft.Container(content=area_dinamica_indicadores, expand=True, padding=20)
@@ -568,7 +544,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             ft.Column(
                 spacing=5,
                 controls=[
-                    ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                    ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                     ft.Text("Gerencie indicadores, acessos e manutenção de dados.", size=16, color="grey"),
                 ]
             ),
@@ -576,7 +552,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
             
             ft.Container(
                 expand=True,
-                bgcolor=layout.COR_CARD,
+                bgcolor=layout.cores["CARD"],
                 border_radius=10,
                 padding=20,
                 shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),

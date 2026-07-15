@@ -1,7 +1,9 @@
 """ Importações """  
 import flet as ft
-from components.layout.responsive import ResponsiveLayout
+
 from database.conexao import adicionar_curso_db, obter_cursos_db, atualizar_curso_db, excluir_curso_db 
+from components.layout.responsive import ResponsiveLayout
+from components.core.theme import AppColors
 
 def ViewCursos(page: ft.Page, mudar_tela):
     
@@ -111,10 +113,10 @@ def ViewCursos(page: ft.Page, mudar_tela):
     
     # Borda do card
     borda_container = ft.Border(
-    top=ft.BorderSide(1, layout.COR_BORDA),
-    bottom=ft.BorderSide(1, layout.COR_BORDA),
-    left=ft.BorderSide(1, layout.COR_BORDA),
-    right=ft.BorderSide(1, layout.COR_BORDA),
+    top=ft.BorderSide(1, layout.cores["BORDA"]),
+    bottom=ft.BorderSide(1, layout.cores["BORDA"]),
+    left=ft.BorderSide(1, layout.cores["BORDA"]),
+    right=ft.BorderSide(1, layout.cores["BORDA"]),
     )
     
     def criar_stats_card(titulo, controle_valor):
@@ -122,7 +124,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
             expand=1,
             padding=15,
             border_radius=8,
-            bgcolor=layout.COR_CARD,
+            bgcolor=layout.cores["CARD"],
             border=borda_container,
             content=ft.Column(
                 spacing=5,
@@ -134,10 +136,10 @@ def ViewCursos(page: ft.Page, mudar_tela):
         )
         
     # Adicione isto aqui:
-    txt_total = ft.Text(str(len(tabela_cursos.rows)), size=20, weight="bold", color=layout.COR_TEXTO_PRINCIPAL)
+    txt_total = ft.Text(str(len(tabela_cursos.rows)), size=20, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"])
     
     # Defina esta variável antes de criar a linha_stats
-    txt_depto_card = ft.Text("0", size=20, weight="bold", color=layout.COR_TEXTO_PRINCIPAL)
+    txt_depto_card = ft.Text("0", size=20, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"])
     
     linha_stats = ft.Row(
         spacing=20,
@@ -149,7 +151,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
                     "0", 
                     size=20, 
                     weight="bold", 
-                    color=layout.COR_TEXTO_PRINCIPAL
+                    color=layout.cores["TEXTO_PRINCIPAL"]
                     )
                 ),
             criar_stats_card("Departamentos", txt_depto_card),
@@ -295,7 +297,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
                     ft.ElevatedButton(
                         "Novo curso", 
                         icon=ft.Icons.ADD, 
-                        bgcolor=layout.COR_PRIMARIA, 
+                        bgcolor=AppColors.PRIMARIA, 
                         color="white",
                         on_click=abrir_modal_add
                     )
@@ -303,14 +305,14 @@ def ViewCursos(page: ft.Page, mudar_tela):
             ),
             linha_stats, 
             ft.Container(
-                bgcolor=layout.COR_CARD,
+                bgcolor=layout.cores["CARD"],
                 padding=30,
                 border_radius=8,
                 border=borda_container,
                 content=ft.Column(
                     spacing=20,
                     controls=[
-                        ft.Text("Lista de Cursos", size=16, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                        ft.Text("Lista de Cursos", size=16, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                         area_tabela
                     ]
                 )

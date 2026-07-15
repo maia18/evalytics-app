@@ -1,36 +1,34 @@
 import flet as ft
 from components.layout.responsive import ResponsiveLayout
 
+from components.core.theme import AppColors
+
 def ViewInicio(page: ft.Page, mudar_tela):
+    
     """Página inicial do Evalytics com layout responsivo"""
     
     # Criar o layout responsivo
-    layout = ResponsiveLayout(
-        page, 
-        "Início", 
-        "Bem-vindo ao Evalytics", 
-        mudar_tela=mudar_tela
-    )    
+    layout = ResponsiveLayout(page, "Início", "Bem-vindo ao Evalytics",  mudar_tela=mudar_tela)    
     
     
     # Função auxiliar para criar cards clicáveis
     def criar_card(titulo, descricao, icone, rota):
         return ft.Container(
             width=300,
-            bgcolor=layout.COR_CARD,
+            bgcolor=layout.cores["CARD"],
             padding=20,
             border_radius=12,
             border=ft.Border(
-                left=ft.BorderSide(width=1, color=layout.COR_BORDA),
-                top=ft.BorderSide(width=1, color=layout.COR_BORDA),
-                right=ft.BorderSide(width=1, color=layout.COR_BORDA),
-                bottom=ft.BorderSide(width=1, color=layout.COR_BORDA),
+                left=ft.BorderSide(width=1, color=layout.cores["BORDA"]),
+                top=ft.BorderSide(width=1, color=layout.cores["BORDA"]),
+                right=ft.BorderSide(width=1, color=layout.cores["BORDA"]),
+                bottom=ft.BorderSide(width=1, color=layout.cores["BORDA"]),
             ),
             ink=True,
             on_click=lambda e: mudar_tela(rota),
             content=ft.Column([
-                ft.Icon(icone, color=layout.COR_PRIMARIA, size=30),
-                ft.Text(titulo, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                ft.Icon(icone, color=AppColors.PRIMARIA, size=30),
+                ft.Text(titulo, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                 ft.Text(descricao, size=12, color="grey")
             ])
         )
@@ -40,25 +38,25 @@ def ViewInicio(page: ft.Page, mudar_tela):
         expand=True,
         controls=[
             ft.Container(
-                bgcolor=layout.COR_CARD,
+                bgcolor=layout.cores["CARD"],
                 padding=25,
                 border_radius=12,
                 border=ft.Border(
-                    left=ft.BorderSide(1, layout.COR_BORDA),
-                    top=ft.BorderSide(1, layout.COR_BORDA),
-                    right=ft.BorderSide(1, layout.COR_BORDA),
-                    bottom=ft.BorderSide(1, layout.COR_BORDA)
+                    left=ft.BorderSide(1, layout.cores["BORDA"]),
+                    top=ft.BorderSide(1, layout.cores["BORDA"]),
+                    right=ft.BorderSide(1, layout.cores["BORDA"]),
+                    bottom=ft.BorderSide(1, layout.cores["BORDA"])
                 ),
                 content=ft.Column([
                     ft.Text(
                         "Sistema de Avaliação Institucional", 
                         weight="bold", 
                         size=20,
-                        color=layout.COR_TEXTO_PRINCIPAL
+                        color=layout.cores["TEXTO_PRINCIPAL"]
                     ),
                     ft.ElevatedButton(
                         "Iniciar nova avaliação", 
-                        bgcolor=layout.COR_PRIMARIA, 
+                        bgcolor=AppColors.PRIMARIA,
                         color="white",
                         on_click=lambda e: mudar_tela("/formulario")
                     )

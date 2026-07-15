@@ -3,8 +3,9 @@ import os
 import csv
 from datetime import datetime
 
-import flet as ft # Biblioteca Flet para UI
+import flet as ft
 from components.layout.responsive import ResponsiveLayout
+from components.core.theme import AppColors
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
@@ -66,7 +67,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     )
 
     card_controle_ciclo = ft.Container(
-        bgcolor=layout.COR_CARD,
+        bgcolor=layout.cores["CARD"],
         padding=25,
         border_radius=10,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
@@ -80,7 +81,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                             spacing=2,
                             controls=[
                                 ft.Text("Ciclo de Avaliação Ativo", size=14, color="grey600"),
-                                ft.Row([ft.Text("Semestre 2026.1", size=22, weight="bold", color=layout.COR_PRIMARIA), status_ciclo])
+                                ft.Row([ft.Text("Semestre 2026.1", size=22, weight="bold", color=AppColors.PRIMARIA), status_ciclo])
                             ]
                         ),
                         ft.Row(
@@ -158,7 +159,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
 
     card_tabela_dados = ft.Container(
         expand=True,
-        bgcolor=layout.COR_CARD,
+        bgcolor=layout.cores["CARD"],
         padding=25,
         border_radius=10,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"),
@@ -168,7 +169,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
-                        ft.Text("Respostas Recentes (Raw Data)", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                        ft.Text("Respostas Recentes (Raw Data)", size=18, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                         ft.ElevatedButton("Exportar CSV", icon=ft.Icons.DOWNLOAD, bgcolor="blue700", color="white", on_click=exportar_csv)
                     ]
                 ),
@@ -186,7 +187,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
             ft.Column(
                 spacing=5,
                 controls=[
-                    ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                    ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                     ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="grey"),
                 ]
             ),

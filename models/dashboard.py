@@ -1,21 +1,19 @@
 import flet as ft
 from components.layout.responsive import ResponsiveLayout
+from components.core.theme import AppColors
 
 def ViewDashboard(page: ft.Page, mudar_tela):
+    
     """
     Tela de Dashboard do sistema Evalytics.
     """
     
-    layout = ResponsiveLayout(
-        page, 
-        titulo_pagina="Dashboard", 
-        subtitulo="Indicadores de avaliação institucional", 
-        mudar_tela=mudar_tela
-    )
+    layout = ResponsiveLayout(page, titulo_pagina="Dashboard", subtitulo="Indicadores de avaliação institucional", mudar_tela=mudar_tela)
     
     # ==========================================
     # 1. DADOS REAIS
     # ==========================================
+    
     dados_kpi = {
         "avaliacoes_ativas": "4",
         "respostas_coletadas": "1.248",
@@ -38,17 +36,18 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     # ==========================================
     # 2. COMPONENTE: CARDS DE KPI 
     # ==========================================
+    
     def criar_kpi_card(titulo, valor, icone, cor_icone):
         borda_card = ft.Border(
-            top=ft.BorderSide(1, layout.COR_BORDA),
-            bottom=ft.BorderSide(1, layout.COR_BORDA),
-            left=ft.BorderSide(1, layout.COR_BORDA),
-            right=ft.BorderSide(1, layout.COR_BORDA)
+            top=ft.BorderSide(1, layout.cores["BORDA"]),
+            bottom=ft.BorderSide(1, layout.cores["BORDA"]),
+            left=ft.BorderSide(1, layout.cores["BORDA"]),
+            right=ft.BorderSide(1, layout.cores["BORDA"])
         )
         
         return ft.Container(
             width=240,
-            bgcolor=layout.COR_CARD,
+            bgcolor=layout.cores["CARD"],
             padding=20, 
             border_radius=8,
             border=borda_card,
@@ -62,7 +61,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                             ft.Icon(icone, color=cor_icone, size=18)
                         ]
                     ),
-                    ft.Text(valor, size=28, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                    ft.Text(valor, size=28, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                 ]
             )
         )
@@ -72,20 +71,20 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         spacing=20,
         run_spacing=20,
         controls=[
-            criar_kpi_card("Avaliações ativas", dados_kpi["avaliacoes_ativas"], ft.Icons.ASSIGNMENT_OUTLINED, layout.COR_PRIMARIA),
-            criar_kpi_card("Respostas coletadas", dados_kpi["respostas_coletadas"], ft.Icons.TRENDING_UP, layout.COR_PRIMARIA),
-            criar_kpi_card("Professores avaliados", dados_kpi["professores_avaliados"], ft.Icons.SCHOOL_OUTLINED, layout.COR_PRIMARIA),
-            criar_kpi_card("Participação", dados_kpi["participacao"], ft.Icons.PEOPLE_OUTLINE, layout.COR_PRIMARIA)
+            criar_kpi_card("Avaliações ativas", dados_kpi["avaliacoes_ativas"], ft.Icons.ASSIGNMENT_OUTLINED, AppColors.PRIMARIA),
+            criar_kpi_card("Respostas coletadas", dados_kpi["respostas_coletadas"], ft.Icons.TRENDING_UP, AppColors.PRIMARIA),
+            criar_kpi_card("Professores avaliados", dados_kpi["professores_avaliados"], ft.Icons.SCHOOL_OUTLINED, AppColors.PRIMARIA),
+            criar_kpi_card("Participação", dados_kpi["participacao"], ft.Icons.PEOPLE_OUTLINE, AppColors.PRIMARIA)
         ]
     )
 
     # ==========================================
     # 3. GRÁFICO CUSTOMIZADO (À Prova de Falhas)
     # ==========================================
-    cores_barras = [layout.COR_PRIMARIA, "#34D399", "#F87171"] 
+    
+    cores_barras = [AppColors.PRIMARIA, "#34D399", "#F87171"] 
     
     def criar_coluna_grafico(nome, nota, cor):
-        # A altura máxima da barra será 200 pixels (equivalente à nota 5.0)
         altura_max = 200
         altura_barra = (nota / 5.0) * altura_max
         
@@ -94,18 +93,15 @@ def ViewDashboard(page: ft.Page, mudar_tela):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=8,
             controls=[
-                # Valor numérico em cima da barra
                 ft.Text(f"{nota:.1f}", size=12, weight="bold", color="grey"),
-                # A barra visual construída com Container
                 ft.Container(
                     width=40,
                     height=altura_barra,
                     bgcolor=cor,
                     border_radius=4,
-                    tooltip=f"{nome}: {nota:.1f} / 5.0" # Mantém a interatividade
+                    tooltip=f"{nome}: {nota:.1f} / 5.0"
                 ),
-                # Nome do eixo na base
-                ft.Text(nome, size=12, weight="w500", color=layout.COR_TEXTO_PRINCIPAL)
+                ft.Text(nome, size=12, weight="w500", color=layout.cores["TEXTO_PRINCIPAL"])
             ]
         )
 
@@ -122,21 +118,20 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         padding=20,
         content=ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            # Corrigido: 'vertical_alignment' é o nome correto para Row na sua versão
             vertical_alignment=ft.CrossAxisAlignment.END, 
             controls=barras_grafico
         )
     )
 
     borda_grafico = ft.Border(
-        top=ft.BorderSide(1, layout.COR_BORDA),
-        bottom=ft.BorderSide(1, layout.COR_BORDA),
-        left=ft.BorderSide(1, layout.COR_BORDA),
-        right=ft.BorderSide(1, layout.COR_BORDA)
+        top=ft.BorderSide(1, layout.cores["BORDA"]),
+        bottom=ft.BorderSide(1, layout.cores["BORDA"]),
+        left=ft.BorderSide(1, layout.cores["BORDA"]),
+        right=ft.BorderSide(1, layout.cores["BORDA"])
     )
 
     area_graficos = ft.Container(
-        bgcolor=layout.COR_CARD,
+        bgcolor=layout.cores["CARD"],
         padding=30,
         border_radius=8,
         border=borda_grafico,
@@ -146,7 +141,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
                 ft.Column(
                     spacing=5,
                     controls=[
-                        ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.COR_TEXTO_PRINCIPAL),
+                        ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
                         ft.Text("Médias das avaliações separadas por categoria (Escala 5.0).", size=14, color="grey"),
                     ]
                 ),
