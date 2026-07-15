@@ -3,7 +3,7 @@ import flet as ft # biblioteca Flet, usada para criar interfaces gráficas em Py
 
 from configurations.global_configs import configurar_aplicacao # função de configuração global da aplicação
 
-from components.navigator import Navigator # componente responsável pela navegação entre páginas/rotas
+from components.core.navigator import Navigator # componente responsável pela navegação entre páginas/rotas
 
 # Função principal da aplicação
 def main(page: ft.Page):

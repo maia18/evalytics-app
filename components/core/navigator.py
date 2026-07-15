@@ -1,7 +1,7 @@
 """ Importações """  
 import flet as ft
 
-from components.router import obter_view # função que retorna a view correspondente a uma rota
+from components.core.router import obter_view # função que retorna a view correspondente a uma rota
 
 class Navigator:
     

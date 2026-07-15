@@ -1,5 +1,5 @@
 import flet as ft
-from components.layout.responsive_layout import ResponsiveLayout
+from components.layout.responsive import ResponsiveLayout
 
 def ViewInicio(page: ft.Page, mudar_tela):
     """Página inicial do Evalytics com layout responsivo"""

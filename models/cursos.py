@@ -1,6 +1,6 @@
 """ Importações """  
 import flet as ft
-from components.layout.responsive_layout import ResponsiveLayout
+from components.layout.responsive import ResponsiveLayout
 from database.conexao import adicionar_curso_db, obter_cursos_db, atualizar_curso_db, excluir_curso_db 
 
 def ViewCursos(page: ft.Page, mudar_tela):
