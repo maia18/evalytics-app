@@ -13,3 +13,4 @@ relatorio_*.csv
 credentials.json
 utils/
 configurations/
+database/
