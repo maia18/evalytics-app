@@ -1,6 +1,5 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.theme.theme import AppColors
 from database.indicadores import INDICADORES
 
 # Importa modais e painéis
@@ -25,7 +24,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
 
     # === Modais com funções de abertura ===
     modal_edicao, campo_titulo, campo_descricao, abrir_modal_edicao = criar_modal_edicao(page, item_alvo_acao, lambda t: abrir_pasta(t), pasta_aberta_atualmente)
-    modal_criterios, campos_criterios, abrir_modal_criterios = criar_modal_criterios(page, item_alvo_acao)
+    modal_criterios, _, abrir_modal_criterios = criar_modal_criterios(page, item_alvo_acao)
     modal_exclusao, preparar_exclusao = criar_modal_exclusao(page, item_alvo_acao, lambda t: abrir_pasta(t), pasta_aberta_atualmente)
     modal_novo, campo_titulo_novo, campo_desc_novo, abrir_modal_novo = criar_modal_novo(page, pasta_aberta_atualmente, lambda t: abrir_pasta(t))
 
