@@ -7,7 +7,7 @@ def criar_logo(cores, compact=False):
     
     if compact:
         return ft.Container(
-            content=ft.Icon(ft.Icons.ANALYTICS, color=PRIMARIA, size=28),
+            content=ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA, size=28),
             padding=8,
             alignment=ft.Alignment.CENTER,
         )
@@ -16,7 +16,7 @@ def criar_logo(cores, compact=False):
             content=ft.Row(
                 spacing=10,
                 controls=[
-                    ft.Icon(ft.Icons.ANALYTICS, color=PRIMARIA, size=28),
+                    ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA, size=28),
                     ft.Text("Evalytics", size=18, weight="bold", color=cores["TEXTO_PRINCIPAL"]),
                 ],
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,

@@ -5,6 +5,12 @@ WINDOW_HEIGHT = 720 # Altura da janela principal da aplicação (em pixels)
 # Cores fixas da marca
 PRIMARIA = "#F59E0B"
 OVERLAY_MODAL = "#00000088"
+COR_PRIMARIA = "#4809F4"
+COR_FUNDO = "#F9FAFB"
+COR_CARD = "#FFFFFF"
+COR_BORDA = "#E5E7EB"
+COR_TEXTO_TITULO = "#111827"
+COR_TEXTO_SECUNDARIO = "#6B7280"
 
 ALTURA_MAX = 200 # Altura máxima da coluna (Gráfico de eixos)
 

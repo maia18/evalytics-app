@@ -28,7 +28,7 @@ def ViewInicio(page: ft.Page, mudar_tela):
                     ),
                     ft.ElevatedButton(
                         TEXTOS_INICIO[3],
-                        bgcolor=PRIMARIA,
+                        bgcolor=COR_PRIMARIA,
                         color="white",
                         on_click=lambda e: mudar_tela("/formulario")
                     )
