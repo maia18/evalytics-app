@@ -1,8 +1,8 @@
 """ Importações """  
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.theme.theme import AppColors
 from models.avaliacoes.core.export_csv import exportar_csv
+from components.core.constants import *
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
@@ -44,7 +44,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
                             spacing=2,
                             controls=[
                                 ft.Text("Ciclo de Avaliação Ativo", size=14, color="grey600"),
-                                ft.Row([ft.Text("Semestre 2026.1", size=22, weight="bold", color=AppColors.PRIMARIA), status_ciclo])
+                                ft.Row([ft.Text("Semestre 2026.1", size=22, weight="bold", color=PRIMARIA), status_ciclo])
                             ]
                         ),
                         ft.Row(

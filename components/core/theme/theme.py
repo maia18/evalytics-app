@@ -1,11 +1,7 @@
-# core/theme.py
 import flet as ft
+from components.core.constants import *
 
 class AppColors:
-    
-    # Cores fixas da marca
-    PRIMARIA = "#F59E0B"
-    OVERLAY_MODAL = "#00000088"
     
     @staticmethod
     def get(dark_mode: bool) -> dict:
@@ -27,5 +23,5 @@ def get_app_theme(dark_mode: bool) -> ft.Theme:
     """Configura o tema nativo do Flet."""
     
     tema = ft.Theme()
-    tema.color_scheme_seed = AppColors.PRIMARIA
+    tema.color_scheme_seed = PRIMARIA
     return tema

@@ -1,5 +1,6 @@
 import flet as ft
-from components.core.theme.theme import AppColors
+# from components.core.theme.theme import AppColors
+from components.core.constants import *
 
 def criar_card(layout, titulo, descricao, icone, rota, mudar_tela):
     return ft.Container(
@@ -16,7 +17,7 @@ def criar_card(layout, titulo, descricao, icone, rota, mudar_tela):
         ink=True,
         on_click=lambda e: mudar_tela(rota),
         content=ft.Column([
-            ft.Icon(icone, color=AppColors.PRIMARIA, size=30),
+            ft.Icon(icone, color=PRIMARIA, size=30),
             ft.Text(titulo, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
             ft.Text(descricao, size=12, color="grey")
         ])

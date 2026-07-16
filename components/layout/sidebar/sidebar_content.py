@@ -5,7 +5,7 @@ from components.layout.sidebar.sidebar_logo import criar_logo
 
 def criar_sidebar_content(dark_mode, mudar_tela, cores):
     
-    """Sidebar completa (ícones + textos)"""
+    """Sidebar completa"""
     
     controles = [
         criar_logo(cores),

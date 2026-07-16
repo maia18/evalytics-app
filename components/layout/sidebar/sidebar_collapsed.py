@@ -5,7 +5,7 @@ from components.layout.sidebar.sidebar_logo import criar_logo
 
 def criar_sidebar_colapsada(dark_mode, mudar_tela, cores):
     
-    """Sidebar compacta (apenas ícones)"""
+    """Sidebar compacta"""
     
     controles = [
         criar_logo(cores, compact=True),

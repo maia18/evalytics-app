@@ -1,8 +1,9 @@
 import flet as ft
+from components.core.constants import *
 
 def criar_coluna_grafico(layout, nome, nota, cor):
-    altura_max = 200
-    altura_barra = (nota / 5.0) * altura_max
+    
+    altura_barra = (nota / 5.0) * ALTURA_MAX
     
     return ft.Column(
         alignment=ft.MainAxisAlignment.END,

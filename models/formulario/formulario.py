@@ -3,17 +3,12 @@ from database.indicadores import INDICADORES
 from models.formulario.widgets.card_pergunta import criar_card_pergunta
 from models.formulario.widgets.stepper_eixos import criar_stepper_eixos
 from models.formulario.widgets.tela_sucesso import criar_tela_sucesso
+from components.core.constants import *
 
 def ViewFormulario(page: ft.Page, mudar_tela):
+    
     indicadores_ativos = [ind for ind in INDICADORES if ind.get("status", "ATIVO") == "ATIVO"]
-
     estado = {"indice_atual": 0, "respostas": {}}
-    nomes_eixos = {
-        1: "Organização Didático-Pedagógica",
-        2: "Corpo Docente e Tutorial",
-        3: "Infraestrutura"
-    }
-
     area_dinamica_conteudo = ft.Column(spacing=25)
 
     def pular_para_eixo(eixo_alvo):
@@ -63,7 +58,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
-                        ft.Text(nomes_eixos.get(eixo_atual, f"Eixo {eixo_atual}"), size=16, weight="bold", color="#1976D2"),
+                        ft.Text(NOMES_EIXOS.get(eixo_atual, f"Eixo {eixo_atual}"), size=16, weight="bold", color="#1976D2"),
                         ft.Text(f"Pergunta {posicao_neste_eixo} de {total_neste_eixo}", size=14, color="grey600")
                     ]
                 ),

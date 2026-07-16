@@ -8,6 +8,8 @@ from models.cursos.widgets.stats_cards import criar_stats_card
 from models.cursos.modals.modal_add import criar_modal_add
 from models.cursos.modals.modal_edit import criar_modal_edit
 
+from components.core.constants import *
+
 def ViewCursos(page: ft.Page, mudar_tela):
     layout = ResponsiveLayout(
         page,
@@ -108,7 +110,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
                     ft.ElevatedButton(
                         "Novo curso",
                         icon=ft.Icons.ADD,
-                        bgcolor=AppColors.PRIMARIA,
+                        bgcolor=PRIMARIA,
                         color="white",
                         on_click=abrir_modal_add
                     )

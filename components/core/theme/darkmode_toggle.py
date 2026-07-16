@@ -1,5 +1,3 @@
-import flet as ft
-
 def toggle_dark_mode(page, dark_mode, mudar_tela, rota_atual, configurar_tema):
     dark_mode = not dark_mode
     page.is_dark_mode = dark_mode

@@ -1,7 +1,7 @@
 import flet as ft
 from utils.services.location_service import obter_localizacao
-from components.core.theme.theme import AppColors
 from components.layout.topbar.topbar_utils import obter_icone_tema
+from components.core.constants import *
 
 def criar_topbar_content(titulo, subtitulo, dark_mode, cores, menu_button, atualizar_tema):
     local_atual = obter_localizacao()
@@ -34,14 +34,14 @@ def criar_topbar_content(titulo, subtitulo, dark_mode, cores, menu_button, atual
                         content=ft.Row(
                             spacing=6,
                             controls=[
-                                ft.Icon(ft.Icons.LOCATION_ON_OUTLINED, size=18, color=AppColors.PRIMARIA),
+                                ft.Icon(ft.Icons.LOCATION_ON_OUTLINED, size=18, color=PRIMARIA),
                                 ft.Text(local_atual, size=14, weight="w500", color=cores["TEXTO_PRINCIPAL"]),
                             ],
                         ),
                     ),
                     ft.IconButton(icon=icone_tema, on_click=lambda e: atualizar_tema()),
                     ft.IconButton(icon=ft.Icons.NOTIFICATIONS_NONE),
-                    ft.CircleAvatar(radius=18, bgcolor=AppColors.PRIMARIA, content=ft.Text("AC")),
+                    ft.CircleAvatar(radius=18, bgcolor=PRIMARIA, content=ft.Text("AC")),
                 ],
             ),
         ],

@@ -1,10 +1,10 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.theme.theme import AppColors
 from models.inicio.widgets.card_inicio import criar_card
+from components.core.constants import *
 
 def ViewInicio(page: ft.Page, mudar_tela):
-    layout = ResponsiveLayout(page, "Início", "Bem-vindo ao Evalytics", mudar_tela=mudar_tela)
+    layout = ResponsiveLayout(page, TEXTOS_INICIO[0], TEXTOS_INICIO[1], mudar_tela=mudar_tela)
 
     conteudo = ft.Column(
         expand=True,
@@ -21,14 +21,14 @@ def ViewInicio(page: ft.Page, mudar_tela):
                 ),
                 content=ft.Column([
                     ft.Text(
-                        "Sistema de Avaliação Institucional",
+                        TEXTOS_INICIO[2],
                         weight="bold",
                         size=20,
                         color=layout.cores["TEXTO_PRINCIPAL"]
                     ),
                     ft.ElevatedButton(
-                        "Iniciar nova avaliação",
-                        bgcolor=AppColors.PRIMARIA,
+                        TEXTOS_INICIO[3],
+                        bgcolor=PRIMARIA,
                         color="white",
                         on_click=lambda e: mudar_tela("/formulario")
                     )
@@ -40,10 +40,10 @@ def ViewInicio(page: ft.Page, mudar_tela):
                 spacing=20,
                 run_spacing=20,
                 controls=[
-                    criar_card(layout, "Nova Avaliação", "Criar um novo instrumento.", ft.Icons.ADD, "/formulario", mudar_tela),
-                    criar_card(layout, "Dashboard", "Visão geral dos indicadores.", ft.Icons.GRID_VIEW, "/dashboard", mudar_tela),
-                    criar_card(layout, "Cursos", "Consultar e organizar cursos.", ft.Icons.MENU_BOOK, "/cursos", mudar_tela),
-                    criar_card(layout, "Relatórios", "Gerar relatórios.", ft.Icons.PIE_CHART, "/relatorios", mudar_tela),
+                    criar_card(layout, TEXTOS_AVALIACAO[0], TEXTOS_AVALIACAO[1], ft.Icons.ADD, "/formulario", mudar_tela),
+                    criar_card(layout, TEXTOS_DASHBOARD[0], TEXTOS_DASHBOARD[1], ft.Icons.GRID_VIEW, "/dashboard", mudar_tela),
+                    criar_card(layout, TEXTOS_CURSOS[0], TEXTOS_CURSOS[1], ft.Icons.MENU_BOOK, "/cursos", mudar_tela),
+                    criar_card(layout, TEXTOS_RELATORIOS[0], TEXTOS_RELATORIOS[1], ft.Icons.PIE_CHART, "/relatorios", mudar_tela),
                 ]
             )
         ]
