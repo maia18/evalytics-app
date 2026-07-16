@@ -11,3 +11,4 @@ relatorio_*.csv
 
 # Credenciais do firebase
 credentials.json
+utils/
