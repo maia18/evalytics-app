@@ -1,6 +1,6 @@
 import csv
-from models.avaliacoes.filename_generator import gerar_nome_arquivo
-from models.avaliacoes.feedback import mostrar_feedback
+from models.avaliacoes.core.filename_generator import gerar_nome_arquivo
+from models.avaliacoes.core.feedback import mostrar_feedback
 
 def exportar_csv(page, dados_exportacao=None):
     

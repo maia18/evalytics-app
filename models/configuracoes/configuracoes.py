@@ -1,5 +1,6 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
+from components.core.theme.theme import AppColors
 from database.indicadores import INDICADORES
 
 # Importa modais e painéis
@@ -7,9 +8,9 @@ from models.configuracoes.modals.modal_edicao import criar_modal_edicao
 from models.configuracoes.modals.modal_criterios import criar_modal_criterios
 from models.configuracoes.modals.modal_exclusao import criar_modal_exclusao
 from models.configuracoes.modals.modal_novo import criar_modal_novo
-from models.configuracoes.indicadores_ui import criar_linha_indicador, criar_pasta_indicador
-from models.configuracoes.painel_seguranca import criar_painel_seguranca
-from models.configuracoes.painel_banco import criar_painel_banco
+from models.configuracoes.core.indicadores_ui import criar_linha_indicador, criar_pasta_indicador
+from models.configuracoes.core.painel_seguranca import criar_painel_seguranca
+from models.configuracoes.core.painel_banco import criar_painel_banco
 
 def ViewConfiguracoes(page: ft.Page, mudar_tela):
     layout = ResponsiveLayout(
@@ -22,10 +23,11 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
     pasta_aberta_atualmente = {"titulo": "", "eixo": 0}
     item_alvo_acao = {}
 
-    abrir_modal_edicao = criar_modal_edicao(page, item_alvo_acao, lambda t: abrir_pasta(t), pasta_aberta_atualmente)
-    abrir_modal_criterios = criar_modal_criterios(page, item_alvo_acao)
-    preparar_exclusao = criar_modal_exclusao(page, item_alvo_acao, lambda t: abrir_pasta(t), pasta_aberta_atualmente)
-    abrir_modal_novo = criar_modal_novo(page, pasta_aberta_atualmente, lambda t: abrir_pasta(t))
+    # === Modais com funções de abertura ===
+    modal_edicao, campo_titulo, campo_descricao, abrir_modal_edicao = criar_modal_edicao(page, item_alvo_acao, lambda t: abrir_pasta(t), pasta_aberta_atualmente)
+    modal_criterios, campos_criterios, abrir_modal_criterios = criar_modal_criterios(page, item_alvo_acao)
+    modal_exclusao, preparar_exclusao = criar_modal_exclusao(page, item_alvo_acao, lambda t: abrir_pasta(t), pasta_aberta_atualmente)
+    modal_novo, campo_titulo_novo, campo_desc_novo, abrir_modal_novo = criar_modal_novo(page, pasta_aberta_atualmente, lambda t: abrir_pasta(t))
 
     # Área dinâmica
     area_dinamica_indicadores = ft.Container(expand=True)
@@ -104,6 +106,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela):
 
     area_dinamica_indicadores.content = layout_pastas
 
+    # Abas
     painel_seguranca = criar_painel_seguranca()
     painel_banco = criar_painel_banco()
     area_conteudo_aba = ft.Container(content=area_dinamica_indicadores, expand=True, padding=20)

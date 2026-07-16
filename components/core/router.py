@@ -1,12 +1,12 @@
 """ Importa as views (páginas) da aplicação """  
 from models.configuracoes.configuracoes import ViewConfiguracoes
 from models.avaliacoes.avaliacoes import ViewAvaliacoes
-from models.relatorios import ViewRelatorios
-from models.formulario import ViewFormulario
-from models.dashboard import ViewDashboard
-from models.inicio import ViewInicio
-from models.cursos import ViewCursos
-from models.login import ViewLogin
+from models.relatorios.relatorios import ViewRelatorios
+from models.formulario.formulario import ViewFormulario
+from models.dashboard.dashboard import ViewDashboard
+from models.inicio.inicio import ViewInicio
+from models.cursos.cursos import ViewCursos
+from models.login.login import ViewLogin
 
 # Dicionário que mapeia rotas (strings) para suas respectivas views
 ROTAS = {

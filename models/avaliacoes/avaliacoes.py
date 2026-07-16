@@ -2,7 +2,7 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
 from components.core.theme.theme import AppColors
-from models.avaliacoes.export_csv import exportar_csv
+from models.avaliacoes.core.export_csv import exportar_csv
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela):
     
