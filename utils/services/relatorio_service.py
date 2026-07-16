@@ -7,10 +7,10 @@ def calcular_medias_eixos():
     Função que calcula as médias das avaliações por eixo temático.
     
     Fluxo:
-    1. Lista todos os indicadores e mapeia cada indicador ao seu eixo.
-    2. Busca todas as avaliações no Firestore.
-    3. Agrupa as notas por eixo.
-    4. Calcula a média de cada eixo.
+        1. Lista todos os indicadores e mapeia cada indicador ao seu eixo.
+        2. Busca todas as avaliações no Firestore.
+        3. Agrupa as notas por eixo.
+        4. Calcula a média de cada eixo.
     
     Retorna:
     - Dicionário {eixo_id: média}

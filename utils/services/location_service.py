@@ -1,11 +1,9 @@
 import urllib.request
 import json
 
-
 def obter_localizacao():
 
     try:
-
         with urllib.request.urlopen(
             "http://ip-api.com/json/",
             timeout=3
