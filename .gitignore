@@ -9,7 +9,6 @@ __pycache__/
 # Arquivos locais e variáveis de ambiente
 relatorio_*.csv
 
-# Pastas confidenciais
+# Confidenciais
+credentials.json
 utils/
-configurations/
-database/
