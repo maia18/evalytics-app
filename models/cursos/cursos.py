@@ -11,6 +11,7 @@ from models.cursos.modals.modal_edit import criar_modal_edit
 from components.core.constants import *
 
 def ViewCursos(page: ft.Page, mudar_tela):
+    
     layout = ResponsiveLayout(
         page,
         titulo_pagina="Gestão de Cursos",
@@ -35,11 +36,11 @@ def ViewCursos(page: ft.Page, mudar_tela):
     tabela_cursos = ft.DataTable(
         heading_row_color="blue50",
         columns=[
-            ft.DataColumn(ft.Text("Código", weight="bold")),
-            ft.DataColumn(ft.Text("Nome do Curso", weight="bold")),
-            ft.DataColumn(ft.Text("Departamento", weight="bold")),
-            ft.DataColumn(ft.Text("Coordenador", weight="bold")),
-            ft.DataColumn(ft.Text("Ações", weight="bold")),
+            ft.DataColumn(ft.Text("Código", weight="bold", color="Black")),
+            ft.DataColumn(ft.Text("Nome do Curso", weight="bold", color="Black")),
+            ft.DataColumn(ft.Text("Departamento", weight="bold", color="Black")),
+            ft.DataColumn(ft.Text("Coordenador", weight="bold", color="Black")),
+            ft.DataColumn(ft.Text("Ações", weight="bold", color="Black")),
         ],
         rows=[]
     )
@@ -64,9 +65,9 @@ def ViewCursos(page: ft.Page, mudar_tela):
         total_deptos = str(len(departamentos_unicos))
 
         linha_stats.controls = [
-            criar_stats_card("Total de Cursos", total_cursos, layout.cores["TEXTO_PRINCIPAL"]),
-            criar_stats_card("Cursos Ativos", "0", layout.cores["TEXTO_PRINCIPAL"]),
-            criar_stats_card("Departamentos", total_deptos, layout.cores["TEXTO_PRINCIPAL"]),
+            criar_stats_card("Total de Cursos", total_cursos, "Black"),
+            criar_stats_card("Cursos Ativos", "0", "Black"),
+            criar_stats_card("Departamentos", total_deptos, "Black"),
         ]
         
         page.update()
@@ -124,7 +125,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
                 content=ft.Column(
                     spacing=20,
                     controls=[
-                        ft.Text("Lista de Cursos", size=16, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
+                        ft.Text("Lista de Cursos", size=16, weight="bold", color="Black"),
                         tabela_cursos if tabela_cursos.rows else ft.Text("Nenhum curso cadastrado ainda.", color="grey", size=14)
                     ]
                 )
