@@ -70,7 +70,7 @@ Você precisará solicitar o arquivo
 ### 5. Executar
 
 ```
-flet run main.py
+python main.py
 ```
 
 ---
