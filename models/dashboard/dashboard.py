@@ -4,7 +4,7 @@ from components.layout.responsive.responsive import ResponsiveLayout
 from models.dashboard.widgets.kpi_cards import criar_kpi_card
 from models.dashboard.widgets.grafico_eixos import criar_grafico_eixos
 
-from components.core.constants import *
+from components.core.constants.constants import *
 
 def ViewDashboard(page: ft.Page, mudar_tela):
     layout = ResponsiveLayout(
@@ -23,7 +23,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     }
     medias_eixos = {1: 4.5, 2: 4.1, 3: 3.4}
     nomes_eixos = {1: "Didático", 2: "Docente", 3: "Infra."}
-    cores_barras = [PRIMARIA, "#34D399", "#F87171"]
+    cores_barras = [COR_PRIMARIA, "#34D399", "#F87171"]
 
     # KPIs
     linha_kpis = ft.Row(
@@ -31,10 +31,10 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         spacing=20,
         run_spacing=20,
         controls=[
-            criar_kpi_card(layout, "Avaliações ativas", dados_kpi["avaliacoes_ativas"], ft.Icons.ASSIGNMENT_OUTLINED, PRIMARIA),
-            criar_kpi_card(layout, "Respostas coletadas", dados_kpi["respostas_coletadas"], ft.Icons.TRENDING_UP, PRIMARIA),
-            criar_kpi_card(layout, "Professores avaliados", dados_kpi["professores_avaliados"], ft.Icons.SCHOOL_OUTLINED, PRIMARIA),
-            criar_kpi_card(layout, "Participação", dados_kpi["participacao"], ft.Icons.PEOPLE_OUTLINE, PRIMARIA)
+            criar_kpi_card(layout, "Avaliações ativas", dados_kpi["avaliacoes_ativas"], ft.Icons.ASSIGNMENT_OUTLINED, COR_PRIMARIA),
+            criar_kpi_card(layout, "Respostas coletadas", dados_kpi["respostas_coletadas"], ft.Icons.TRENDING_UP, COR_PRIMARIA),
+            criar_kpi_card(layout, "Professores avaliados", dados_kpi["professores_avaliados"], ft.Icons.SCHOOL_OUTLINED, COR_PRIMARIA),
+            criar_kpi_card(layout, "Participação", dados_kpi["participacao"], ft.Icons.PEOPLE_OUTLINE, COR_PRIMARIA)
         ]
     )
 

@@ -1,7 +1,7 @@
 from configurations.firebase_config import db
 
+# Calcula médias das avaliações para o dashboard
 def obter_medias_dashboard():
-    """Calcula médias das avaliações para o dashboard"""
     try:
         docs = db.collection("avaliacoes_institucionais").stream()
         soma = {"infra": 0, "didatica": 0, "atend": 0, "mat": 0, "inov": 0}

@@ -1,9 +1,8 @@
 import flet as ft
-from components.core.constants import *
+from components.core.constants.constants import *
 
+# Cria logo da sidebar
 def criar_logo(cores, compact=False):
-    
-    """Cria logo da sidebar"""
     
     if compact:
         return ft.Container(
@@ -17,7 +16,7 @@ def criar_logo(cores, compact=False):
                 spacing=10,
                 controls=[
                     ft.Icon(ft.Icons.ANALYTICS, color=COR_PRIMARIA, size=28),
-                    ft.Text("Evalytics", size=18, weight="bold", color=cores["TEXTO_PRINCIPAL"]),
+                    ft.Text("Evalytics", size=18, weight="bold", color=cores[TEXTO_PRINCIPAL]),
                 ],
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),

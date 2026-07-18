@@ -1,4 +1,5 @@
 import flet as ft
+from components.core.constants.constants import *
 
 def criar_secao_filtros(layout, borda_container):
     dropdown_semestre = ft.Dropdown(
@@ -20,7 +21,7 @@ def criar_secao_filtros(layout, borda_container):
     )
 
     return ft.Container(
-        bgcolor=layout.cores["CARD"],
+        bgcolor=layout.cores[CARD],
         padding=20,
         border_radius=8,
         border=borda_container,

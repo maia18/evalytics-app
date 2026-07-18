@@ -1,8 +1,8 @@
 from firebase_admin import firestore
 from configurations.firebase_config import db
 
+# Adiciona curso na coleção 'cursos'
 def adicionar_curso_db(codigo, nome, depto, coord):
-    """Adiciona curso na coleção 'cursos'"""
     try:
         novo_curso = {
             "codigo": codigo,
@@ -17,8 +17,8 @@ def adicionar_curso_db(codigo, nome, depto, coord):
         print(f"Erro ao adicionar curso: {e}")
         return None
 
+# Retorna lista de cursos com IDs
 def obter_cursos_db():
-    """Retorna lista de cursos com IDs"""
     try:
         docs = db.collection("cursos").stream()
         lista_cursos = []
@@ -31,8 +31,8 @@ def obter_cursos_db():
         print(f"Erro ao obter cursos: {e}")
         return []
 
+# Atualiza curso existente
 def atualizar_curso_db(doc_id, nome, depto, coord):
-    """Atualiza curso existente"""
     try:
         db.collection("cursos").document(doc_id).update({
             "nome": nome,
@@ -44,8 +44,8 @@ def atualizar_curso_db(doc_id, nome, depto, coord):
         print(f"Erro ao atualizar curso: {e}")
         return False
 
+# Exclui curso pelo ID
 def excluir_curso_db(doc_id):
-    """Exclui curso pelo ID"""
     try:
         db.collection("cursos").document(doc_id).delete()
         return True

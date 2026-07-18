@@ -7,7 +7,7 @@ from models.login.widgets.card_login import criar_card_login
 from models.login.widgets.social_login import criar_login_social
 from models.login.widgets.rodape import criar_rodape_termos
 
-from components.core.constants import *
+from components.core.constants.constants import *
 
 def ViewLogin(page: ft.Page, mudar_tela):
 

@@ -2,10 +2,10 @@ import flet as ft
 from components.widgets.menu.menu import MENU_ITEMS_COLLAPSED
 from components.widgets.menu.botao_icon import criar_botao_icon
 from components.layout.sidebar.sidebar_logo import criar_logo
+from components.core.constants.constants import *
 
+# Sidebar compacta
 def criar_sidebar_colapsada(dark_mode, mudar_tela, cores):
-    
-    """Sidebar compacta"""
     
     controles = [
         criar_logo(cores, compact=True),
@@ -15,7 +15,7 @@ def criar_sidebar_colapsada(dark_mode, mudar_tela, cores):
     for icone, texto, rota in MENU_ITEMS_COLLAPSED:
         controles.append(
             criar_botao_icon(
-                icone, texto, rota, dark_mode, cores["TEXTO_PRINCIPAL"], mudar_tela
+                icone, texto, rota, dark_mode, cores[TEXTO_PRINCIPAL], mudar_tela
             )
         )
 

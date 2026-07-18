@@ -1,6 +1,7 @@
 import flet as ft
 from components.core.theme.theme import AppColors
 from components.layout.topbar.topbar_content import criar_topbar_content
+from components.core.constants.constants import *
 
 class TopBar(ft.Container):
     def __init__(self, titulo_pagina: str, subtitulo: str, dark_mode: bool, toggle_sidebar, atualizar_tema):
@@ -22,9 +23,9 @@ class TopBar(ft.Container):
         )
 
         # Estilo visual
-        self.bgcolor = self.cores["CARD"]
+        self.bgcolor = self.cores[CARD]
         self.padding = 20
-        self.border = ft.Border(bottom=ft.BorderSide(1, self.cores["BORDA"]))
+        self.border = ft.Border(bottom=ft.BorderSide(1, self.cores[BORDA]))
 
         # Conteúdo da TopBar
         self.content = criar_topbar_content(

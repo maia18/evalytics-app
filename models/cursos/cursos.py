@@ -1,14 +1,13 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.theme.theme import AppColors
 from database.services.firestore_courses import obter_cursos_db
 
-from models.cursos.widgets.tabela_cursos import criar_linha_curso
-from models.cursos.widgets.stats_cards import criar_stats_card
+from models.cursos.widgets.tables.tabela_cursos import criar_linha_curso
+from models.cursos.widgets.stats.stats_cards import criar_stats_card
 from models.cursos.modals.modal_add import criar_modal_add
 from models.cursos.modals.modal_edit import criar_modal_edit
 
-from components.core.constants import *
+from components.core.constants.constants import *
 
 def ViewCursos(page: ft.Page, mudar_tela):
     
@@ -48,9 +47,9 @@ def ViewCursos(page: ft.Page, mudar_tela):
     linha_stats = ft.Row(
         spacing=20,
         controls=[
-            criar_stats_card("Total de Cursos", "0", layout.cores["TEXTO_PRINCIPAL"]),
-            criar_stats_card("Cursos Ativos", "0", layout.cores["TEXTO_PRINCIPAL"]),
-            criar_stats_card("Departamentos", "0", layout.cores["TEXTO_PRINCIPAL"]),
+            criar_stats_card("Total de Cursos", "0", layout.cores[TEXTO_PRINCIPAL]),
+            criar_stats_card("Cursos Ativos", "0", layout.cores[TEXTO_PRINCIPAL]),
+            criar_stats_card("Departamentos", "0", layout.cores[TEXTO_PRINCIPAL]),
         ]
     )
 
@@ -111,7 +110,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
                     ft.ElevatedButton(
                         "Novo curso",
                         icon=ft.Icons.ADD,
-                        bgcolor=PRIMARIA,
+                        bgcolor=COR_PRIMARIA,
                         color="white",
                         on_click=abrir_modal_add
                     )
@@ -119,7 +118,7 @@ def ViewCursos(page: ft.Page, mudar_tela):
             ),
             linha_stats,
             ft.Container(
-                bgcolor=layout.cores["CARD"],
+                bgcolor=layout.cores[CARD],
                 padding=30,
                 border_radius=8,
                 content=ft.Column(

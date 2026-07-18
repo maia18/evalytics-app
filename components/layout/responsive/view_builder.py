@@ -1,4 +1,5 @@
 import flet as ft
+from components.core.constants.constants import *
 
 def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overlay, sidebar_mobile, ajustar_responsividade, page):
     page.on_resize = ajustar_responsividade
@@ -7,7 +8,7 @@ def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overla
     return ft.View(
         route=route,
         padding=0,
-        bgcolor=cores["FUNDO"],
+        bgcolor=cores[FUNDO],
         controls=[
             ft.Stack(
                 expand=True,

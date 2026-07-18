@@ -1,11 +1,8 @@
 import flet as ft
 from components.core.router import obter_view # função que retorna a view correspondente a uma rota
 
+# Classe responsável por gerenciar a navegação entre diferentes rotas/views dentro da aplicação Flet.
 class Navigator:
-    
-    """
-    Classe responsável por gerenciar a navegação entre diferentes rotas/views dentro da aplicação Flet.
-    """
     
     def __init__(self, page: ft.Page):
         

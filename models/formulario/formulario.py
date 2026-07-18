@@ -3,7 +3,8 @@ from database.indicadores import INDICADORES
 from models.formulario.widgets.card_pergunta import criar_card_pergunta
 from models.formulario.widgets.stepper_eixos import criar_stepper_eixos
 from models.formulario.widgets.tela_sucesso import criar_tela_sucesso
-from components.core.constants import *
+from components.core.constants.constants import *
+from components.core.constants.texts import *
 
 def ViewFormulario(page: ft.Page, mudar_tela):
     

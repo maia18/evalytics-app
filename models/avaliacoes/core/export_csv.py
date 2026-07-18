@@ -2,12 +2,9 @@ import csv
 from models.avaliacoes.core.filename_generator import gerar_nome_arquivo
 from models.avaliacoes.core.feedback import mostrar_feedback
 
+# Exporta dados simulados ou recebidos para CSV
 def exportar_csv(page, dados_exportacao=None):
-    
-    """
-    Exporta dados simulados ou recebidos para CSV.
-    """
-    
+
     if dados_exportacao is None:
         dados_exportacao = [
             ["ID_Resposta", "Data_Hora", "Curso", "Eixo_Avaliado", "Nota_Geral", "Comentario"],

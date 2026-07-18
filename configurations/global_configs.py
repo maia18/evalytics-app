@@ -1,7 +1,8 @@
 import os
 import flet as ft
 
-from components.core.constants import * # Importa as configurações definidas em "configurations/config.py"
+from components.core.constants.constants import * # Importa as configurações definidas em "configurations/config.py"
+from components.core.constants.texts import * # Importa os textos definidos em txts.py
 
 def configurar_aplicacao(page: ft.Page):
     

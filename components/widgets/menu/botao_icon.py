@@ -1,7 +1,7 @@
 import flet as ft
 
+# Cria um botão apenas com ícone
 def criar_botao_icon(icone: str, tooltip_text: str, rota: str, dark_mode: bool, cor_texto: str, mudar_tela) -> ft.Container:
-    """Cria um botão apenas com ícone"""
     return ft.Container(
         height=45,
         alignment=ft.Alignment(0, 0),

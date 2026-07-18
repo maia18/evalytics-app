@@ -1,15 +1,16 @@
 import flet as ft
+from components.core.constants.constants import *
 
 def criar_tabela_resultados(page, layout, borda_container):
     return ft.Container(
         expand=True,
-        bgcolor=layout.cores["CARD"],
+        bgcolor=layout.cores[CARD],
         padding=25,
         border=borda_container,
         border_radius=10,
         content=ft.Column(
             controls=[
-                ft.Text("Resultados Consolidados", size=18, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
+                ft.Text("Resultados Consolidados", size=18, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
                 ft.DataTable(
                     heading_row_color=ft.Colors.BLUE_GREY_900 if page.theme_mode == ft.ThemeMode.DARK else "blue50",
                     columns=[

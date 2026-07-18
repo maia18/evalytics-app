@@ -1,7 +1,7 @@
 import flet as ft
 
+# Cria um item de menu com ícone e texto
 def criar_item_menu(icone: str, texto: str, rota: str, dark_mode: bool, cor_texto: str, mudar_tela) -> ft.Container:
-    """Cria um item de menu com ícone e texto"""
     return ft.Container(
         height=45,
         content=ft.TextButton(

@@ -1,5 +1,6 @@
 import flet as ft
 from components.layout.responsive.responsive import ResponsiveLayout
+from components.core.constants.constants import *
 from models.relatorios.widgets.filtros_relatorios import criar_secao_filtros
 from models.relatorios.widgets.tabela_resultados import criar_tabela_resultados
 
@@ -12,10 +13,10 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     )
 
     borda_container = ft.Border(
-        top=ft.BorderSide(1, layout.cores["BORDA"]),
-        bottom=ft.BorderSide(1, layout.cores["BORDA"]),
-        left=ft.BorderSide(1, layout.cores["BORDA"]),
-        right=ft.BorderSide(1, layout.cores["BORDA"]),
+        top=ft.BorderSide(1, layout.cores[BORDA]),
+        bottom=ft.BorderSide(1, layout.cores[BORDA]),
+        left=ft.BorderSide(1, layout.cores[BORDA]),
+        right=ft.BorderSide(1, layout.cores[BORDA]),
     )
 
     secao_filtros = criar_secao_filtros(layout, borda_container)
@@ -24,7 +25,7 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     conteudo = ft.Column(
         expand=True,
         controls=[
-            ft.Text("Relatórios e Exportações", size=28, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
+            ft.Text("Relatórios e Exportações", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
             ft.Text("Gere visualizações dinâmicas, analise os critérios e exporte os resultados.", size=16, color="grey"),
             ft.Divider(height=30, color="transparent"),
             secao_filtros,

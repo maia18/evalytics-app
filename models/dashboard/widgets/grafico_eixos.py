@@ -1,5 +1,5 @@
 import flet as ft
-from components.core.constants import *
+from components.core.constants.constants import *
 
 def criar_coluna_grafico(layout, nome, nota, cor):
     
@@ -18,7 +18,7 @@ def criar_coluna_grafico(layout, nome, nota, cor):
                 border_radius=4,
                 tooltip=f"{nome}: {nota:.1f} / 5.0"
             ),
-            ft.Text(nome, size=12, weight="w500", color=layout.cores["TEXTO_PRINCIPAL"])
+            ft.Text(nome, size=12, weight="w500", color=layout.cores[TEXTO_PRINCIPAL])
         ]
     )
 
@@ -30,14 +30,14 @@ def criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras):
         barras_grafico.append(criar_coluna_grafico(layout, nome, nota, cor))
 
     borda_grafico = ft.Border(
-        top=ft.BorderSide(1, layout.cores["BORDA"]),
-        bottom=ft.BorderSide(1, layout.cores["BORDA"]),
-        left=ft.BorderSide(1, layout.cores["BORDA"]),
-        right=ft.BorderSide(1, layout.cores["BORDA"])
+        top=ft.BorderSide(1, layout.cores[BORDA]),
+        bottom=ft.BorderSide(1, layout.cores[BORDA]),
+        left=ft.BorderSide(1, layout.cores[BORDA]),
+        right=ft.BorderSide(1, layout.cores[BORDA])
     )
 
     return ft.Container(
-        bgcolor=layout.cores["CARD"],
+        bgcolor=layout.cores[CARD],
         padding=30,
         border_radius=8,
         border=borda_grafico,
@@ -47,7 +47,7 @@ def criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras):
                 ft.Column(
                     spacing=5,
                     controls=[
-                        ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.cores["TEXTO_PRINCIPAL"]),
+                        ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
                         ft.Text("Médias das avaliações separadas por categoria (Escala 5.0).", size=14, color="grey"),
                     ]
                 ),
