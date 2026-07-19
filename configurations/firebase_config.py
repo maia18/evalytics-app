@@ -1,18 +1,19 @@
-import firebase_admin # biblioteca Firebase Admin para gerenciar serviços do Firebase
+import os
+import firebase_admin
 from firebase_admin import credentials, firestore
 
-""" 
-Verifica se já existe uma instância inicializada do Firebase.
-Se não houver, inicializa a aplicação com as credenciais.
-"""
-    
+# 1. Resolve o caminho de forma robusta, independentemente de onde o script principal for rodado
+diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+caminho_credenciais = os.path.join(diretorio_atual, "firebase_credentials.json")
+
 try:
-    cred = credentials.Certificate("database/firebase_credentials.json") # Carrega as credenciais a partir do arquivo JSON (chave de serviço)
-    
+    # 2. Garante que a inicialização ocorra apenas uma vez
     if not firebase_admin._apps:
+        cred = credentials.Certificate(caminho_credenciais)
         firebase_admin.initialize_app(cred)
-        
-    db = firestore.client() # Cria o cliente Firestore para interagir com o banco de dados
+    
+    # 3. Cria e exporta o cliente Firestore
+    db = firestore.client()
     
 except Exception as e:
-    print(f"Erro Crítico na Conexão: {e}") # Captura qualquer erro crítico na conexão e exibe no console
+    print(f"Erro Crítico na Conexão com o Firebase: {e}")
