@@ -4,7 +4,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 diretorio_atual = os.path.dirname(os.path.abspath(__file__))
-caminho_credenciais = os.path.join(diretorio_atual, "credentials.json")
+caminho_credenciais = os.path.join(diretorio_atual, "firebase_credentials.json")
 
 cred = credentials.Certificate(caminho_credenciais)
 

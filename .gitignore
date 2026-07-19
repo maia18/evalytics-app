@@ -10,4 +10,4 @@ __pycache__/
 relatorio_*.csv
 
 # Confidenciais
-credentials.json
+database/firebase_credentials.json

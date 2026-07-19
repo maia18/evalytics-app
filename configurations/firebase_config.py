@@ -7,7 +7,7 @@ Se não houver, inicializa a aplicação com as credenciais.
 """
     
 try:
-    cred = credentials.Certificate("database/credentials.json") # Carrega as credenciais a partir do arquivo JSON (chave de serviço)
+    cred = credentials.Certificate("database/firebase_credentials.json") # Carrega as credenciais a partir do arquivo JSON (chave de serviço)
     
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
