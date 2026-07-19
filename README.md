@@ -19,11 +19,8 @@ O projeto foi modernizado para oferecer uma arquitetura robusta e escalável:
 ## Principais Funcionalidades
 
 * **Gerenciamento Hierárquico**: Organização intuitiva de indicadores por eixos temáticos (Pastas).
-
 * **Editor Dinâmico**: Fluxo otimizado para atualização de títulos, descrições e critérios de avaliação com um clique.
-
 * **Interface Cross-Platform**: Experiência consistente em diferentes dispositivos.
-
 * **Dados em Tempo Real**: Sincronização imediata das avaliações entre usuários e base de dados.
 
 ---
