@@ -8,4 +8,7 @@ def main(page: ft.Page):
     Navigator(page).go("/") # Inicializa o navegador e direciona para a página de login
 
 if __name__ == "__main__":
-    ft.run(main, assets_dir="assets") # O parâmetro assets_dir define a pasta onde ficam os arquivos estáticos (imagens, ícones, etc.)
+    ft.run(
+        main, 
+        assets_dir="assets" # 'assets_dir' define a pasta onde ficam os arquivos estáticos (imagens, ícones, etc.)
+    ) 
