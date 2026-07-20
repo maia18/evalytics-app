@@ -1,4 +1,4 @@
-from configurations.firebase_config import db
+from database.services.firebase_config import db
 
 # Calcula médias das avaliações para o dashboard
 def obter_medias_dashboard():

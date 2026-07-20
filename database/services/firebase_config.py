@@ -15,12 +15,6 @@ try:
     # 3. Cria e exporta o cliente Firestore
     db = firestore.client()
     
-except FileNotFoundError:
-    print(f"\n❌ ERRO CRÍTICO: Arquivo de credenciais não encontrado!")
-    print(f"   Caminho esperado: {caminho_credenciais}")
-    print(f"\n   Solução: Solicite o arquivo 'firebase_credentials.json' à equipe de desenvolvimento")
-    print(f"            e coloque-o na pasta: {diretorio_atual}")
-    raise
 except Exception as e:
     print(f"\n❌ Erro na Conexão com Firebase: {e}")
     raise

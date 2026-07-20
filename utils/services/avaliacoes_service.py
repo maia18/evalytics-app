@@ -1,4 +1,4 @@
-from configurations.firebase_config import db
+from database.services.firebase_config import db
 from datetime import datetime
 
 def salvar_avaliacao(curso_id, curso_nome, respostas):

@@ -1,4 +1,4 @@
-from configurations.firebase_config import db
+from database.services.firebase_config import db
 
 COLECAO = "professores" # Nome da coleção no Firebase
 

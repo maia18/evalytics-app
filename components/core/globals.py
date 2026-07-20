@@ -1,8 +1,8 @@
 import os
 import flet as ft
 
-from components.core.constants.constants import * # Importa as configurações definidas em "configurations/config.py"
-from components.core.constants.texts import * # Importa os textos definidos em txts.py
+from components.core.constants.constants import *   # Importa as constantes definidas
+from components.core.constants.texts import *       # Importa os textos
 
 def configurar_aplicacao(page: ft.Page):
     
@@ -16,6 +16,6 @@ def configurar_aplicacao(page: ft.Page):
     page.bgcolor = ft.Colors.BLUE_GREY_50   # Define a cor de fundo da aplicação
 
     page.window.icon = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "assets", "imgs",   # Caminho do projeto                            
-        "logo.ico"                                                      # Nome do ícone da janela (logo da aplicação).
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "imgs", # Caminho             
+        "logo.ico"                                                                     # Nome do ícone da janela
     )

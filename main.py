@@ -1,5 +1,5 @@
 import flet as ft
-from configurations.global_configs import configurar_aplicacao
+from components.core.globals import configurar_aplicacao
 from components.core.navigator import Navigator
 
 def main(page: ft.Page):

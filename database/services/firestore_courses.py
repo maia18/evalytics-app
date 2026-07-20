@@ -1,5 +1,5 @@
 from firebase_admin import firestore
-from configurations.firebase_config import db
+from database.services.firebase_config import db
 
 # Adiciona curso na coleção 'cursos'
 def adicionar_curso_db(codigo, nome, depto, coord):
