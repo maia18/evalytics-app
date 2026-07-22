@@ -10,9 +10,7 @@ class Navigator:
 
     def go(self, rota: str):
         
-        """
-        Método que realiza a navegação para uma rota específica.
-        """
+        """Método que realiza a navegação para uma rota específica."""
 
         self.page.views.clear() # Remove todas as views existentes da página
 
