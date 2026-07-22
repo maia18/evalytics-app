@@ -19,7 +19,7 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
         right=ft.BorderSide(1, layout.cores[BORDA]),
     )
 
-    secao_filtros = criar_secao_filtros(layout, borda_container)
+    secao_filtros = criar_secao_filtros(layout, borda_container, page)
     tabela_resultados = criar_tabela_resultados(page, layout, borda_container)
 
     conteudo = ft.Column(
