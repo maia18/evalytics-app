@@ -1,41 +1,43 @@
-import flet as ft
-from components.core.constants.constants import *
+import flet as ft 
+from components.core.constants.constants import * 
 
-def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overlay, sidebar_mobile, ajustar_responsividade, page):
-    page.on_resize = ajustar_responsividade
-    ajustar_responsividade()
+# Estrutura fisicamente a página final, definindo as camadas (z-index) e eixos
+def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overlay, sidebar_mobile, ajustar_responsividade, page): 
+    
+    page.on_resize = ajustar_responsividade # Vincula o evento nativo de redimensionamento de janela à nossa função de ajuste
+    ajustar_responsividade() # Chama logo de início para aplicar formatação inicial
 
-    return ft.View(
-        route=route,
-        padding=0,
-        bgcolor=cores[FUNDO],
-        controls=[
-            ft.Stack(
-                expand=True,
-                controls=[
-                    ft.Row(
-                        expand=True,
-                        spacing=0,
-                        controls=[
-                            sidebar_desktop,
-                            ft.Column(
-                                expand=True,
-                                spacing=0,
-                                controls=[
-                                    topbar,
-                                    ft.Container(
-                                        expand=True,
-                                        padding=20,
-                                        content=conteudo_principal
-                                    )
-                                ],
-                                scroll=ft.ScrollMode.AUTO
-                            )
-                        ]
-                    ),
-                    overlay,
-                    sidebar_mobile
-                ]
-            )
-        ]
-    )
+    return ft.View( 
+        route=route, # Rota da tela atual
+        padding=0, # Remove espaçamento padrão ao redor da janela
+        bgcolor=cores[FUNDO], # Define o fundo global de acordo com a constante e tema
+        controls=[ 
+            ft.Stack( # Usa Stack para permitir que a sidebar_mobile e o overlay fiquem "voando" por cima do conteúdo principal
+                expand=True, # Ocupa todo o espaço
+                controls=[ 
+                    ft.Row( # Distribuição horizontal principal
+                        expand=True, 
+                        spacing=0, # Elimina o espaço nativo entre as colunas
+                        controls=[ 
+                            sidebar_desktop, # Lado Esquerdo: Navegação
+                            ft.Column( # Lado Direito: Topbar e Área de trabalho do usuário
+                                expand=True, 
+                                spacing=0, 
+                                controls=[ 
+                                    topbar, # Fica no topo da área direita
+                                    ft.Container( 
+                                        expand=True, 
+                                        padding=20, # Margem interna em torno do conteúdo centralizado
+                                        content=conteudo_principal # Injeta dinamicamente a tela em questão
+                                    ) 
+                                ], 
+                                scroll=ft.ScrollMode.AUTO # Habilita scroll para conteúdos grandes nesta área específica
+                            ) 
+                        ] 
+                    ), 
+                    overlay, # Camada oculta que será chamada por cima da tela ao abrir menu mobile
+                    sidebar_mobile # Menu fora de tela inicialmente, pronto para deslizar pra dentro
+                ] 
+            ) 
+        ] 
+    ) 
