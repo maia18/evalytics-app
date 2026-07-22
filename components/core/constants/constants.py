@@ -6,6 +6,7 @@ Centraliza todas as dimensões, medidas e paletas de cores da aplicação.
 # =====================================================================
 # DIMENSÕES E MEDIDAS DA INTERFACE
 # =====================================================================
+
 WINDOW_WIDTH = 1280  # Largura padrão da janela principal da aplicação (em pixels)
 WINDOW_HEIGHT = 720  # Altura padrão da janela principal da aplicação (em pixels)
 ALTURA_MAX = 200     # Altura máxima da coluna (utilizada em Gráficos de eixos/barras)
