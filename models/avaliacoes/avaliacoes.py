@@ -13,7 +13,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela):
     )
 
     card_controle_ciclo = criar_card_controle_ciclo(layout, mudar_tela, page)
-    card_tabela_dados = criar_card_tabela_dados(layout)
+    card_tabela_dados = criar_card_tabela_dados(layout, page)
 
     conteudo = ft.Column(
         expand=True,

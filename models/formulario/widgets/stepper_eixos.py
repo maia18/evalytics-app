@@ -6,8 +6,8 @@ def criar_stepper_eixos(eixo_atual, pular_para_eixo):
         ativo = (i == eixo_atual)
         controles.append(
             ft.Container(
-                content=ft.Text(f"Eixo {i}", color="white" if ativo else "black87", weight="bold"),
-                bgcolor="#1976D2" if ativo else "#E0E0E0",
+                content=ft.Text(f"Eixo {i}", color="onPrimary" if ativo else "onSurface", weight="bold"),
+                bgcolor="primary" if ativo else "surfaceVariant",
                 padding=10,
                 border_radius=20,
                 ink=True,

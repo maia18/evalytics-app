@@ -7,8 +7,8 @@ def criar_card_pergunta(page, indicador, estado):
     valor_inicial = estado["respostas"].get(titulo_ind, 3)
     texto_inicial = criterios.get(str(valor_inicial), criterios.get(valor_inicial, "Critério não definido."))
 
-    lbl_nota_destaque = ft.Text(str(valor_inicial), size=28, weight="bold", color="blue700")
-    txt_criterio_dinamico = ft.Text(texto_inicial, size=14, color="grey700", italic=True, text_align=ft.TextAlign.CENTER)
+    lbl_nota_destaque = ft.Text(str(valor_inicial), size=28, weight="bold", color="primary")
+    txt_criterio_dinamico = ft.Text(texto_inicial, size=14, color="onSurfaceVariant", italic=True, text_align=ft.TextAlign.CENTER)
 
     def ao_deslizar(e):
         nota_atual = int(e.control.value)
@@ -20,27 +20,28 @@ def criar_card_pergunta(page, indicador, estado):
     slider_nota = ft.Slider(
         min=1, max=5, divisions=4,
         value=valor_inicial,
-        label="Nota {value}",
-        active_color="blue700",
-        inactive_color="blue100",
+        active_color="primary",
+        inactive_color="outlineVariant",
         on_change=ao_deslizar,
         expand=True
     )
 
     return ft.Container(
-        bgcolor="white",
+        bgcolor="surface",
         padding=30,
         border_radius=12,
-        shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="black12"),
+        shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="shadow"),
         content=ft.Column(
             spacing=15,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
             controls=[
-                ft.Text(titulo_ind, size=18, weight="bold", color="black87"),
-                ft.Text(indicador.get("descricao", ""), size=14, color="grey500"),
+                ft.Text(titulo_ind, size=18, weight="bold", color="onSurface", text_align=ft.TextAlign.CENTER),
+                ft.Text(indicador.get("descricao", ""), size=14, color="onSurfaceVariant", text_align=ft.TextAlign.CENTER),
+                
                 ft.Divider(height=10, color="transparent"),
-                ft.Row([ft.Text("1", color="grey400", weight="bold"), slider_nota, ft.Text("5", color="grey400", weight="bold")]),
+                ft.Row([ft.Text("1", color="onSurfaceVariant", weight="bold"), slider_nota, ft.Text("5", color="onSurfaceVariant", weight="bold")]),
                 ft.Container(
-                    bgcolor="#F8F9FA",
+                    bgcolor="surfaceVariant",
                     padding=15,
                     border_radius=8,
                     content=ft.Column(

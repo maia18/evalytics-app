@@ -2,7 +2,7 @@ import flet as ft
 from models.avaliacoes.core.export_csv import exportar_csv
 from components.core.constants.constants import *
 
-def criar_card_tabela_dados(layout):
+def criar_card_tabela_dados(layout, page):
     tabela_dados = ft.DataTable(
         expand=True,
         columns=[
@@ -54,7 +54,8 @@ def criar_card_tabela_dados(layout):
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
                         ft.Text("Respostas Recentes (Raw Data)", size=18, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
-                        ft.ElevatedButton("Exportar CSV", icon=ft.Icons.DOWNLOAD, bgcolor="blue700", color="white", on_click=exportar_csv)
+                        # CORREÇÃO APLICADA AQUI: Uso do lambda para capturar o evento e passar a page
+                        ft.ElevatedButton("Exportar CSV", icon=ft.Icons.DOWNLOAD, bgcolor="blue700", color="white", on_click=lambda e: exportar_csv(page))
                     ]
                 ),
                 ft.Divider(color="grey200"),

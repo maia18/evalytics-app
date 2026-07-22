@@ -31,7 +31,7 @@ def criar_card_controle_ciclo(layout, mudar_tela, page):
                             spacing=10,
                             controls=[
                                 ft.ElevatedButton(
-                                    "Visão do Usuário",
+                                    "Nova Avaliação",
                                     icon=ft.Icons.OPEN_IN_NEW,
                                     bgcolor="blue700",
                                     color="white",
