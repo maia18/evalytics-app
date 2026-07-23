@@ -1,14 +1,12 @@
 from database.services.firebase_config import db
 
-# Centralizar o nome da coleção em uma constante evita erros de digitação (typos)
-# e facilita futuras manutenções na estrutura do banco de dados.
+# Centralizar o nome da coleção em uma constante evita erros de digitação (typos) e facilita futuras manutenções na estrutura do banco de dados.
 COLECAO = "disciplinas" 
 
 def criar_disciplina(nome: str, codigo: str, carga_horaria: int):
     """
     Cria uma nova disciplina no banco de dados do Firebase.
-    Diferente do método .add() direto, esta função cria a referência primeiro 
-    para poder capturar e retornar o ID gerado imediatamente após a gravação.
+    Diferente do método .add() direto, esta função cria a referência primeiro para poder capturar e retornar o ID gerado imediatamente após a gravação.
     
     Args:
         nome (str): Nome completo da disciplina (ex: "Eletromagnetismo Aplicado").
@@ -56,8 +54,7 @@ def listar_disciplinas():
         # Converte o documento bruto do Firestore para um dicionário Python padrão
         dados = doc.to_dict()
         
-        # Injeta o ID único dentro do dicionário para que a interface de usuário 
-        # consiga identificar qual registro é qual na hora de editar ou excluir
+        # Injeta o ID único dentro do dicionário para que a interface de usuário consiga identificar qual registro é qual na hora de editar ou excluir
         dados["id"] = doc.id
         
         # Adiciona o registro já processado e pronto para uso na lista final
@@ -80,9 +77,7 @@ def atualizar_disciplina(disciplina_id: str, dados_atualizados: dict):
     # Localiza a referência exata do documento a ser atualizado pelo seu ID
     doc_ref = db.collection(COLECAO).document(disciplina_id)
     
-    # O uso do 'merge=True' é a chave aqui! Ele instrui o Firebase a mesclar os novos dados
-    # com os dados existentes. Se não usássemos isso, o comando .set() apagaria tudo o que 
-    # não foi enviado no dicionário 'dados_atualizados', causando perda de dados.
+    # O uso do 'merge=True' é a chave aqui! Ele instrui o Firebase a mesclar os novos dados com os dados existentes. Se não usássemos isso, o comando .set() apagaria tudo o que não foi enviado no dicionário 'dados_atualizados', causando perda de dados.
     doc_ref.set(dados_atualizados, merge=True)
     
     return True
