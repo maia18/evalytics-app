@@ -37,7 +37,7 @@ def criar_login_social(cor_texto_secundario, cor_borda):
     estilo_botao_social = ft.ButtonStyle(
         shape=ft.RoundedRectangleBorder(radius=4), # Bordas apenas levemente arredondadas (aspecto mais corporativo)
         side=ft.BorderSide(1, cor_borda),          # Contorno com a mesma cor das linhas do divisor
-        padding=ft.padding.symmetric(vertical=15)  # Aumenta a área de clique vertical (padding superior e inferior)
+        padding=ft.Padding.symmetric(vertical=15)  # Aumenta a área de clique vertical (padding superior e inferior)
     )
 
     # === Construção da Linha de Botões ===

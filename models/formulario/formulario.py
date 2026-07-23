@@ -29,7 +29,7 @@ def ViewFormulario(page: ft.Page, mudar_tela):
     area_central = ft.Container(
         expand=True, 
         # Garante que o formulário não encoste nas bordas laterais ou inferiores da tela
-        padding=ft.padding.only(top=10, bottom=30, right=20), 
+        padding=ft.Padding.only(top=10, bottom=30, right=20), 
         content=area_dinamica_conteudo
     )
 

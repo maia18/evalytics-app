@@ -101,7 +101,7 @@ def TelaResultados(page: ft.Page):
                     alignment=ft.MainAxisAlignment.END, # Alinha o botão à direita
                     controls=[
                         ft.ElevatedButton(
-                            text="Exportar Relatório PDF", 
+                            "Exportar Relatório PDF", 
                             icon=ft.Icons.PICTURE_AS_PDF,
                             bgcolor="red700",
                             color="white",

@@ -12,7 +12,7 @@ def criar_rodape_termos(cor_texto_secundario, cor_primaria):
     
     return ft.Container(
         # Aplica uma margem superior para desgrudar o rodapé do cartão principal de login
-        margin=ft.margin.only(top=10),
+        margin=ft.Margin.only(top=10),
         
         # O controle principal de texto
         content=ft.Text(
