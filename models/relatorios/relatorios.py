@@ -1,31 +1,28 @@
 import flet as ft
-# Importa o layout base que garante a responsividade (Sidebar, Topbar, etc.)
 from components.layout.responsive.responsive import ResponsiveLayout
-# Importa as paletas de cores e espaçamentos padrão do sistema
 from components.core.constants.constants import *
 
-# Importa os subcomponentes isolados que compõem esta tela
+# Importa os subcomponentes isolados (Tabela e Filtros)
 from models.relatorios.widgets.filtros_relatorios import criar_secao_filtros
 from models.relatorios.widgets.tabela_resultados import criar_tabela_resultados
+
+# Importa o seu Dashboard Executivo recém-criado que está na pasta views
+from models.relatorios.views.resultados_view import TelaResultados
 
 def ViewRelatorios(page: ft.Page, mudar_tela):
     """
     Renderiza a tela principal de 'Relatórios e Exportações'.
-    Atua como a View orquestradora que agrupa os painéis de filtro de dados 
-    e a tabela de exibição/exportação dos resultados institucionais.
+    Utiliza um sistema de Abas (Tabs) para organizar a exibição entre o 
+    Dashboard Gráfico e a Tabela de Dados Brutos.
     """
     
-    # Inicializa o contêiner responsivo passando o título e subtítulo para a Topbar
     layout = ResponsiveLayout(
         page,
         titulo_pagina="Relatórios e Exportações",
-        subtitulo="Gere visualizações dinâmicas e exporte resultados.",
+        subtitulo="Analise indicadores visuais e exporte resultados consolidados.",
         mudar_tela=mudar_tela
     )
 
-    # Criação de um objeto de borda reutilizável.
-    # Como tanto o painel de filtros quanto a tabela usarão o mesmo estilo de caixa,
-    # centralizamos a borda aqui usando a cor dinâmica do tema e repassamos como argumento.
     borda_container = ft.Border(
         top=ft.BorderSide(1, layout.cores[BORDA]),
         bottom=ft.BorderSide(1, layout.cores[BORDA]),
@@ -34,36 +31,53 @@ def ViewRelatorios(page: ft.Page, mudar_tela):
     )
 
     # === Instanciação dos Componentes ===
-    # Delega a construção do formulário de filtros para a função externa
     secao_filtros = criar_secao_filtros(layout, borda_container, page)
-    
-    # Delega a construção do painel de dados (DataGrid/DataTable) para a função externa
     tabela_resultados = criar_tabela_resultados(page, layout, borda_container)
+    
+    # Instancia a View do Dashboard Executivo
+    dashboard_visual = TelaResultados(page)
 
-    # === Montagem do Layout Principal ===
-    conteudo = ft.Column(
-        expand=True, # Garante que a coluna ocupe todo o espaço da tela em altura
-        controls=[
-            # Cabeçalho interno da página
-            ft.Text("Relatórios e Exportações", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
-            ft.Text("Gere visualizações dinâmicas, analise os critérios e exporte os resultados.", size=16, color="grey"),
+    # === Montagem do Sistema de Abas (Tabs) ===
+    abas = ft.Tabs(
+        selected_index=0, # Inicia mostrando o Dashboard por padrão
+        animation_duration=300, # Transição suave entre as abas
+        expand=True,
+        tabs=[
+            # Aba 1: Dashboard Executivo
+            ft.Tab(
+                text="Dashboard Executivo",
+                icon=ft.Icons.DASHBOARD,
+                content=dashboard_visual # Injeta a sua view visual aqui
+            ),
             
-            # Divisor transparente atuando como margem (respiro) entre o cabeçalho e os filtros
-            ft.Divider(height=30, color="transparent"),
-            
-            # Painel superior contendo os Dropdowns de busca e filtros
-            secao_filtros,
-            
-            # Outro respiro antes da exibição dos dados
-            ft.Divider(height=20, color="transparent"),
-            
-            # Painel inferior exibindo a tabela e os botões de exportação (PDF/Excel)
-            tabela_resultados
+            # Aba 2: Dados e Exportações (Filtros + Tabela)
+            ft.Tab(
+                text="Dados Brutos e Exportação",
+                icon=ft.Icons.TABLE_CHART,
+                content=ft.Container(
+                    padding=ft.padding.only(top=20), # Respiro antes de começar o conteúdo
+                    content=ft.Column(
+                        expand=True,
+                        controls=[
+                            secao_filtros,
+                            ft.Divider(height=20, color="transparent"),
+                            tabela_resultados
+                        ]
+                    )
+                )
+            ),
         ]
     )
 
-    # Injeta a estrutura montada dentro do contêiner flexível do ResponsiveLayout
+    # === Montagem do Layout Principal ===
+    conteudo = ft.Column(
+        expand=True,
+        controls=[
+            # Todo aquele cabeçalho de texto foi removido daqui pois o ResponsiveLayout
+            # já cuida do título da página na Topbar. Inserimos direto as abas!
+            abas
+        ]
+    )
+
     layout.add_content(conteudo)
-    
-    # Retorna a View devidamente registrada com sua rota oficial para o sistema de navegação
     return layout.criar_view("/relatorios")
