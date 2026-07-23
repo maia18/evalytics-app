@@ -1,8 +1,6 @@
 import flet as ft
-# Importa o gerenciador central de layout responsivo que engloba a página
-from components.layout.responsive.responsive import ResponsiveLayout 
-# Importa o controlador do formulário, responsável por ditar as regras de negócio e transições
-from models.formulario.core.form_controller import FormularioController
+from components.layout.responsive.responsive import ResponsiveLayout # Importa o gerenciador central de layout responsivo que engloba a página
+from models.formulario.core.form_controller import FormularioController # Importa o controlador do formulário, responsável por ditar as regras de negócio e transições
 
 def ViewFormulario(page: ft.Page, mudar_tela):
     """
