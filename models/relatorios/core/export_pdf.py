@@ -3,12 +3,10 @@ import plotly.graph_objects as go
 import os
 from datetime import datetime
 
-# Importa o componente visual que exibirá a barra de sucesso ou erro (Snackbar) na interface do usuário
-from models.avaliacoes.core.feedback import mostrar_feedback
+from models.avaliacoes.core.feedback import mostrar_feedback # Importa o componente visual que exibirá a barra de sucesso ou erro (Snackbar) na interface do usuário
 
 # === CLASSE PERSONALIZADA FPDF ===
-# Herdar da classe base FPDF permite sobrescrever os métodos de cabeçalho e rodapé
-# para que eles sejam inseridos automaticamente em todas as páginas geradas!
+# Herdar da classe base FPDF permite sobrescrever os métodos de cabeçalho e rodapé para que eles sejam inseridos automaticamente em todas as páginas geradas.
 class RelatorioEvalytics(FPDF):
     def header(self):
         """Define o cabeçalho padrão repetido no topo de cada página."""
@@ -37,8 +35,7 @@ class RelatorioEvalytics(FPDF):
 # === FUNÇÃO PRINCIPAL ===
 def gerar_pdf_completo(page, medias: dict, nomes_eixos: dict, semestre: str = "2025.2"):
     """
-    Gera um relatório acadêmico em PDF, orquestrando a criação de um gráfico 
-    de radar dinâmico (Plotly), uma tabela de resultados e o feedback visual no Flet.
+    Gera um relatório acadêmico em PDF, orquestrando a criação de um gráfico de radar dinâmico (Plotly), uma tabela de resultados e o feedback visual no Flet.
     
     Args:
         page: A página atual do Flet para injetar o alerta de sucesso/erro.
