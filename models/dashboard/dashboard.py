@@ -44,21 +44,13 @@ def ViewDashboard(page: ft.Page, mudar_tela):
 
     # === Conteúdo de cada aba ===
     conteudo_dashboard_executivo = ft.Container(
-        padding=ft.Padding.only(top=20),
         content=ft.Column(
             spacing=25, 
             scroll=ft.ScrollMode.AUTO, 
-            controls=[linha_kpis, area_graficos] 
+            controls=[ft.Container(height=20), linha_kpis, area_graficos] 
         )
     )
-
-    # Injeção da tela de avaliações de forma modular
-    conteudo_dados_brutos = ft.Container(
-        padding=ft.Padding.only(top=20),
-        # Puxa o conteúdo da outra tela sem reescrever código
-        content=criar_conteudo_avaliacoes(layout, mudar_tela, page)
-    )
-
+    
     # === Abas (Mantendo as restrições corretas) ===
     barra_abas = ft.TabBar(
         tabs=[
@@ -75,7 +67,7 @@ def ViewDashboard(page: ft.Page, mudar_tela):
         expand=True,
         controls=[
             conteudo_dashboard_executivo,
-            conteudo_dados_brutos,
+            criar_conteudo_avaliacoes(layout, mudar_tela, page)
         ],
     )
 

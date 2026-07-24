@@ -10,15 +10,12 @@ def criar_conteudo_avaliacoes(layout, mudar_tela, page):
     """
     card_controle_ciclo = criar_card_controle_ciclo(layout, mudar_tela, page)
     card_tabela_dados = criar_card_tabela_dados(layout, page)
-    
-    # Travar a altura da tabela se ela for usada em ambientes com scroll
-    card_tabela_dados.expand = False
-    card_tabela_dados.height = 420
 
     return ft.Column( 
         spacing=20,
         scroll=ft.ScrollMode.AUTO,
         controls=[ 
+            ft.Container(height=20),
             ft.Column( 
                 spacing=5,
                 controls=[ 
