@@ -80,38 +80,46 @@ def TelaResultados(page: ft.Page):
             )
         )
 
+    # NOVO: Cabeçalho com o título à esquerda e botão à direita (Opção 1)
+    cabecalho = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.START,
+        controls=[
+            # Textos de título agrupados em uma coluna
+            ft.Column(
+                spacing=5,
+                controls=[
+                    ft.Text("Dashboard de Resultados", size=28, weight="bold"),
+                    ft.Text("Acompanhe o desempenho institucional através dos eixos avaliados.", size=14, color="grey"),
+                ]
+            ),
+            # O botão que antes estava no final, agora vem pro topo!
+            ft.ElevatedButton(
+                "Exportar Relatório PDF", 
+                icon=ft.Icons.PICTURE_AS_PDF,
+                bgcolor="red700",
+                color="white",
+                height=45,
+                on_click=exportar_pdf
+            )
+        ]
+    )
+
     # Retorna o contêiner principal que envelopa toda a tela
     return ft.Container(
         padding=30,
         expand=True,
         content=ft.Column(
+            expand=True,
             controls=[
-                # Cabeçalho da página
-                ft.Text("Dashboard de Resultados", size=28, weight="bold"),
-                ft.Text("Acompanhe o desempenho institucional através dos eixos avaliados.", size=14, color="grey"),
+                # O cabeçalho agora já inclui o título e o botão lado a lado
+                cabecalho,
                 ft.Divider(height=20, color="transparent"),
                 
-                # Desempacota e insere todos os cards gerados no loop
-                *cards_resultados,  
-                
-                ft.Divider(height=30, color="transparent"),
-                
-                # Botão de Ação Primária (Call to Action)
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.END, # Alinha o botão à direita
-                    controls=[
-                        ft.ElevatedButton(
-                            "Exportar Relatório PDF", 
-                            icon=ft.Icons.PICTURE_AS_PDF,
-                            bgcolor="red700",
-                            color="white",
-                            height=45,
-                            on_click=exportar_pdf
-                        )
-                    ]
-                )
+                ft.Column(
+                    expand=True, # Preenche o resto da tela abaixo do cabeçalho
+                    controls=cards_resultados 
+                ),
             ], 
-            # Scroll habilitado para que a tela não quebre se houver muitos eixos avaliativos
-            scroll=ft.ScrollMode.AUTO 
         )
     )
