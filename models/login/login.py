@@ -52,35 +52,53 @@ def ViewLogin(page: ft.Page, mudar_tela):
     secao_social = criar_login_social(COR_TEXTO_SECUNDARIO, COR_BORDA) # Botões de autenticação Google, Apple, etc.
     rodape_termos = criar_rodape_termos(COR_TEXTO_SECUNDARIO, COR_PRIMARIA) # Links de termos de uso e privacidade
 
-    # === Lógica de Abas (Sign In / Sign Up) ===
-    # Estilo base removendo o arredondamento para que os botões pareçam guias (abas) coladas umas nas outras
-    estilo_aba = ft.ButtonStyle(
-        shape=ft.RoundedRectangleBorder(radius=0),
-        color=COR_TEXTO_TITULO,
-        bgcolor=COR_CARD 
+    # === Lógica de Abas (Sign In / Sign Up) - Layout Minimalista ===
+    
+    # Aba de Sign In (Login) - Ativa e SEM borda
+    btn_aba_signin = ft.TextButton(
+        "Entrar", 
+        data="signin", 
+        expand=True, 
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=8), # Mantém os cantos arredondados
+            color=COR_PRIMARIA, 
+            bgcolor=ft.Colors.with_opacity(0.1, COR_PRIMARIA), # Apenas um fundo leve
+            side=ft.BorderSide(0, ft.Colors.TRANSPARENT), # Remove o contorno padrão de foco/hover
+            overlay_color=ft.Colors.TRANSPARENT, # Remove o overlay que o Flet desenha ao focar/pressionar
+        )
     )
     
-    # Aba de Sign In (Login)
-    btn_aba_signin = ft.OutlinedButton("Sign In", data="signin", style=estilo_aba)
-    btn_aba_signin.style.side = ft.border.BorderSide(1, COR_PRIMARIA) # Inicia em evidência com a cor primária
+    # Aba de Sign Up (Cadastro) - Inativa e SEM borda
+    btn_aba_signup = ft.TextButton(
+        "Cadastrar-se", 
+        data="signup", 
+        expand=True, 
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=8),
+            color=COR_TEXTO_SECUNDARIO, 
+            bgcolor=ft.Colors.TRANSPARENT,
+            side=ft.BorderSide(0, ft.Colors.TRANSPARENT), # Remove o contorno padrão de foco/hover
+            overlay_color=ft.Colors.TRANSPARENT, # Remove o overlay que o Flet desenha ao focar/pressionar
+        )
+    )
     
-    # Aba de Sign Up (Cadastro)
-    btn_aba_signup = ft.OutlinedButton("Sign Up", data="signup", style=estilo_aba)
-    btn_aba_signup.style.side = ft.border.BorderSide(1, "transparent") # Inicia sem destaque de borda
-    
-    # Recupera a função de callback que reage à troca de abas.
-    # Esta função manipulará o visual da tela (ex: exibindo o campo de nome ao ir para Sign Up).
+    # Recupera a função de callback que reage à troca de abas
     funcao_alternar = obter_funcao_alternar(
         btn_aba_signin, btn_aba_signup, campo_nome, opcoes_extras, 
         btn_login, COR_TEXTO_TITULO, COR_CARD, COR_PRIMARIA
     )
     
-    # Acopla a função de alternância ao evento de clique de ambas as abas
+    # Acopla a função de alternância ao evento de clique
     btn_aba_signin.on_click = funcao_alternar
     btn_aba_signup.on_click = funcao_alternar
     
-    # Agrupa as abas em uma linha centralizada, com espaçamento zero (coladas)
-    cabecalho_abas = ft.Row([btn_aba_signin, btn_aba_signup], alignment=ft.MainAxisAlignment.CENTER, spacing=0)
+    # Removemos o contêiner cinza com bordas. 
+    # Colocamos os botões direto em uma Row limpa, com um bom espaçamento.
+    cabecalho_abas = ft.Row(
+        controls=[btn_aba_signin, btn_aba_signup],
+        alignment=ft.MainAxisAlignment.CENTER,
+        spacing=10, # Espaço limpo e elegante entre as duas opções
+    )
     
     # === Montagem do Card Principal ===
     # Encapsula todos os elementos de input e ações dentro do contêiner central da tela

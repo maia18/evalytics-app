@@ -19,20 +19,22 @@ def obter_funcao_alternar(btn_aba_signin, btn_aba_signup, campo_nome, opcoes_ext
         # Descobre qual aba foi clicada verificando o atributo 'data' do controle que disparou o evento
         is_signup = (e.control.data == "signup")
         
-        # Define o estilo visual de uma aba SELECIONADA (ganha uma borda destacada com a cor primária)
+        # Define o estilo visual de uma aba SELECIONADA (destaque apenas por fundo/cor de texto, sem borda)
         estilo_ativo = ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=0), # Sem cantos arredondados na base da aba
-            color=COR_TEXTO_TITULO,
-            bgcolor=COR_CARD,
-            side=ft.border.BorderSide(1, COR_PRIMARIA) # Borda colorida indicando foco
+            shape=ft.RoundedRectangleBorder(radius=8),
+            color=COR_PRIMARIA,
+            bgcolor=ft.Colors.with_opacity(0.1, COR_PRIMARIA),
+            side=ft.BorderSide(0, ft.Colors.TRANSPARENT), # Sem contorno
+            overlay_color=ft.Colors.TRANSPARENT, # Sem overlay de foco/hover
         )
         
-        # Define o estilo visual de uma aba INATIVA (borda transparente, misturando-se com o fundo)
+        # Define o estilo visual de uma aba INATIVA (transparente, sem borda)
         estilo_inativo = ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=0),
+            shape=ft.RoundedRectangleBorder(radius=8),
             color=COR_TEXTO_TITULO,
-            bgcolor=COR_CARD,
-            side=ft.border.BorderSide(1, "transparent") # Esconde a borda
+            bgcolor=ft.Colors.TRANSPARENT,
+            side=ft.BorderSide(0, ft.Colors.TRANSPARENT), # Sem contorno
+            overlay_color=ft.Colors.TRANSPARENT, # Sem overlay de foco/hover
         )
         
         # Aplica os estilos dependendo de quem foi clicado usando operadores ternários
