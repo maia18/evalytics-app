@@ -9,9 +9,14 @@ def criar_conteudo_avaliacoes(layout, mudar_tela, page):
     Isola os componentes visuais da tela de avaliações para permitir reaproveitamento.
     """
     card_controle_ciclo = criar_card_controle_ciclo(layout, mudar_tela, page)
-    card_tabela_dados = criar_card_tabela_dados(layout, page)
+    card_tabela_dados = criar_card_tabela_dados(layout, page)   
+
+    # ESSENCIAL: Impede que a tabela force um tamanho infinito no scroll
+    card_tabela_dados.expand = False
+    card_tabela_dados.height = 420
 
     return ft.Column( 
+        expand=True, # Ancora a coluna no TabBarView
         spacing=20,
         scroll=ft.ScrollMode.AUTO,
         controls=[ 

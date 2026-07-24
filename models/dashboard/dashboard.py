@@ -43,12 +43,11 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     area_graficos = criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras)
 
     # === Conteúdo de cada aba ===
-    conteudo_dashboard_executivo = ft.Container(
-        content=ft.Column(
-            spacing=25, 
-            scroll=ft.ScrollMode.AUTO, 
-            controls=[ft.Container(height=20), linha_kpis, area_graficos] 
-        )
+    conteudo_dashboard_executivo = ft.Column(
+        expand=True, # Ancora a coluna no TabBarView
+        spacing=25,
+        scroll=ft.ScrollMode.AUTO,
+        controls=[ft.Container(height=20), linha_kpis, area_graficos]
     )
     
     # === Abas (Mantendo as restrições corretas) ===
