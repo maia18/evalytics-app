@@ -32,8 +32,8 @@ TXTS_DASHBOARD = (
 """Textos utilizados na tela de Nova Avaliação / Formulários"""
 
 TXTS_AVALIACAO = (
-    "Nova Avaliação",                  # [0] Título da aba/menu/página
-    "Criar um novo instrumento.",      # [1] Subtítulo ou descrição da funcionalidade
+    "Avaliações",                  # [0] Título da aba/menu/página
+    "Acessar histórico de avaliações",      # [1] Subtítulo ou descrição da funcionalidade
 )
 
 """Textos utilizados na tela de Gestão de Cursos"""
@@ -48,4 +48,11 @@ TXTS_CURSOS = (
 TXTS_RELATORIOS = (
     "Relatórios",                      # [0] Título da aba/menu/página
     "Gerar relatórios.",               # [1] Subtítulo ou descrição da funcionalidade
+)
+
+"""Textos utilizados na tela de Configurações"""
+
+TXTS_CONFIGS = (
+    "Configurações",
+    "Acessar configurações do sistema",
 )

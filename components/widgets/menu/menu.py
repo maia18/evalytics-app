@@ -4,7 +4,7 @@ import flet as ft
 # A estrutura de dados é uma lista de tuplas: (Constante de Ícone, Nome Exibido, Rota de Navegação)
 MENU_ITEMS = [ 
     (ft.Icons.HOME, "Início", "/inicio"), 
-    (ft.Icons.ADD_BOX_OUTLINED, "Avaliação", "/avaliacoes"), 
+    (ft.Icons.ADD_CIRCLE, "Nova Avaliação", "/formulario"), 
     (ft.Icons.GRID_VIEW_OUTLINED, "Dashboard", "/dashboard"), 
     (ft.Icons.MENU_BOOK_OUTLINED, "Cursos", "/cursos"), 
     (ft.Icons.PIE_CHART_OUTLINE, "Relatórios", "/relatorios"), 
@@ -16,7 +16,7 @@ MENU_ITEMS = [
 # Ícones mais "sólidos" ajudam na visualização rápida quando o menu está encolhido.
 MENU_ITEMS_COLLAPSED = [ 
     (ft.Icons.HOME, "Início", "/inicio"), 
-    (ft.Icons.ADD_CIRCLE, "Nova Avaliação", "/avaliacoes"), 
+    (ft.Icons.ADD_CIRCLE, "Nova Avaliação", "/formulario"), 
     (ft.Icons.DASHBOARD, "Dashboard", "/dashboard"), 
     (ft.Icons.BOOK, "Cursos", "/cursos"), 
     (ft.Icons.PIE_CHART, "Relatórios", "/relatorios"), 
