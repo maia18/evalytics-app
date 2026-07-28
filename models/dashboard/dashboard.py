@@ -59,8 +59,8 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     # === Abas (Mantendo as restrições corretas) ===
     barra_abas = ft.TabBar(
         tabs=[
-            ft.Tab(label="Dashboard Executivo", icon=ft.Icons.GRID_VIEW_ROUNDED),
-            ft.Tab(label="Dados Brutos e Exportação", icon=ft.Icons.TABLE_ROWS_ROUNDED),
+            ft.Tab(label="Dashboard", icon=ft.Icons.GRID_VIEW_ROUNDED),
+            ft.Tab(label="Gestão de Ciclos e Respostas", icon=ft.Icons.TABLE_ROWS_ROUNDED),
         ],
         label_color=COR_PRIMARIA,
         unselected_label_color="grey600",
