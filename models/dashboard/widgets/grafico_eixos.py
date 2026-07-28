@@ -1,14 +1,22 @@
 import flet as ft
 from components.core.constants.constants import *
 
-def criar_coluna_grafico(layout, nome, nota, cor):
+# A área de plotagem tem 190px de altura (definida em criar_grafico_eixos).
+# Desse total, ~50px são reservados para o texto do valor (ex: "4.5"), o espaçamento
+# e o rótulo do nome do eixo abaixo da barra. O restante (com uma margem de segurança)
+# é o espaço máximo real disponível para a própria barra crescer.
+# Usamos essa constante LOCAL em vez do ALTURA_MAX de constants.py, porque aquele valor
+# não tem garantia de caber no card compacto — calculando aqui, a barra NUNCA estoura
+# o container e corta os rótulos, independente do que ALTURA_MAX valha em constants.py.
+
+def criar_coluna_grafico(layout, nome, nota, cor, altura_max=ALTURA_MAX):
     """
     Desenha uma barra vertical individual do gráfico, calculando sua altura baseada na nota.
     """
     
     # Cálculo matemático para descobrir a altura em pixels: 
-    # Divide a nota pela nota máxima (5.0) para obter a porcentagem, e multiplica pela Altura Máxima definida nas constantes.
-    altura_barra = (nota / 5.0) * ALTURA_MAX
+    # Divide a nota pela nota máxima (5.0) para obter a porcentagem, e multiplica pela altura máxima segura.
+    altura_barra = (nota / 5.0) * altura_max
     
     return ft.Column(
         alignment=ft.MainAxisAlignment.END, # Empurra os itens para o fundo (faz as barras crescerem de baixo para cima)
@@ -74,8 +82,8 @@ def criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras):
                 ),
                 # Área de plotagem (desenho) das barras
                 ft.Container(
-                    height=190, # Reduzido de 260 para 190: principal ganho de espaço vertical
-                    padding=ft.Padding.only(left=12, right=12, top=8, bottom=0), # Reduzido de 20 uniforme
+                    height=200, # Aumentado de 190 para 200: folga extra para caber valor + barra + rótulo sem cortar
+                    padding=ft.Padding.only(left=12, right=12, top=8, bottom=4),
                     content=ft.Row(
                         alignment=ft.MainAxisAlignment.SPACE_AROUND, # Distribui as barras com espaço igual ao redor delas
                         vertical_alignment=ft.CrossAxisAlignment.END, # Alinha todas as colunas pela sua base
