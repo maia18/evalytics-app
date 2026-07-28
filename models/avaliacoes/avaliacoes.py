@@ -15,22 +15,26 @@ def criar_conteudo_avaliacoes(layout, mudar_tela, page):
     card_tabela_dados.expand = False
     card_tabela_dados.height = 420
 
-    return ft.Column( 
-        expand=True, # Ancora a coluna no TabBarView
-        spacing=20,
-        scroll=ft.ScrollMode.AUTO,
-        controls=[ 
-            ft.Container(height=20),
-            ft.Column( 
-                spacing=5,
-                controls=[ 
-                    ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
-                    ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="grey"),
-                ] 
-            ), 
-            card_controle_ciclo,
-            card_tabela_dados
-        ] 
+    # Mesmo padrão de correção do dashboard.py: expand=True no Container "de fora",
+    # scroll=AUTO isolado na Column "de dentro" (nunca os dois juntos na mesma Column).
+    return ft.Container(
+        expand=True,
+        content=ft.Column(
+            spacing=20,
+            scroll=ft.ScrollMode.AUTO,
+            controls=[
+                ft.Container(height=20),
+                ft.Column(
+                    spacing=5,
+                    controls=[
+                        ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
+                        ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="grey"),
+                    ]
+                ),
+                card_controle_ciclo,
+                card_tabela_dados
+            ]
+        )
     )
 
 def ViewAvaliacoes(page: ft.Page, mudar_tela): 

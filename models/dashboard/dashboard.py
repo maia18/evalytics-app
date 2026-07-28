@@ -43,11 +43,17 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     area_graficos = criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras)
 
     # === Conteúdo de cada aba ===
-    conteudo_dashboard_executivo = ft.Column(
-        expand=True, # Ancora a coluna no TabBarView
-        spacing=25,
-        scroll=ft.ScrollMode.AUTO,
-        controls=[ft.Container(height=20), linha_kpis, area_graficos]
+    # IMPORTANTE: expand=True fica no Container (dá o limite de altura vindo do TabBarView),
+    # e scroll=AUTO fica isolado na Column interna, SEM expand=True nela mesma.
+    # Isso evita o bug do Flet de espaço em branco + scroll fantasma quando
+    # expand e scroll são combinados na mesma Column (github.com/flet-dev/flet/issues/6087).
+    conteudo_dashboard_executivo = ft.Container(
+        expand=True, # Ancora o container no TabBarView, dando altura limitada
+        content=ft.Column(
+            spacing=25,
+            scroll=ft.ScrollMode.AUTO, # Rola somente se o conteúdo real ultrapassar o espaço disponível
+            controls=[ft.Container(height=20), linha_kpis, area_graficos]
+        )
     )
     
     # === Abas (Mantendo as restrições corretas) ===

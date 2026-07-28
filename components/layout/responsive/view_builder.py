@@ -24,14 +24,19 @@ def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overla
                                 expand=True, 
                                 spacing=0, 
                                 controls=[ 
-                                    topbar, # Fica no topo da área direita
+                                    topbar, # Fica no topo da área direita (fixa, não rola)
                                     ft.Container( 
                                         expand=True, 
                                         padding=20, # Margem interna em torno do conteúdo centralizado
                                         content=conteudo_principal # Injeta dinamicamente a tela em questão
                                     ) 
                                 ], 
-                                scroll=ft.ScrollMode.AUTO # Habilita scroll para conteúdos grandes nesta área específica
+                                # NOTA: scroll=AUTO foi removido daqui de propósito.
+                                # Combinar expand=True + scroll na MESMA Column é um bug conhecido do Flet
+                                # (github.com/flet-dev/flet/issues/6087): o Flutter reserva uma área de
+                                # scroll muito maior que o necessário, criando espaço em branco e uma
+                                # barra de rolagem falsa. O scroll agora é responsabilidade de cada tela
+                                # individualmente (ex: conteudo_dashboard_executivo), de forma isolada.
                             ) 
                         ] 
                     ), 
@@ -40,4 +45,4 @@ def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overla
                 ] 
             ) 
         ] 
-    ) 
+    )
