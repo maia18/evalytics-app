@@ -17,11 +17,11 @@ def criar_card_controle_ciclo(layout, mudar_tela, page):
     # Retorna o container principal que atua como o fundo do cartão
     return ft.Container( 
         bgcolor=layout.cores[CARD], # Usa a cor dinâmica do tema para cartões
-        padding=25, # Margem interna espaçosa
+        padding=20, # Reduzido de 25 para 20
         border_radius=10, # Bordas levemente arredondadas
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"), # Adiciona sombra para profundidade
         content=ft.Column( 
-            spacing=20, 
+            spacing=14, # Reduzido de 20 para 14
             controls=[ 
                 # Linha superior contendo as informações e os botões de ação
                 ft.Row( 
@@ -69,4 +69,4 @@ def criar_card_controle_ciclo(layout, mudar_tela, page):
                 ) 
             ] 
         ) 
-    ) 
+    )

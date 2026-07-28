@@ -27,7 +27,7 @@ def criar_view(route, cores, sidebar_desktop, topbar, conteudo_principal, overla
                                     topbar, # Fica no topo da área direita (fixa, não rola)
                                     ft.Container( 
                                         expand=True, 
-                                        padding=20, # Margem interna em torno do conteúdo centralizado
+                                        padding=16, # Reduzido de 20 para 16: mais espaço útil vertical
                                         content=conteudo_principal # Injeta dinamicamente a tela em questão
                                     ) 
                                 ], 

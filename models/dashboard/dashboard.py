@@ -50,9 +50,9 @@ def ViewDashboard(page: ft.Page, mudar_tela):
     conteudo_dashboard_executivo = ft.Container(
         expand=True, # Ancora o container no TabBarView, dando altura limitada
         content=ft.Column(
-            spacing=25,
+            spacing=16, # Reduzido de 25 para 16: menos espaço entre KPIs e gráfico
             scroll=ft.ScrollMode.AUTO, # Rola somente se o conteúdo real ultrapassar o espaço disponível
-            controls=[ft.Container(height=20), linha_kpis, area_graficos]
+            controls=[ft.Container(height=8), linha_kpis, area_graficos] # Spacer do topo reduzido de 20 para 8
         )
     )
     

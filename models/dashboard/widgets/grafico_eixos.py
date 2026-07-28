@@ -13,7 +13,7 @@ def criar_coluna_grafico(layout, nome, nota, cor):
     return ft.Column(
         alignment=ft.MainAxisAlignment.END, # Empurra os itens para o fundo (faz as barras crescerem de baixo para cima)
         horizontal_alignment=ft.CrossAxisAlignment.CENTER, # Centraliza os rótulos em relação à barra
-        spacing=8,
+        spacing=6, # Reduzido de 8 para 6
         controls=[
             # Exibe o valor numérico acima da barra com uma casa decimal
             ft.Text(f"{nota:.1f}", size=12, weight="bold", color="grey"),
@@ -58,15 +58,15 @@ def criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras):
 
     return ft.Container(
         bgcolor=layout.cores[CARD], # Usa a cor dinâmica do tema
-        padding=30,
+        padding=20, # Reduzido de 30 para 20
         border_radius=8,
         border=borda_grafico, # Aplica o contorno criado acima
         content=ft.Column(
-            spacing=20,
+            spacing=14, # Reduzido de 20 para 14
             controls=[
                 # Cabeçalho interno do gráfico
                 ft.Column(
-                    spacing=5,
+                    spacing=4, # Reduzido de 5 para 4
                     controls=[
                         ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
                         ft.Text("Médias das avaliações separadas por categoria (Escala 5.0).", size=14, color="grey"),
@@ -74,8 +74,8 @@ def criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras):
                 ),
                 # Área de plotagem (desenho) das barras
                 ft.Container(
-                    height=260, # Limita a altura total dessa caixa de desenho
-                    padding=20,
+                    height=190, # Reduzido de 260 para 190: principal ganho de espaço vertical
+                    padding=ft.Padding.only(left=12, right=12, top=8, bottom=0), # Reduzido de 20 uniforme
                     content=ft.Row(
                         alignment=ft.MainAxisAlignment.SPACE_AROUND, # Distribui as barras com espaço igual ao redor delas
                         vertical_alignment=ft.CrossAxisAlignment.END, # Alinha todas as colunas pela sua base

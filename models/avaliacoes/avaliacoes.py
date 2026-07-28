@@ -20,12 +20,12 @@ def criar_conteudo_avaliacoes(layout, mudar_tela, page):
     return ft.Container(
         expand=True,
         content=ft.Column(
-            spacing=20,
+            spacing=14, # Reduzido de 20 para 14
             scroll=ft.ScrollMode.AUTO,
             controls=[
-                ft.Container(height=20),
+                ft.Container(height=8), # Spacer do topo reduzido de 20 para 8
                 ft.Column(
-                    spacing=5,
+                    spacing=4, # Reduzido de 5 para 4
                     controls=[
                         ft.Text("Gestão de Ciclos e Respostas", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
                         ft.Text("Monitore campanhas ativas e extraia os dados brutos das avaliações.", size=16, color="grey"),

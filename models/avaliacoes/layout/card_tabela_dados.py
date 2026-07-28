@@ -52,7 +52,7 @@ def criar_card_tabela_dados(layout, page):
     return ft.Container( 
         expand=True, # O card deve preencher o espaço vertical restante da tela
         bgcolor=layout.cores[CARD], # Fundo adaptativo
-        padding=25, 
+        padding=20, # Reduzido de 25 para 20
         border_radius=10, 
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"), 
         content=ft.Column( 
@@ -73,4 +73,4 @@ def criar_card_tabela_dados(layout, page):
                 ft.Column(expand=True, scroll=ft.ScrollMode.AUTO, controls=[tabela_dados]) 
             ] 
         ) 
-    ) 
+    )

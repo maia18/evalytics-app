@@ -17,11 +17,11 @@ def criar_kpi_card(layout, titulo, valor, icone, cor_icone):
     return ft.Container(
         width=240, # Trava a largura para os cartões ficarem uniformes
         bgcolor=layout.cores[CARD], # Fundo reativo a dark/light mode
-        padding=20,
+        padding=16, # Reduzido de 20 para 16
         border_radius=8,
         border=borda_card,
         content=ft.Column(
-            spacing=15,
+            spacing=10, # Reduzido de 15 para 10
             controls=[
                 # Linha superior contendo o Título e o Ícone
                 ft.Row(
