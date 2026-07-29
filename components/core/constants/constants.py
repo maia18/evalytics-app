@@ -12,6 +12,16 @@ from typing import Final
 WINDOW_WIDTH: Final[int] = 1280  # Largura padrão da janela principal da aplicação (em pixels)
 WINDOW_HEIGHT: Final[int] = 720  # Altura padrão da janela principal da aplicação (em pixels)
 ALTURA_MAX: Final[int] = 200     # Altura máxima da coluna (utilizada em Gráficos de eixos/barras)
+LARGURA_BREAKPOINT_MOBILE = 700   # Define o limite máximo para dispositivos pequenos (celulares e tablets pequenos). Se a largura da tela for menor que 700px, a aplicação adota o modo Mobile.
+LARGURA_BREAKPOINT_DESKTOP = 1100  # Define o limite para telas grandes (monitores de notebook e desktop). Acima de 1100px, a aplicação tem espaço de sobra, então adota o modo Desktop completo.
+
+# =====================================================================
+# DIMENSÕES DE COMPONENTES (SIDEBAR)
+# =====================================================================
+
+LARGURA_SIDEBAR_EXPANDIDA = 250 # Define a largura (em pixels) da barra lateral quando ela está totalmente aberta. 250px é um tamanho padrão excelente, pois oferece espaço suficiente para ícones e textos descritivos longos sem espremer o conteúdo principal da tela.
+LARGURA_SIDEBAR_COLAPSADA = 72 # Define a largura (em pixels) da barra lateral quando ela está recolhida (mini-sidebar). 72px é o tamanho exato para mostrar apenas os ícones centralizados, liberando o máximo de espaço útil na tela para o conteúdo principal, ideal para telas médias (tablets) ou quando o usuário prefere focar no dashboard.
+
 
 # =====================================================================
 # PALETA DE CORES
