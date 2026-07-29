@@ -6,10 +6,10 @@ Importa as constantes do projeto.
 Centralizar esses valores em um arquivo de constantes é uma excelente prática, pois facilita a manutenção (se quiser mudar o tamanho da tela, muda num lugar só).
 '''
 from components.core.constants.constants import (
-    APP_TITLE,
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
 )
+from components.core.constants.texts import APP_TITLE
 
 logger = lg.getLogger(__name__) # Cria um logger específico para este módulo.
 
