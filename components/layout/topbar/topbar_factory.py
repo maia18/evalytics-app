@@ -5,10 +5,14 @@ def criar_topbar(
     titulo: str,
     subtitulo: str,
     dark_mode: bool,
+    
+    # Recebe os callbacks (funções) para gerenciar o estado global: abrir o menu e trocar o tema
     toggle_sidebar: Callable[[], None],
     atualizar_tema: Callable[[], None],
 ) -> TopBar:
     """Padrão Factory: instancia o objeto TopBar repassando as dependências de forma limpa."""
+    
+    # Retorna uma nova instância da classe TopBar preenchida com as variáveis passadas[cite: 28]. Ao encapsular essa chamada, se no futuro o construtor da TopBar mudar, você precisará alterar apenas este arquivo, e não todas as telas que a utilizam.
     return TopBar(
         titulo_pagina=titulo,
         subtitulo=subtitulo,
