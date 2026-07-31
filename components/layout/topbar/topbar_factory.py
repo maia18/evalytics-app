@@ -1,7 +1,5 @@
 from typing import Callable
-
 from components.layout.topbar.topbar import TopBar
-
 
 def criar_topbar(
     titulo: str,

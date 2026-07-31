@@ -13,7 +13,9 @@ def montar_view(
     ajustar_responsividade: Callable[..., None],
     page: ft.Page,
 ) -> ft.View:
+    
     """Estrutura fisicamente a página final, definindo camadas (z-index) e eixos."""
+    
     page.on_resize = ajustar_responsividade  # Vincula o resize nativo à função de ajuste
     ajustar_responsividade()  # Aplica a formatação inicial
 
@@ -41,12 +43,6 @@ def montar_view(
                                         content=conteudo_principal,  # Injeta a tela atual
                                     ),
                                 ],
-                                # NOTA: scroll=AUTO foi removido de propósito.
-                                # Combinar expand=True + scroll na MESMA Column é um bug
-                                # conhecido do Flet (github.com/flet-dev/flet/issues/6087):
-                                # o Flutter reserva uma área de scroll maior que o necessário,
-                                # criando espaço em branco e uma barra de rolagem falsa.
-                                # O scroll é responsabilidade de cada tela individualmente.
                             ),
                         ],
                     ),

@@ -1,25 +1,24 @@
-from typing import Callable, Optional
-
 import flet as ft
-
+from typing import Callable, Optional
+from components.core.constants.constants import (
+    POSICAO_SIDEBAR_MOBILE_FECHADA,
+    POSICAO_SIDEBAR_MOBILE_ABERTA,
+)
 from components.layout.responsive.overlay import criar_overlay
+from components.layout.topbar.topbar_factory import criar_topbar
+from components.layout.sidebar.sidebar_toggle import toggle_sidebar
+from components.layout.responsive.responsiveness import ajustar_responsividade
+from components.layout.responsive.view_builder import montar_view
 from components.layout.sidebar.sidebar_factory import (
     criar_sidebar_desktop,
     criar_sidebar_mobile,
-    POSICAO_SIDEBAR_MOBILE_ABERTA,
-    POSICAO_SIDEBAR_MOBILE_FECHADA,
 )
-from components.layout.topbar.topbar_factory import criar_topbar
-from components.layout.sidebar.sidebar_toggle import toggle_sidebar
 from components.core.theme.theme_config import configurar_tema
 from components.core.theme.darkmode_toggle import toggle_dark_mode
-from components.layout.responsive.responsiveness import ajustar_responsividade
-from components.layout.responsive.view_builder import montar_view
 
-
+# Gerenciador central do layout responsivo, unindo sidebar, topbar e conteúdo
 class ResponsiveLayout:
-    """Gerenciador central do layout responsivo, unindo sidebar, topbar e conteúdo."""
-
+    
     def __init__(
         self,
         page: ft.Page,

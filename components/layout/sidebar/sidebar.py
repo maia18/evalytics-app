@@ -1,15 +1,14 @@
-from typing import Callable
-
 import flet as ft
-
+from typing import Callable
 from components.core.theme.theme import AppColors
+from components.core.constants.constants import (
+    CARD, 
+    BORDA,
+    LARGURA_SIDEBAR_EXPANDIDA,
+    LARGURA_SIDEBAR_COLAPSADA,
+)
 from components.layout.sidebar.sidebar_content import criar_sidebar_content
 from components.layout.sidebar.sidebar_collapsed import criar_sidebar_colapsada
-from components.core.constants.constants import CARD, BORDA
-
-LARGURA_SIDEBAR_EXPANDIDA = 250
-LARGURA_SIDEBAR_COLAPSADA = 72
-
 
 class Sidebar(ft.Container):
     """Componente customizado que atua como o esqueleto principal do menu lateral.

@@ -1,31 +1,24 @@
-from typing import Callable
-
 import flet as ft
+from typing import Callable
+from components.core.constants.constants import LARGURA_LIMITE_TOGGLE_SIDEBAR
 
-# Largura acima da qual o toggle da sidebar mobile é ignorado (a UI já é
-# tratada como "larga" o suficiente para não precisar de menu-gaveta).
-#
-# ATENÇÃO: este valor (900) é diferente do breakpoint mobile usado em
-# responsiveness.py (700). Isso cria uma faixa de 700-900px onde a sidebar
-# desktop já está visível, mas o toggle mobile ainda pode ser acionado.
-# Mantido como estava para não alterar comportamento sem validação; considerar
-# unificar os breakpoints numa próxima revisão.
-LARGURA_LIMITE_TOGGLE_SIDEBAR = 900
-
-
+# Inverte o estado de visibilidade do menu mobile, acionando os callbacks informados
 def toggle_sidebar(
     page: ft.Page,
     sidebar_mobile_aberta: bool,
     abrir_sidebar: Callable[[], None],
     fechar_sidebar: Callable[[], None],
 ) -> bool:
-    """Inverte o estado de visibilidade do menu mobile, acionando os callbacks informados."""
+    
+    # Cláusula de Guarda: Se a largura da tela atual for maior ou igual ao limite configurado, o sistema bloqueia o comportamento de menu gaveta, pois telas largas não precisam dele
     if page.width >= LARGURA_LIMITE_TOGGLE_SIDEBAR:
         return sidebar_mobile_aberta  # Bloqueia o comportamento em telas largas
-
+    
+    # Verifica o estado atual: se a sidebar já estiver aberta, executa o callback de fechamento e retorna False
     if sidebar_mobile_aberta:
         fechar_sidebar()
         return False
 
+    # Se chegou aqui, significa que a sidebar estava fechada. Então ele abre e retorna True
     abrir_sidebar()
     return True
