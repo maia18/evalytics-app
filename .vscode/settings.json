@@ -1,0 +1,8 @@
+{
+    "editor.wordWrap": "on",
+    "workbench.activityBar.autoHide": true,
+    "workbench.activityBar.compact": true,
+    "workbench.activityBar.location": "bottom",
+    "workbench.sideBar.location": "left",
+    "files.autoSave": "afterDelay"
+}

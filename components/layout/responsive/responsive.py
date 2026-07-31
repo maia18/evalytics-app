@@ -1,14 +1,21 @@
-import flet as ft
 from typing import Callable, Optional
 
+import flet as ft
+
 from components.layout.responsive.overlay import criar_overlay
-from components.layout.sidebar.sidebar_factory import criar_sidebar_desktop, criar_sidebar_mobile
+from components.layout.sidebar.sidebar_factory import (
+    criar_sidebar_desktop,
+    criar_sidebar_mobile,
+    POSICAO_SIDEBAR_MOBILE_ABERTA,
+    POSICAO_SIDEBAR_MOBILE_FECHADA,
+)
 from components.layout.topbar.topbar_factory import criar_topbar
 from components.layout.sidebar.sidebar_toggle import toggle_sidebar
 from components.core.theme.theme_config import configurar_tema
 from components.core.theme.darkmode_toggle import toggle_dark_mode
 from components.layout.responsive.responsiveness import ajustar_responsividade
 from components.layout.responsive.view_builder import montar_view
+
 
 class ResponsiveLayout:
     """Gerenciador central do layout responsivo, unindo sidebar, topbar e conteúdo."""
@@ -27,7 +34,7 @@ class ResponsiveLayout:
 
         self.dark_mode: bool = getattr(self.page, "is_dark_mode", False)
         self.sidebar_mobile_aberta: bool = False
-        self.rota_atual: Optional[str] = None  # Definida ao chamar criar_view()
+        self.rota_atual: Optional[str] = None
         self.conteudo_principal: ft.Control = ft.Column()
 
         self.cores = configurar_tema(self.page, self.dark_mode)
@@ -51,14 +58,14 @@ class ResponsiveLayout:
     def _abrir_sidebar(self) -> None:
         """Exibe a sidebar móvel e ativa o overlay."""
         self.sidebar_mobile_aberta = True
-        self.sidebar_mobile.left = 0  # Move o menu para dentro da tela
-        self.overlay.visible = True   # Mostra o fundo escuro
+        self.sidebar_mobile.left = POSICAO_SIDEBAR_MOBILE_ABERTA
+        self.overlay.visible = True
         self.page.update()
 
     def _fechar_sidebar(self) -> None:
         """Oculta a sidebar móvel e desativa o overlay."""
         self.sidebar_mobile_aberta = False
-        self.sidebar_mobile.left = -270  # Move o menu para fora da tela (escondido)
+        self.sidebar_mobile.left = POSICAO_SIDEBAR_MOBILE_FECHADA
         self.overlay.visible = False
         self.page.update()
 
