@@ -1,83 +1,81 @@
-import flet as ft 
-from database.indicadores import INDICADORES 
-from models.configuracoes.core.indicadores_ui import criar_linha_indicador, criar_pasta_indicador 
+import flet as ft
 
-def abrir_pasta(page, titulo_pasta, pasta_aberta_atualmente, area_conteudo_aba, abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao): 
+from utils.services.sessions.indicadores_repository import contar_indicadores_por_eixo, listar_indicadores_por_eixo
+from models.configuracoes.core.indicadores_ui import criar_linha_indicador, criar_pasta_indicador
+from models.configuracoes.core.estado_indicadores import EstadoIndicadores
+
+# De-para entre o título exibido da pasta e o ID do eixo correspondente
+MAPA_EIXOS: dict[str, int] = {
+    "Organização Didático-Pedagógica": 1,
+    "Corpo Docente e Tutorial": 2,
+    "Infraestrutura": 3,
+}
+
+
+def abrir_pasta(page: ft.Page, titulo_pasta: str, estado: EstadoIndicadores) -> None:
+    """Substitui a visualização das pastas principais pela listagem de indicadores do eixo selecionado."""
+    eixo_id = MAPA_EIXOS.get(titulo_pasta)
+    estado.definir_pasta_aberta(titulo_pasta, eixo_id)
+
+    lista_da_pasta = listar_indicadores_por_eixo(eixo_id)
+
+    controles_lista: list[ft.Control] = [
+        ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            controls=[
+                ft.Row([
+                    ft.IconButton(icon=ft.Icons.ARROW_BACK, on_click=lambda _: voltar_para_pastas(page, estado)),
+                    ft.Text(titulo_pasta, size=22, weight="bold", color=ft.Colors.BLACK87),
+                ]),
+                ft.ElevatedButton(
+                    "Novo Indicador", icon=ft.Icons.ADD, bgcolor=ft.Colors.BLUE_700, color=ft.Colors.WHITE,
+                    on_click=lambda e: estado.abrir_modal_novo(),
+                ),
+            ],
+        ),
+        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+    ]
+
+    for item in lista_da_pasta:
+        controles_lista.append(
+            criar_linha_indicador(
+                item,
+                lambda e, i=item: estado.abrir_modal_criterios(e, i),
+                lambda e, i=item: estado.abrir_modal_edicao(e, i),
+                lambda i=item: estado.preparar_exclusao(i),
+            )
+        )
+
+    estado.area_conteudo_aba.content = ft.Column(expand=True, scroll=ft.ScrollMode.AUTO, spacing=15, controls=controles_lista)
+    page.update()
+
+
+def criar_layout_pastas(page: ft.Page, estado: EstadoIndicadores) -> ft.Column:
+    """Monta a listagem inicial de pastas (uma por eixo), com a contagem atual de indicadores.
+
+    Reutilizada tanto na primeira renderização da tela quanto ao voltar de
+    uma pasta aberta, eliminando a duplicação que existia entre os dois pontos.
     """
-    Substitui a visualização das 3 pastas principais pela listagem detalhada de indicadores daquele Eixo específico.
-    """
-    # De-para identificando qual ID de eixo pertence a qual título de pasta
-    mapa_eixos = { 
-        "Organização Didático-Pedagógica": 1, 
-        "Corpo Docente e Tutorial": 2, 
-        "Infraestrutura": 3 
-    } 
-    
-    eixo_id = mapa_eixos.get(titulo_pasta) 
-    pasta_aberta_atualmente["titulo"] = titulo_pasta # Salva estado na memória
-    pasta_aberta_atualmente["eixo"] = eixo_id 
-
-    # Filtra os dados globais puxando apenas os indicadores do eixo selecionado
-    lista_da_pasta = [item for item in INDICADORES if item.get("eixo") == eixo_id] 
-
-    # Monta o cabeçalho superior contendo o botão de voltar e título da pasta
-    controles_lista = [ 
-        ft.Row( 
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
-            controls=[ 
-                ft.Row([ 
-                    ft.IconButton(icon=ft.Icons.ARROW_BACK, on_click=lambda _: voltar_para_pastas(page, area_conteudo_aba)), 
-                    ft.Text(titulo_pasta, size=22, weight="bold", color="black87") 
-                ]), 
-                ft.ElevatedButton("Novo Indicador", icon=ft.Icons.ADD, bgcolor="blue700", color="white", on_click=lambda e: abrir_modal_novo()) 
-            ] 
-        ), 
-        ft.Divider(height=20, color="transparent") 
-    ] 
-
-    # Laço de repetição (for) preenchendo a lista visual com cada indicador filtrado
-    for item in lista_da_pasta: 
-        controles_lista.append( 
-            criar_linha_indicador( 
-                item, 
-                lambda e, i=item: abrir_modal_criterios(e, i), 
-                lambda e, i=item: abrir_modal_edicao(e, i), 
-                lambda i=item: preparar_exclusao(i) 
-            ) 
-        ) 
-
-    # Injeta a listagem completa dentro do container dinâmico da aba e ativa a barra de rolagem automática
-    area_conteudo_aba.content = ft.Column(expand=True, scroll=ft.ScrollMode.AUTO, spacing=15, controls=controles_lista) 
-    page.update() 
+    return ft.Column(
+        expand=True,
+        spacing=25,
+        controls=[
+            ft.Text("Gerenciar Indicadores", size=22, weight="bold", color=ft.Colors.BLACK87),
+            ft.Column(
+                spacing=15,
+                controls=[
+                    criar_pasta_indicador(
+                        titulo, contar_indicadores_por_eixo(eixo_id),
+                        lambda t: abrir_pasta(page, t, estado),
+                    )
+                    for titulo, eixo_id in MAPA_EIXOS.items()
+                ],
+            ),
+        ],
+    )
 
 
-def voltar_para_pastas(page, area_conteudo_aba): 
-    """
-    Desfaz a visualização de lista e reconstrói as 3 pastas principais na tela, recalculando a contagem de itens.
-    """
-    # Recalcula a volumetria em caso de adições ou deleções recentes
-    qtd_eixo_1 = sum(1 for item in INDICADORES if item.get("eixo") == 1) 
-    qtd_eixo_2 = sum(1 for item in INDICADORES if item.get("eixo") == 2) 
-    qtd_eixo_3 = sum(1 for item in INDICADORES if item.get("eixo") == 3) 
-
-    # Reconstrói a estrutura inicial
-    layout_pastas = ft.Column( 
-        expand=True, 
-        spacing=25, 
-        controls=[ 
-            ft.Text("Gerenciar Indicadores", size=22, weight="bold", color="black87"), 
-            ft.Column( 
-                spacing=15, 
-                controls=[ 
-                    # Repassa o dicionário de estado "zerado" nas invocações lambdas
-                    criar_pasta_indicador("Organização Didático-Pedagógica", qtd_eixo_1, lambda t: abrir_pasta(page, t, {"titulo": "", "eixo": 0}, area_conteudo_aba, None, None, None, None)), 
-                    criar_pasta_indicador("Corpo Docente e Tutorial", qtd_eixo_2, lambda t: abrir_pasta(page, t, {"titulo": "", "eixo": 0}, area_conteudo_aba, None, None, None, None)), 
-                    criar_pasta_indicador("Infraestrutura", qtd_eixo_3, lambda t: abrir_pasta(page, t, {"titulo": "", "eixo": 0}, area_conteudo_aba, None, None, None, None)), 
-                ] 
-            ) 
-        ] 
-    ) 
-
-    # Redefine a área dinâmica e força a atualização visual
-    area_conteudo_aba.content = layout_pastas 
-    page.update() 
+def voltar_para_pastas(page: ft.Page, estado: EstadoIndicadores) -> None:
+    """Desfaz a visualização de lista e reconstrói as pastas principais, recalculando as contagens."""
+    estado.area_conteudo_aba.content = criar_layout_pastas(page, estado)
+    page.update()

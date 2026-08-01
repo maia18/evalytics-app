@@ -1,123 +1,83 @@
-import flet as ft 
-from database.indicadores import INDICADORES 
-from components.layout.responsive.responsive import ResponsiveLayout 
-from components.core.constants.constants import * 
+from typing import Callable
 
-# Importação dos módulos que constroem os modais da tela
-from models.configuracoes.modals.modal_edicao import criar_modal_edicao 
-from models.configuracoes.modals.modal_criterios import criar_modal_criterios 
-from models.configuracoes.modals.modal_exclusao import criar_modal_exclusao 
-from models.configuracoes.modals.modal_novo import criar_modal_novo 
+import flet as ft
 
-# Importação dos componentes internos de UI
-from models.configuracoes.core.indicadores_ui import criar_pasta_indicador 
-from models.configuracoes.core.painel_seguranca import criar_painel_seguranca 
-from models.configuracoes.core.painel_banco import criar_painel_banco 
-from models.configuracoes.core.pastas import abrir_pasta, voltar_para_pastas 
-from models.configuracoes.core.abas import criar_abas 
+from components.layout.responsive.responsive import ResponsiveLayout
+from components.core.constants.constants import TEXTO_PRINCIPAL, CARD
+
+from models.configuracoes.modals.modal_edicao import criar_modal_edicao
+from models.configuracoes.modals.modal_criterios import criar_modal_criterios
+from models.configuracoes.modals.modal_exclusao import criar_modal_exclusao
+from models.configuracoes.modals.modal_novo import criar_modal_novo
+
+from models.configuracoes.core.painel_seguranca import criar_painel_seguranca
+from models.configuracoes.core.painel_banco import criar_painel_banco
+from models.configuracoes.core.pastas import criar_layout_pastas
+from models.configuracoes.core.abas import criar_abas
+from models.configuracoes.core.estado_indicadores import EstadoIndicadores
 
 
-def ViewConfiguracoes(page: ft.Page, mudar_tela): 
-    """
-    Constrói a tela de configurações, unindo layout responsivo, pastas de indicadores e controle de dados.
-    """
-    # Inicializa a estrutura base da página
-    layout = ResponsiveLayout( 
-        page, 
-        titulo_pagina="Configurações", 
-        subtitulo="Gerencie indicadores e critérios de avaliação.", 
-        mudar_tela=mudar_tela 
-    ) 
+def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
+    """Constrói a tela de configurações, unindo layout responsivo, pastas de indicadores e controle de dados."""
+    layout = ResponsiveLayout(
+        page,
+        titulo_pagina="Configurações",
+        subtitulo="Gerencie indicadores e critérios de avaliação.",
+        mudar_tela=mudar_tela,
+    )
 
-    # Estado local para rastrear qual pasta (Eixo) ou item (Indicador) está em evidência no momento
-    pasta_aberta_atualmente = {"titulo": "", "eixo": 0} 
-    item_alvo_acao = {} 
+    # Estado compartilhado entre a listagem de indicadores e os modais de gerenciamento.
+    # As referências de callback (abrir_modal_*, area_conteudo_aba) são preenchidas
+    # logo abaixo, após a criação dos respectivos componentes — como os consumidores
+    # (pastas.py) só acessam essas referências no momento do clique (não na criação),
+    # não há risco de usá-las antes de estarem definidas.
+    estado = EstadoIndicadores()
+
+    def ir_para_pasta(titulo: str) -> None:
+        from models.configuracoes.core.pastas import abrir_pasta
+        abrir_pasta(page, titulo, estado)
 
     # === Modais ===
-    # Instanciação dos modais de gerenciamento, passando callbacks para atualizar a tela após cada ação
-    modal_edicao, campo_titulo, campo_descricao, abrir_modal_edicao = criar_modal_edicao( 
-        page, item_alvo_acao, lambda t: abrir_pasta(page, t, pasta_aberta_atualmente, area_conteudo_aba, 
-                                                    abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao), 
-        pasta_aberta_atualmente 
-    ) 
-    modal_criterios, _, abrir_modal_criterios = criar_modal_criterios(page, item_alvo_acao) 
-    modal_exclusao, preparar_exclusao = criar_modal_exclusao( 
-        page, item_alvo_acao, lambda t: abrir_pasta(page, t, pasta_aberta_atualmente, area_conteudo_aba, 
-                                                    abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao), 
-        pasta_aberta_atualmente 
-    ) 
-    modal_novo, campo_titulo_novo, campo_desc_novo, abrir_modal_novo = criar_modal_novo( 
-        page, pasta_aberta_atualmente, 
-        lambda t: abrir_pasta(page, t, pasta_aberta_atualmente, area_conteudo_aba, 
-                              abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao) 
-    ) 
+    modal_edicao, campo_titulo, campo_descricao, estado.abrir_modal_edicao = criar_modal_edicao(page, estado, ir_para_pasta)
+    modal_criterios, _, estado.abrir_modal_criterios = criar_modal_criterios(page, estado)
+    modal_exclusao, estado.preparar_exclusao = criar_modal_exclusao(page, estado, ir_para_pasta)
+    modal_novo, campo_titulo_novo, campo_desc_novo, estado.abrir_modal_novo = criar_modal_novo(page, estado, ir_para_pasta)
 
     # Área que alternará o conteúdo exibido (Pastas vs. Lista de Indicadores)
-    area_dinamica_indicadores = ft.Container(expand=True) 
+    area_dinamica_indicadores = ft.Container(expand=True)
+    area_dinamica_indicadores.content = criar_layout_pastas(page, estado)
 
-    # Layout inicial de pastas calculando a quantidade de itens presentes no banco de dados para cada eixo
-    qtd_eixo_1 = sum(1 for item in INDICADORES if item.get("eixo") == 1) 
-    qtd_eixo_2 = sum(1 for item in INDICADORES if item.get("eixo") == 2) 
-    qtd_eixo_3 = sum(1 for item in INDICADORES if item.get("eixo") == 3) 
-
-    # Monta a visão inicial agrupada por pastas
-    layout_pastas = ft.Column( 
-        expand=True, 
-        spacing=25, 
-        controls=[ 
-            ft.Text("Gerenciar Indicadores", size=22, weight="bold", color="black87"), 
-            ft.Column( 
-                spacing=15, 
-                controls=[ 
-                    criar_pasta_indicador("Organização Didático-Pedagógica", qtd_eixo_1, 
-                                          lambda t: abrir_pasta(page, t, pasta_aberta_atualmente, area_conteudo_aba, 
-                                                                abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao)), 
-                    criar_pasta_indicador("Corpo Docente e Tutorial", qtd_eixo_2, 
-                                          lambda t: abrir_pasta(page, t, pasta_aberta_atualmente, area_conteudo_aba, 
-                                                                abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao)), 
-                    criar_pasta_indicador("Infraestrutura", qtd_eixo_3, 
-                                          lambda t: abrir_pasta(page, t, pasta_aberta_atualmente, area_conteudo_aba, 
-                                                                abrir_modal_novo, abrir_modal_criterios, abrir_modal_edicao, preparar_exclusao)), 
-                ] 
-            ) 
-        ] 
-    ) 
-
-    # Define a tela de pastas como conteúdo padrão inicial
-    area_dinamica_indicadores.content = layout_pastas 
-
-    # Instancia painéis auxiliares da página de configurações
-    painel_seguranca = criar_painel_seguranca() 
-    painel_banco = criar_painel_banco() 
+    # Painéis auxiliares da página de configurações
+    painel_seguranca = criar_painel_seguranca()
+    painel_banco = criar_painel_banco()
 
     # Agrupa as áreas geradas em um controle de Abas para navegação superior
-    menu_abas, area_conteudo_aba = criar_abas(page, area_dinamica_indicadores, painel_seguranca, painel_banco) 
+    menu_abas, area_conteudo_aba = criar_abas(page, area_dinamica_indicadores, painel_seguranca, painel_banco)
+    estado.area_conteudo_aba = area_conteudo_aba
 
-    # Estruturação visual final encapsulando o conteúdo num Container tipo Card
-    conteudo = ft.Column( 
-        expand=True, 
-        controls=[ 
-            ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]), 
-            ft.Text("Gerencie indicadores, acessos e manutenção de dados.", size=16, color="grey"), 
-            ft.Divider(height=20, color="transparent"), 
-            ft.Container( 
-                expand=True, 
-                bgcolor=layout.cores[CARD], 
-                border_radius=10, 
-                padding=20, 
-                shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="black12"), 
-                content=ft.Column( 
-                    expand=True, 
-                    controls=[ 
-                        menu_abas, # Renderiza a barra de seleção de guias
-                        ft.Divider(height=20, color="grey200"), 
-                        ft.Container(expand=True, padding=10, content=area_conteudo_aba) # Renderiza o conteúdo associado à guia selecionada
-                    ] 
-                ) 
-            ) 
-        ] 
-    ) 
+    conteudo = ft.Column(
+        expand=True,
+        controls=[
+            ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
+            ft.Text("Gerencie indicadores, acessos e manutenção de dados.", size=16, color=ft.Colors.GREY),
+            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+            ft.Container(
+                expand=True,
+                bgcolor=layout.cores[CARD],
+                border_radius=10,
+                padding=20,
+                shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK12),
+                content=ft.Column(
+                    expand=True,
+                    controls=[
+                        menu_abas,
+                        ft.Divider(height=20, color=ft.Colors.GREY_200),
+                        ft.Container(expand=True, padding=10, content=area_conteudo_aba),
+                    ],
+                ),
+            ),
+        ],
+    )
 
-    # Injeta a estrutura montada no layout principal e constrói a View
-    layout.add_content(conteudo) 
-    return layout.criar_view("/configuracoes") 
+    layout.add_content(conteudo)
+    return layout.criar_view("/configuracoes")

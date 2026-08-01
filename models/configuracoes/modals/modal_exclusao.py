@@ -1,45 +1,44 @@
-import flet as ft 
-import json 
-from database.indicadores import INDICADORES 
+from typing import Callable
 
-def criar_modal_exclusao(page, item_alvo_acao, abrir_pasta, pasta_aberta_atualmente): 
-    """Painel de segurança ('Tem certeza?') que exclui dados."""
-    
-    def confirmar_exclusao(e): 
-        """Procura o registro pelo índice e dá o comando pop na lista nativa do Python."""
-        for idx, item in enumerate(INDICADORES): 
-            if item["titulo"] == item_alvo_acao["titulo"] and item["eixo"] == item_alvo_acao["eixo"]: 
-                INDICADORES.pop(idx) 
-                break 
-                
-        # Substitui a listagem no arquivo
-        with open("database/indicadores.py", "w", encoding="utf-8") as f: 
-            f.write(f"INDICADORES = {json.dumps(INDICADORES, indent=4, ensure_ascii=False)}\n") 
-            
-        # Reflete a remoção na interface atual
-        page.snack_bar = ft.SnackBar(ft.Text("Indicador removido!", color="red")) 
-        page.snack_bar.open = True 
-        abrir_pasta(pasta_aberta_atualmente["titulo"]) 
-        page.update() 
+import flet as ft
 
-    # Mostra o diálogo focado em alertas vermelhos
-    modal = ft.AlertDialog( 
-        title=ft.Text("Confirmar Exclusão", size=18, weight="bold", color="red700"), 
-        content=ft.Text("Tem certeza que deseja excluir este indicador?"), 
-        actions=[ 
-            ft.TextButton("Cancelar", on_click=lambda e: setattr(modal, "open", False)), 
-            ft.ElevatedButton("Excluir", bgcolor="red700", color="white", on_click=confirmar_exclusao) 
-        ], 
-        actions_alignment=ft.MainAxisAlignment.END 
-    ) 
+from utils.services.sessions.indicadores_repository import excluir_indicador
+from models.configuracoes.core.estado_indicadores import EstadoIndicadores
 
-    def preparar_exclusao(item): 
-        """Captura o objeto selecionado antes de exibir as opções destrutivas."""
-        item_alvo_acao.clear() 
-        item_alvo_acao.update(item) 
-        if modal not in page.overlay: 
-            page.overlay.append(modal) 
-        modal.open = True 
-        page.update() 
 
-    return modal, preparar_exclusao 
+def criar_modal_exclusao(
+    page: ft.Page,
+    estado: EstadoIndicadores,
+    abrir_pasta: Callable[[str], None],
+) -> tuple[ft.AlertDialog, Callable]:
+    """Painel de confirmação ('Tem certeza?') que exclui um indicador."""
+
+    def confirmar_exclusao(e: ft.ControlEvent) -> None:
+        """Remove o indicador alvo e persiste a alteração."""
+        excluir_indicador(estado.item_alvo.get("titulo"), estado.item_alvo.get("eixo"))
+
+        page.snack_bar = ft.SnackBar(ft.Text("Indicador removido!", color=ft.Colors.RED))
+        page.snack_bar.open = True
+        modal.open = False
+        abrir_pasta(estado.pasta_titulo)
+        page.update()
+
+    modal = ft.AlertDialog(
+        title=ft.Text("Confirmar Exclusão", size=18, weight="bold", color=ft.Colors.RED_700),
+        content=ft.Text("Tem certeza que deseja excluir este indicador?"),
+        actions=[
+            ft.TextButton("Cancelar", on_click=lambda e: setattr(modal, "open", False)),
+            ft.ElevatedButton("Excluir", bgcolor=ft.Colors.RED_700, color=ft.Colors.WHITE, on_click=confirmar_exclusao),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
+
+    def preparar_exclusao(item: dict) -> None:
+        """Captura o item selecionado antes de exibir a confirmação de exclusão."""
+        estado.definir_item_alvo(item)
+        if modal not in page.overlay:
+            page.overlay.append(modal)
+        modal.open = True
+        page.update()
+
+    return modal, preparar_exclusao
