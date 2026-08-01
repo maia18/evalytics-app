@@ -29,6 +29,16 @@ SOMBRA_SIDEBAR_MOBILE = "#33000000" # Define a cor e a opacidade da sombra proje
 LARGURA_LIMITE_TOGGLE_SIDEBAR = 900 # Largura acima da qual o toggle da sidebar mobile é ignorado (a UI já é tratada como "larga" o suficiente para não precisar de menu-gaveta). ATENÇÃO: este valor (900) é diferente do breakpoint mobile usado em responsiveness.py (700). Isso cria uma faixa de 700-900px onde a sidebar desktop já está visível, mas o toggle mobile ainda pode ser acionado. Mantido como estava para não alterar comportamento sem validação; considerar unificar os breakpoints numa próxima revisão.
 
 # =====================================================================
+# COMPONENTES (TABELA DE DADOS)
+# =====================================================================
+
+ALTURA_CARD_TABELA_DADOS = 420 # Define uma altura fixa para o card da tabela, evitando problemas de layout infinito
+# Centraliza as configurações visuais para manter consistência
+PADDING_CARD_PADRAO = 20
+BORDA_RADIUS_CARD_PADRAO = 10
+SOMBRA_CARD_PADRAO = ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK12)
+
+# =====================================================================
 # COMPONENTES (MENU)
 # =====================================================================
 
