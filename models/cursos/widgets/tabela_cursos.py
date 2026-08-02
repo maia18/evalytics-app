@@ -1,56 +1,86 @@
-import flet as ft 
-from database.services.firestore_courses import excluir_curso_db 
+from dataclasses import dataclass
+from typing import Callable, Optional
 
-def criar_linha_curso(page, tabela_cursos, atualizar_interface, modal_editar, campos_edit, estado, doc_id, codigo, nome, depto, coord): 
+import flet as ft
+
+from database.services.firestore_courses import excluir_curso_db
+
+@dataclass
+class ContextoTabelaCursos:
+    """Agrupa as dependências compartilhadas para construir e operar uma linha da tabela de cursos.
+
+    NOTA ARQUITETURAL: Um único objeto de contexto, criado uma vez e reutilizado em todos os
+    pontos que criam linhas (carga inicial e cadastro via modal), evita que
+    algum desses pontos passe por engano um conjunto de campos ou um estado
+    diferente do que é realmente compartilhado com o modal de edição, simplificando as assinaturas de funções.
     """
-    Gera uma linha de dados (DataRow) para a tabela, preenchida com as strings recebidas e acoplando os callbacks de editar e deletar.
-    """
-    # Prepara os textos. Cursos criados na sessão recebem cor verde na flag "NOVO"
-    txt_codigo = ft.Text(codigo, color="green" if codigo == "NOVO" else "black", weight="bold") 
-    txt_nome = ft.Text(nome, weight="bold") 
-    txt_depto = ft.Text(depto) 
-    txt_coord = ft.Text(coord) 
+    page: ft.Page
+    tabela_cursos: ft.DataTable
+    atualizar_interface: Callable[[], None]
+    modal_editar: ft.AlertDialog
+    campos_edit: dict[str, ft.TextField]
+    estado: dict
 
-    # Constrói a linha base sem a coluna de ações
-    linha = ft.DataRow( 
-        cells=[ 
-            ft.DataCell(txt_codigo), 
-            ft.DataCell(txt_nome), 
-            ft.DataCell(txt_depto), 
-            ft.DataCell(txt_coord), 
-            ft.DataCell(ft.Row()) # Container provisório para abrigar os ícones de ação logo abaixo
-        ] 
-    ) 
 
-    def acao_deletar(e): 
-        """Acionado ao clicar na Lixeira. Avisa o Firestore e retira a linha da lista visual."""
-        sucesso = excluir_curso_db(doc_id) 
-        if sucesso: 
-            tabela_cursos.rows.remove(linha) # Dá um pop/remove na referência da linha
-            page.update() 
-            atualizar_interface() # Atualiza o "Total de Cursos" lá no topo
+def criar_linha_curso(
+    contexto: ContextoTabelaCursos,
+    doc_id: Optional[str],
+    codigo: str,
+    nome: str,
+    depto: str,
+    coord: str,
+) -> ft.DataRow:
+    """Gera uma linha oficial (DataRow) para a tabela, com os callbacks de editar e excluir já acoplados."""
+    
+    # Destaca em verde o código da linha se ele acabou de ser criado e não está salvo com código definitivo no banco
+    txt_codigo = ft.Text(codigo, color=ft.Colors.GREEN if codigo == "NOVO" else ft.Colors.BLACK, weight="bold")
+    txt_nome = ft.Text(nome, weight="bold")
+    txt_depto = ft.Text(depto)
+    txt_coord = ft.Text(coord)
 
-    def acao_editar(e): 
-        """Seta as informações no modal de edição antes de ele ser aberto."""
-        # Carrega os dados desta linha específica para dentro dos TextFields do Modal Edit
-        campos_edit["nome"].value = txt_nome.value 
-        campos_edit["departamento"].value = txt_depto.value 
-        campos_edit["coordenador"].value = txt_coord.value 
+    linha = ft.DataRow(
+        cells=[
+            ft.DataCell(txt_codigo),
+            ft.DataCell(txt_nome),
+            ft.DataCell(txt_depto),
+            ft.DataCell(txt_coord),
+            ft.DataCell(ft.Row()),  # Preenchida abaixo com os ícones de ação de Editar e Excluir
+        ]
+    )
+
+    def acao_deletar(e: ft.ControlEvent) -> None:
+        """Remove o curso permanentemente no Firestore e, em caso de sucesso, retira a linha visual da tabela."""
+        sucesso = excluir_curso_db(doc_id)
+        if sucesso:
+            # Remove a linha atual utilizando a lista do contexto
+            contexto.tabela_cursos.rows.remove(linha)
+            contexto.page.update()
+            
+            # Recalcula as estatísticas (KPIs superiores) já que uma linha foi removida
+            contexto.atualizar_interface()
+
+    def acao_editar(e: ft.ControlEvent) -> None:
+        """Carrega os dados específicos desta linha nos campos do modal de edição e o exibe para o usuário."""
         
-        # Aponta o ponteiro central de estado para ESTA linha e ESTE doc_id
-        estado["linha_atual"] = linha 
-        estado["id_firebase"] = doc_id 
-        
-        # Insere e abre o modal
-        if modal_editar not in page.overlay: 
-            page.overlay.append(modal_editar) 
-        modal_editar.open = True 
-        page.update() 
+        # Joga os valores atuais (que podem ser recém-editados) para dentro do Input do Modal
+        contexto.campos_edit["nome"].value = txt_nome.value
+        contexto.campos_edit["departamento"].value = txt_depto.value
+        contexto.campos_edit["coordenador"].value = txt_coord.value
 
-    # Preenche a quinta célula com os botões de ação injetando as funções definidas acima
-    linha.cells[4].content = ft.Row([ 
-        ft.IconButton(icon=ft.Icons.EDIT, icon_color="blue700", tooltip="Editar", on_click=acao_editar), 
-        ft.IconButton(icon=ft.Icons.DELETE, icon_color="red700", tooltip="Excluir", on_click=acao_deletar) 
-    ]) 
+        # Salva no dicionário global de estado qual linha e ID o modal vai atacar na hora de dar o "Salvar"
+        contexto.estado["linha_atual"] = linha
+        contexto.estado["id_firebase"] = doc_id
 
-    return linha 
+        # Processo padrão do Flet para renderizar modais flutuantes
+        if contexto.modal_editar not in contexto.page.overlay:
+            contexto.page.overlay.append(contexto.modal_editar)
+        contexto.modal_editar.open = True
+        contexto.page.update()
+
+    # Injeta os botões na última DataCell reservada acima
+    linha.cells[4].content = ft.Row([
+        ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.BLUE_700, tooltip="Editar", on_click=acao_editar),
+        ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED_700, tooltip="Excluir", on_click=acao_deletar),
+    ])
+
+    return linha
