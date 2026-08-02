@@ -1,23 +1,21 @@
+import flet as ft
 from typing import Callable, Optional
 
-import flet as ft
-
-
 class EstadoIndicadores:
-    """Estado compartilhado entre a listagem de pastas/indicadores e os modais de gerenciamento.
-
-    Substitui os dicionários soltos `pasta_aberta_atualmente` e `item_alvo_acao`,
-    e centraliza as referências às funções que abrem cada modal e ao container
-    de conteúdo da aba ativa — evitando que sejam repassadas (e, em alguns
-    casos, esquecidas como None) através de várias camadas de lambdas.
     """
+    Estado compartilhado entre a listagem de pastas/indicadores e os modais de gerenciamento.
 
+    Centraliza as referências às funções que abrem cada modal e ao container de conteúdo da aba ativa — evitando que sejam repassadas (e esquecidas) através de lambdas.
+    """
+    
     def __init__(self) -> None:
+        # Rastreia onde o usuário está navegando
         self.pasta_titulo: str = ""
         self.pasta_eixo: Optional[int] = 0
-        self.item_alvo: dict = {}
+        
+        self.item_alvo: dict = {} # Guarda os dados do indicador clicado para edição/exclusão
 
-        # Preenchidos por ViewConfiguracoes após a criação dos modais e das abas
+        # Callbacks injetados posteriormente pela View, permitindo disparo global de eventos
         self.area_conteudo_aba: Optional[ft.Container] = None
         self.abrir_modal_novo: Optional[Callable[[], None]] = None
         self.abrir_modal_criterios: Optional[Callable[..., None]] = None
@@ -29,4 +27,4 @@ class EstadoIndicadores:
         self.pasta_eixo = eixo
 
     def definir_item_alvo(self, item: dict) -> None:
-        self.item_alvo = dict(item)
+        self.item_alvo = dict(item) # Isola o item alvo criando uma cópia do dicionário

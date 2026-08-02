@@ -1,8 +1,7 @@
 import flet as ft
 
-
+# Constrói a interface visual para manutenção e gestão de backups do banco (Mockup)
 def criar_painel_banco() -> ft.Container:
-    """Constrói a interface para manutenção e gestão de backups do banco."""
     return ft.Container(
         padding=20,
         content=ft.Column(
@@ -20,10 +19,9 @@ def criar_painel_banco() -> ft.Container:
                 ),
 
                 ft.Text("Zona de Risco", size=16, color=ft.Colors.RED_700, weight="bold"),
+                # Container vermelho para destacar funções de alto risco/destrutivas
                 ft.Container(
-                    padding=15,
-                    bgcolor=ft.Colors.RED_50,
-                    border_radius=8,
+                    padding=15, bgcolor=ft.Colors.RED_50, border_radius=8,
                     content=ft.Row(
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         controls=[

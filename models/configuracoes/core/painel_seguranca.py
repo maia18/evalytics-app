@@ -1,8 +1,7 @@
 import flet as ft
 
-
 def criar_painel_seguranca() -> ft.Container:
-    """Constrói a interface contendo chaves de ativação (Switches) para políticas de segurança."""
+    """Constrói a interface contendo chaves de ativação (Switches) para políticas de segurança estáticas."""
     return ft.Container(
         padding=20,
         content=ft.Column(

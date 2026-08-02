@@ -1,22 +1,19 @@
-from typing import Callable, Optional
-
 import flet as ft
-
+from typing import Callable, Optional
 from utils.services.sessions.indicadores_repository import atualizar_criterios
 from models.configuracoes.core.estado_indicadores import EstadoIndicadores
 
 NUM_CRITERIOS = 5
 
-
+# Gera um popup para gerenciar os critérios de avaliação de um indicador
 def criar_modal_criterios(page: ft.Page, estado: EstadoIndicadores) -> tuple[ft.AlertDialog, list[ft.TextField], Callable]:
-    """Gera um popup para gerenciar os critérios de avaliação de um indicador."""
     campos_criterios = [
         ft.TextField(label=f"Critério {i + 1}", multiline=True, width=600, border_color=ft.Colors.BLUE_200)
         for i in range(NUM_CRITERIOS)
     ]
-
+    
+    # Coleta os dados dos campos e persiste os novos critérios do indicador
     def salvar_criterios(e: ft.ControlEvent) -> None:
-        """Coleta os dados dos campos e persiste os novos critérios do indicador."""
         novos_criterios = {str(i + 1): (campos_criterios[i].value or "") for i in range(NUM_CRITERIOS)}
         atualizar_criterios(estado.item_alvo.get("titulo"), estado.item_alvo.get("eixo"), novos_criterios)
 
@@ -35,14 +32,13 @@ def criar_modal_criterios(page: ft.Page, estado: EstadoIndicadores) -> tuple[ft.
         ],
     )
 
+    # Prepara o modal preenchendo os campos com os critérios existentes do item clicado
     def abrir_modal_criterios(e: Optional[ft.ControlEvent], indicador_selecionado: dict) -> None:
-        """Prepara o modal preenchendo os campos com os critérios existentes do item clicado."""
         estado.definir_item_alvo(indicador_selecionado)
 
         criterios_atuais = indicador_selecionado.get("criterios", {})
         for i in range(NUM_CRITERIOS):
-            # Aceita chave string ou inteira, por compatibilidade com dados salvos antes da padronização
-            valor_salvo = criterios_atuais.get(str(i + 1), criterios_atuais.get(i + 1, ""))
+            valor_salvo = criterios_atuais.get(str(i + 1), criterios_atuais.get(i + 1, "")) # Aceita chave string ou inteira, por compatibilidade com dados salvos antes da padronização
             campos_criterios[i].value = valor_salvo
 
         if modal not in page.overlay:
