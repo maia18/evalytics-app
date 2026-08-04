@@ -1,95 +1,80 @@
-import flet as ft
-from components.core.constants.constants import *
+from typing import Callable
 
-# A área de plotagem tem 190px de altura (definida em criar_grafico_eixos).
-# Desse total, ~50px são reservados para o texto do valor (ex: "4.5"), o espaçamento
-# e o rótulo do nome do eixo abaixo da barra. O restante (com uma margem de segurança)
-# é o espaço máximo real disponível para a própria barra crescer.
+import flet as ft
+
+from components.core.constants.constants import ALTURA_MAX, BORDA, CARD, TEXTO_PRINCIPAL
+from components.core.theme.border_utils import criar_borda_uniforme
+
+# A área de plotagem tem 200px de altura (definida em criar_grafico_eixos). Desse total,
+# ~50px são reservados para o texto do valor (ex: "4.5"), o espaçamento e o rótulo do
+# nome do eixo abaixo da barra. O restante (com margem de segurança) é o espaço máximo
+# real disponível para a própria barra crescer.
 # Usamos essa constante LOCAL em vez do ALTURA_MAX de constants.py, porque aquele valor
 # não tem garantia de caber no card compacto — calculando aqui, a barra NUNCA estoura
 # o container e corta os rótulos, independente do que ALTURA_MAX valha em constants.py.
+ALTURA_AREA_PLOTAGEM = 200
 
-def criar_coluna_grafico(layout, nome, nota, cor, altura_max=ALTURA_MAX):
-    """
-    Desenha uma barra vertical individual do gráfico, calculando sua altura baseada na nota.
-    """
-    
-    # Cálculo matemático para descobrir a altura em pixels: 
-    # Divide a nota pela nota máxima (5.0) para obter a porcentagem, e multiplica pela altura máxima segura.
+
+def criar_coluna_grafico(layout, nome: str, nota: float, cor: str, altura_max: int = ALTURA_MAX) -> ft.Column:
+    """Desenha uma barra vertical individual do gráfico, calculando sua altura a partir da nota."""
     altura_barra = (nota / 5.0) * altura_max
-    
+
     return ft.Column(
-        alignment=ft.MainAxisAlignment.END, # Empurra os itens para o fundo (faz as barras crescerem de baixo para cima)
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER, # Centraliza os rótulos em relação à barra
-        spacing=6, # Reduzido de 8 para 6
+        alignment=ft.MainAxisAlignment.END,  # Faz as barras crescerem de baixo para cima
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        spacing=6,
         controls=[
-            # Exibe o valor numérico acima da barra com uma casa decimal
-            ft.Text(f"{nota:.1f}", size=12, weight="bold", color="grey"),
-            
-            # O "corpo" da barra do gráfico
+            ft.Text(f"{nota:.1f}", size=12, weight="bold", color=ft.Colors.GREY),
             ft.Container(
-                width=40, # Largura fixa da barra
-                height=altura_barra, # Altura calculada dinamicamente
-                bgcolor=cor, # Cor recebida por parâmetro
-                border_radius=4, # Bordas levemente arredondadas no topo e na base
-                tooltip=f"{nome}: {nota:.1f} / 5.0" # Exibe dica interativa ao passar o mouse por cima da barra
+                width=40,
+                height=altura_barra,
+                bgcolor=cor,
+                border_radius=4,
+                tooltip=f"{nome}: {nota:.1f} / 5.0",
             ),
-            
-            # Rótulo com o nome do eixo abaixo da barra
-            ft.Text(nome, size=12, weight="w500", color=layout.cores[TEXTO_PRINCIPAL])
-        ]
+            ft.Text(nome, size=12, weight="w500", color=layout.cores[TEXTO_PRINCIPAL]),
+        ],
     )
 
-def criar_grafico_eixos(layout, medias_eixos, nomes_eixos, cores_barras):
-    """
-    Constrói o painel completo do gráfico, incluindo o título e iterando sobre os dados para gerar as barras.
-    """
+
+def criar_grafico_eixos(
+    layout,
+    medias_eixos: dict[int, float],
+    nomes_eixos: dict[int, str],
+    cores_barras: list[str],
+) -> ft.Container:
+    """Constrói o painel completo do gráfico, incluindo título e barras geradas a partir dos dados."""
     barras_grafico = []
-    
-    # Laço de repetição percorrendo os dados simulados recebidos
+
     for i, (eixo_id, nota) in enumerate(medias_eixos.items()):
-        # Pega o nome no dicionário ou usa um fallback genérico "Eixo X
         nome = nomes_eixos.get(eixo_id, f"Eixo {eixo_id}")
-        # Aplica a cor garantindo que não vai dar erro de índice se houver mais barras do que cores mapeadas (usando módulo %)
-        cor = cores_barras[i % len(cores_barras)]
-        
-        # Gera a barra visual e anexa na lista de controles
+        cor = cores_barras[i % len(cores_barras)]  # Módulo evita erro de índice se houver mais barras que cores
         barras_grafico.append(criar_coluna_grafico(layout, nome, nota, cor))
 
-    # Configuração explícita das 4 bordas para desenhar o quadrado ao redor do painel do gráfico
-    borda_grafico = ft.Border(
-        top=ft.BorderSide(1, layout.cores[BORDA]),
-        bottom=ft.BorderSide(1, layout.cores[BORDA]),
-        left=ft.BorderSide(1, layout.cores[BORDA]),
-        right=ft.BorderSide(1, layout.cores[BORDA])
-    )
-
     return ft.Container(
-        bgcolor=layout.cores[CARD], # Usa a cor dinâmica do tema
-        padding=20, # Reduzido de 30 para 20
+        bgcolor=layout.cores[CARD],
+        padding=20,
         border_radius=8,
-        border=borda_grafico, # Aplica o contorno criado acima
+        border=criar_borda_uniforme(layout.cores[BORDA]),
         content=ft.Column(
-            spacing=14, # Reduzido de 20 para 14
+            spacing=14,
             controls=[
-                # Cabeçalho interno do gráfico
                 ft.Column(
-                    spacing=4, # Reduzido de 5 para 4
+                    spacing=4,
                     controls=[
                         ft.Text("Desempenho Médio por Eixo", size=18, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
-                        ft.Text("Médias das avaliações separadas por categoria (Escala 5.0).", size=14, color="grey"),
-                    ]
+                        ft.Text("Médias das avaliações separadas por categoria (Escala 5.0).", size=14, color=ft.Colors.GREY),
+                    ],
                 ),
-                # Área de plotagem (desenho) das barras
                 ft.Container(
-                    height=200, # Aumentado de 190 para 200: folga extra para caber valor + barra + rótulo sem cortar
+                    height=ALTURA_AREA_PLOTAGEM,
                     padding=ft.Padding.only(left=12, right=12, top=8, bottom=4),
                     content=ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_AROUND, # Distribui as barras com espaço igual ao redor delas
-                        vertical_alignment=ft.CrossAxisAlignment.END, # Alinha todas as colunas pela sua base
-                        controls=barras_grafico # Injeta a lista gerada no for loop
-                    )
-                )
-            ]
-        )
+                        alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                        vertical_alignment=ft.CrossAxisAlignment.END,
+                        controls=barras_grafico,
+                    ),
+                ),
+            ],
+        ),
     )

@@ -1,30 +1,22 @@
+from typing import Callable
+
 import flet as ft
+
 from components.layout.responsive.responsive import ResponsiveLayout
 from models.inicio.widgets.card_inicio import criar_card
-from components.core.constants.constants import *
-from components.core.constants.texts import *
+from components.core.constants.constants import CARD, BORDA, TEXTO_PRINCIPAL, COR_PRIMARIA, COR_TEXTO_SECUNDARIO
+from components.core.constants.texts import TXTS_INICIO, TXTS_DASHBOARD, TXTS_CURSOS, TXTS_RELATORIOS, TXTS_CONFIGS
 
-def ViewInicio(page: ft.Page, mudar_tela):
-    """
-    Constrói a tela inicial (Home) da aplicação.
-    Apresenta um painel de boas-vindas com um atalho rápido para iniciar uma avaliação,
-    além de uma grade de cartões de navegação para as demais áreas do sistema.
 
-    Aprimoramentos em relação à versão anterior:
-        - Hero section com ícone de destaque, sombra e hierarquia tipográfica mais clara.
-        - Botão de CTA com ícone e cantos arredondados, alinhado ao padrão do restante do app.
-        - Grade de cards usando ResponsiveRow, melhorando o comportamento em telas menores.
-    """
-
-    # Inicializa o layout responsivo padrão, consumindo os textos definidos nas constantes
+def ViewInicio(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
+    """Constrói a tela inicial (Home): hero de boas-vindas + grade de atalhos de navegação."""
     layout = ResponsiveLayout(
         page,
-        TXTS_INICIO[0],  # Título da aba/página (Ex: "Início")
-        TXTS_INICIO[1],  # Título de boas-vindas (Ex: "Bem-vindo ao Evalytics")
-        mudar_tela=mudar_tela
+        TXTS_INICIO[0],
+        TXTS_INICIO[1],
+        mudar_tela=mudar_tela,
     )
 
-    # === Painel de destaque (Hero Section) ===
     hero = ft.Container(
         bgcolor=layout.cores[CARD],
         padding=28,
@@ -35,7 +27,6 @@ def ViewInicio(page: ft.Page, mudar_tela):
             right=ft.BorderSide(1, layout.cores[BORDA]),
             bottom=ft.BorderSide(1, layout.cores[BORDA]),
         ),
-        # Sombra suave para dar profundidade ao card principal da tela
         shadow=ft.BoxShadow(
             spread_radius=0,
             blur_radius=20,
@@ -53,29 +44,19 @@ def ViewInicio(page: ft.Page, mudar_tela):
                     spacing=8,
                     tight=True,
                     controls=[
-                        ft.Text(
-                            TXTS_INICIO[2],  # Ex: "Sistema de Avaliação Institucional"
-                            weight="bold",
-                            size=22,
-                            color=layout.cores[TEXTO_PRINCIPAL],
-                        ),
+                        ft.Text(TXTS_INICIO[2], weight="bold", size=22, color=layout.cores[TEXTO_PRINCIPAL]),
                         ft.Text(
                             "Crie, acompanhe e analise avaliações institucionais em um só lugar.",
-                            size=13,
-                            color=COR_TEXTO_SECUNDARIO,
+                            size=13, color=COR_TEXTO_SECUNDARIO,
                         ),
                         ft.Container(height=6),
                         ft.ElevatedButton(
-                            TXTS_INICIO[3],  # Texto do botão (Ex: "Iniciar nova avaliação")
+                            TXTS_INICIO[3],
                             icon=ft.Icons.ADD_ROUNDED,
                             bgcolor=COR_PRIMARIA,
-                            color="white",
+                            color=ft.Colors.WHITE,
                             height=44,
-                            style=ft.ButtonStyle(
-                                shape=ft.RoundedRectangleBorder(radius=10),
-                                elevation=0,
-                            ),
-                            # Gatilho que redireciona o usuário diretamente para a rota do formulário
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), elevation=0),
                             on_click=lambda e: mudar_tela("/formulario"),
                         ),
                     ],
@@ -84,7 +65,6 @@ def ViewInicio(page: ft.Page, mudar_tela):
         ),
     )
 
-    # === Grade de cartões de navegação (Menu de atalhos rápidos) ===
     grade_cards = ft.ResponsiveRow(
         spacing=20,
         run_spacing=20,
@@ -108,18 +88,10 @@ def ViewInicio(page: ft.Page, mudar_tela):
         ],
     )
 
-    # Estrutura principal da página
     conteudo = ft.Column(
-        expand=True,  # Ocupa todo o espaço vertical disponível
-        controls=[
-            hero,
-            ft.Container(height=24),  # Espaçador vertical entre o banner e os cartões
-            grade_cards,
-        ],
+        expand=True,
+        controls=[hero, ft.Container(height=24), grade_cards],
     )
 
-    # Injeta o conteúdo montado na área central do layout responsivo
     layout.add_content(conteudo)
-
-    # Retorna a View estruturada e pronta para ser registrada no sistema de rotas (Router) do Flet
     return layout.criar_view("/inicio")
