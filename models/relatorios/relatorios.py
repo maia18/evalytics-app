@@ -9,7 +9,6 @@ from models.relatorios.widgets.filtros_relatorios import criar_secao_filtros
 from models.relatorios.widgets.tabela_resultados import criar_tabela_resultados
 from models.relatorios.views.resultados_view import TelaResultados
 
-
 def ViewRelatorios(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """Renderiza a tela de 'Relatórios e Exportações', com abas para Dashboard Executivo e Dados Brutos."""
     layout = ResponsiveLayout(

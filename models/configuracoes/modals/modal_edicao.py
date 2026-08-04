@@ -1,6 +1,6 @@
 import flet as ft
 from typing import Callable
-from utils.services.sessions.indicadores_repository import atualizar_indicador
+from utils.services.indicadores.indicadores_repository import atualizar_indicador
 from models.configuracoes.core.estado_indicadores import EstadoIndicadores
 
 # Permite reescrever os metadados textuais básicos de um indicador

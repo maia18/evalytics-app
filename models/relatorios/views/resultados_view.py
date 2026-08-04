@@ -1,4 +1,3 @@
-from typing import Callable
 import flet as ft
 
 from utils.services.relatorio_service import calcular_medias_eixos

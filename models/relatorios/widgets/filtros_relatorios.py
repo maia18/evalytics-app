@@ -1,4 +1,3 @@
-from typing import Callable
 import flet as ft
 
 from components.core.constants.constants import CARD

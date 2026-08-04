@@ -1,6 +1,6 @@
 import flet as ft 
 from typing import Callable 
-from utils.services.sessions.indicadores_repository import adicionar_indicador 
+from utils.services.indicadores.indicadores_repository import adicionar_indicador 
 from models.configuracoes.core.estado_indicadores import EstadoIndicadores 
 
 # Cria o modal de cadastro de um novo indicador

@@ -1,4 +1,3 @@
-from typing import Callable
 import flet as ft
 
 from components.core.constants.constants import ALTURA_MAX, BORDA, CARD, TEXTO_PRINCIPAL
@@ -8,7 +7,6 @@ from components.core.theme.border_utils import criar_borda_uniforme
 # Desse espaço, ~50px são reservados para o texto do valor e o rótulo.
 # Usamos essa constante LOCAL em vez de uma global para garantir que a barra NUNCA estoure o container cortando os textos.
 ALTURA_AREA_PLOTAGEM = 200
-
 
 def criar_coluna_grafico(layout, nome: str, nota: float, cor: str, altura_max: int = ALTURA_MAX) -> ft.Column:
     """Desenha uma barra vertical individual do gráfico, calculando sua altura proporcionalmente a partir da nota."""

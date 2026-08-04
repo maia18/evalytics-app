@@ -4,7 +4,7 @@ class AvaliacaoSession:
     """Gerencia o estado temporário (State Management) de uma avaliação em andamento.
 
     NOTA: Identificado que o Controller do formulário atual gerencia seu próprio estado local. 
-    Esta classe pode atuar como um excelente componente futuro para isolar o estado no `page.session.set()` do Flet, 
+    Esta classe pode atuar comso um excelente componente futuro para isolar o estado no `page.session.set()` do Flet, 
     garantindo sobrevivência dos dados durante a navegação.
     """
 

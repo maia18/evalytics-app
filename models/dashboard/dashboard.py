@@ -13,7 +13,6 @@ from models.dashboard.layout.card_grafico_desempenho import criar_card_grafico_d
 # A segunda e a terceira cores são decorativas (verde/vermelho de gráfico) e não fazem parte da paleta dinâmica de tema claro/escuro.
 CORES_BARRAS_GRAFICO_EIXOS = [COR_PRIMARIA, "#34D399", "#F87171"]
 
-
 def ViewDashboard(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """Constrói a página principal do Dashboard com navegação por abas."""
     layout = ResponsiveLayout(

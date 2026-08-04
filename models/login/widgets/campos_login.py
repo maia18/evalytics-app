@@ -1,4 +1,3 @@
-from typing import Optional
 import flet as ft
 
 def _criar_campo_texto(

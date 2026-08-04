@@ -3,7 +3,7 @@ from typing import Callable
 import flet as ft
 
 from database.services.firestore_courses import atualizar_curso_db
-from models.cursos.modals.modal_utils import ESTILO_BOTAO_CANCELAR, abrir_modal, fechar_modal
+from models.cursos.modals.modal_utils import ESTILO_BOTAO_CANCELAR, fechar_modal
 
 def criar_modal_edit(
     page: ft.Page,

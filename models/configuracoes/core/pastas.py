@@ -1,6 +1,6 @@
 import flet as ft
 
-from utils.services.sessions.indicadores_repository import contar_indicadores_por_eixo, listar_indicadores_por_eixo
+from utils.services.indicadores.indicadores_repository import contar_indicadores_por_eixo, listar_indicadores_por_eixo
 from models.configuracoes.core.indicadores_ui import criar_linha_indicador, criar_pasta_indicador
 from models.configuracoes.core.estado_indicadores import EstadoIndicadores
 
