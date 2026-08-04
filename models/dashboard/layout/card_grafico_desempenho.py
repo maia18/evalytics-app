@@ -4,9 +4,8 @@ from components.widgets.card.card_base import criar_card_base
 from components.core.constants.constants import TEXTO_PRINCIPAL, COR_PRIMARIA
 from database.services.firestore_dashboard import obter_medias_dashboard
 
-
 def _criar_barra_indicador(titulo: str, nota: float) -> ft.Column:
-    """Desenha uma única barra de progresso para um indicador (nota de 0 a 5 convertida em 0.0-1.0)."""
+    """Desenha uma única barra de progresso para um indicador, convertendo a nota de 0 a 5 para uma escala de 0.0 a 1.0."""
     valor_percentual = nota / 5.0
 
     return ft.Column(
@@ -23,11 +22,13 @@ def _criar_barra_indicador(titulo: str, nota: float) -> ft.Column:
         ],
     )
 
-
 def criar_card_grafico_desempenho(layout) -> ft.Container:
     """Card que busca as médias reais do Firestore e monta o gráfico de desempenho por eixo."""
+    
+    # Chama o backend para pegar os dados agregados
     medias = obter_medias_dashboard()
 
+    # Tratamento de erro ou banco vazio (Empty State)
     if not medias:
         conteudo_vazio = ft.Column(
             alignment=ft.MainAxisAlignment.CENTER,
@@ -39,6 +40,7 @@ def criar_card_grafico_desempenho(layout) -> ft.Container:
         )
         return criar_card_base(layout.cores, content=conteudo_vazio, expand=True)
 
+    # Gera a lista de componentes iterando pelo dicionário retornado
     barras_controles = [
         _criar_barra_indicador(titulo=campo, nota=nota) for campo, nota in medias.items()
     ]

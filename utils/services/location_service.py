@@ -1,45 +1,45 @@
-import urllib.request
 import json
+import logging
+import urllib.request
+from typing import Optional
 
-def obter_localizacao():
-    """
-    Tenta descobrir a localização aproximada do usuário (Cidade e Estado) baseada no seu endereço de IP.
-    Faz uma requisição HTTP simples e rápida para uma API pública e gratuita.
-    
+logger = logging.getLogger(__name__)
+
+URL_API_LOCALIZACAO = "http://ip-api.com/json/"
+TIMEOUT_SEGUNDOS = 3
+LOCALIZACAO_INDISPONIVEL = "Localização indisponível"
+
+# Cache em memória: a localização não muda durante a sessão do app, então
+# evitamos repetir a chamada de rede a cada reconstrução da TopBar (que
+# acontece a cada navegação de rota, via Navigator.go()).
+_localizacao_em_cache: Optional[str] = None
+
+
+def obter_localizacao() -> str:
+    """Descobre a localização aproximada do usuário (Cidade - Estado) via IP.
+
+    O resultado é armazenado em cache após a primeira busca bem-sucedida,
+    evitando requisições de rede repetidas a cada renderização da interface.
+
     Returns:
-        str: Uma string formatada "Cidade - Estado" se a busca for bem-sucedida, 
-             ou "Localização indisponível" caso ocorra qualquer falha (sem internet, timeout, etc).
+        "Cidade - Estado" em caso de sucesso, ou uma mensagem de indisponibilidade.
     """
+    global _localizacao_em_cache
+
+    if _localizacao_em_cache is not None:
+        return _localizacao_em_cache
 
     try:
-        # Abre uma conexão com a API do ip-api.com.
-        # O uso do bloco 'with' garante que a conexão de rede seja fechada corretamente após o uso, liberando recursos.
-        with urllib.request.urlopen(
-            "http://ip-api.com/json/", 
-            timeout=3 # Crucial: Aborta a tentativa após 3 segundos para evitar que o aplicativo trave aguardando resposta
-        ) as resposta:
+        with urllib.request.urlopen(URL_API_LOCALIZACAO, timeout=TIMEOUT_SEGUNDOS) as resposta:
+            dados = json.loads(resposta.read().decode())
 
-            # Lê os dados brutos (em bytes) recebidos do servidor, decodifica para texto (string)
-            # e então converte (faz o parse) do formato JSON para um dicionário Python.
-            dados = json.loads(
-                resposta.read().decode()
-            )
-
-            # A API retorna uma chave 'status' que indica se conseguiu mapear o IP
             if dados.get("status") == "success":
-
-                # Extrai a cidade e a região (geralmente a sigla do estado no Brasil)
-                # O uso do .get() previne erros caso as chaves não existam no dicionário, retornando uma string vazia por padrão
                 cidade = dados.get("city", "")
                 estado = dados.get("region", "")
-
-                # Retorna os dados formatados (ex: "Fortaleza - CE")
-                return f"{cidade} - {estado}"
+                _localizacao_em_cache = f"{cidade} - {estado}"
+                return _localizacao_em_cache
 
     except Exception:
-        # Se qualquer coisa der errado (falta de internet, servidor fora do ar, limite de tempo excedido),
-        # o código ignora o erro silenciosamente (pass) e segue para o retorno padrão abaixo.
-        pass
+        logger.warning("Não foi possível obter a localização via IP.", exc_info=True)
 
-    # Fallback: Retorno seguro caso o bloco try falhe ou a API não retorne 'success'
-    return "Localização indisponível"
+    return LOCALIZACAO_INDISPONIVEL

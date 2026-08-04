@@ -1,18 +1,11 @@
 import flet as ft
 
-
 def criar_rodape_termos(cor_texto_secundario: str, cor_primaria: str) -> ft.Container:
-    """Rodapé com o aviso de concordância com os Termos de Serviço e Política de Privacidade.
-
-    Args:
-        cor_texto_secundario: cor do texto base da frase.
-        cor_primaria: cor de destaque usada para simular os links clicáveis.
-    """
+    """Rodapé de conformidade (Termos de Serviço e Política de Privacidade)."""
     return ft.Container(
         margin=ft.Margin.only(top=10),
         content=ft.Text(
-            text_align=ft.TextAlign.CENTER,
-            size=12,
+            text_align=ft.TextAlign.CENTER, size=12,
             spans=[
                 ft.TextSpan("By signing up, you agree to our ", ft.TextStyle(color=cor_texto_secundario)),
                 ft.TextSpan("Terms of Service", ft.TextStyle(color=cor_primaria, weight=ft.FontWeight.W_500)),

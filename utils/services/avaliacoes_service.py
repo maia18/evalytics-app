@@ -1,62 +1,50 @@
-from database.services.firebase_config import db
+import logging
 from datetime import datetime
+from typing import Optional
 
-def salvar_avaliacao(curso_id, curso_nome, respostas):
-    """
-    Salva o formulário de avaliação preenchido no banco de dados do Firebase (Firestore).
-    
+from database.services.firebase_config import db
+
+logger = logging.getLogger(__name__)
+
+COLECAO_AVALIACOES = "avaliacoes"
+
+
+def salvar_avaliacao(curso_id: str, curso_nome: str, respostas: dict) -> bool:
+    """Salva o formulário de avaliação preenchido no Firestore.
+
     Args:
-        curso_id (str/int): O identificador único do curso avaliado.
-        curso_nome (str): O nome em texto do curso para facilitar a leitura humana no banco.
-        respostas (dict): Um dicionário contendo as notas dadas no formato { id_do_indicador : nota }.
-        
+        curso_id: identificador único do curso avaliado.
+        curso_nome: nome do curso, para leitura humana direta no banco.
+        respostas: dicionário no formato {id_do_indicador: nota}.
+
     Returns:
-        bool: Retorna True se a gravação for bem-sucedida, ou False em caso de erro.
+        True se a gravação for bem-sucedida, False em caso de erro.
     """
-    
     try:
-        # Monta o pacote de dados (documento) que será gravado na nuvem
         nova_avaliacao = {
             "curso_id": curso_id,
             "curso_nome": curso_nome,
-            # Grava o momento exato do envio usando o formato ISO 8601 (ex: 2026-07-23T14:30:00)
-            # Este formato é universal e excelente para ordenar dados cronologicamente no banco
-            "data_avaliacao": datetime.now().isoformat(),
-            "respostas": respostas
+            "data_avaliacao": datetime.now().isoformat(),  # ISO 8601, ordenável cronologicamente
+            "respostas": respostas,
         }
-        
-        # Acessa a coleção "avaliacoes" (se não existir, o Firebase cria na hora)
-        # e adiciona o novo documento, gerando um ID alfanumérico único automaticamente
-        db.collection("avaliacoes").add(nova_avaliacao)
-        
-        # Log de sucesso no terminal do servidor/console
-        print(f"Avaliação do curso {curso_nome} salva com sucesso!")
+        db.collection(COLECAO_AVALIACOES).add(nova_avaliacao)
         return True
-        
-    except Exception as e:
-        # Intercepta qualquer falha (queda de internet, erro de permissão) e exibe o motivo
-        print(f"Erro ao salvar a avaliação: {e}")
+
+    except Exception:
+        logger.exception("Erro ao salvar a avaliação do curso '%s'.", curso_nome)
         return False
-    
-def listar_avaliacoes():
-    """
-    Busca e retorna todas as avaliações concluídas e armazenadas na coleção do Firebase.
-    
+
+
+def listar_avaliacoes() -> list[dict]:
+    """Busca todas as avaliações concluídas armazenadas no Firestore.
+
     Returns:
-        list: Uma lista de dicionários, onde cada dicionário é uma avaliação completa 
-              incluindo o seu ID gerado pelo banco.
+        Lista de dicionários, cada um representando uma avaliação com seu ID de documento.
     """
-    
     try:
-        # O método stream() cria um fluxo de leitura eficiente para buscar todos os documentos da coleção
-        docs = db.collection("avaliacoes").stream()
-        
-        # Utiliza List Comprehension (compreensão de lista) para iterar sobre os resultados.
-        # A sintaxe **doc.to_dict() "desempacota" os dados salvos e os junta com a chave "id" em um novo dicionário.
+        docs = db.collection(COLECAO_AVALIACOES).stream()
         return [{"id": doc.id, **doc.to_dict()} for doc in docs]
-        
-    except Exception as e:
-        # Caso falhe ao tentar ler os dados, exibe o erro e retorna uma lista vazia
-        # para evitar que a interface do usuário (como a tabela) quebre tentando iterar sobre 'None'
-        print(f"Erro ao buscar avaliações: {e}")
+
+    except Exception:
+        logger.exception("Erro ao buscar avaliações.")
         return []

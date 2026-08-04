@@ -1,35 +1,27 @@
 from typing import Callable
-
 import flet as ft
 
 from components.core.constants.constants import ALTURA_MAX, BORDA, CARD, TEXTO_PRINCIPAL
 from components.core.theme.border_utils import criar_borda_uniforme
 
-# A área de plotagem tem 200px de altura (definida em criar_grafico_eixos). Desse total,
-# ~50px são reservados para o texto do valor (ex: "4.5"), o espaçamento e o rótulo do
-# nome do eixo abaixo da barra. O restante (com margem de segurança) é o espaço máximo
-# real disponível para a própria barra crescer.
-# Usamos essa constante LOCAL em vez do ALTURA_MAX de constants.py, porque aquele valor
-# não tem garantia de caber no card compacto — calculando aqui, a barra NUNCA estoura
-# o container e corta os rótulos, independente do que ALTURA_MAX valha em constants.py.
+# A área de plotagem tem 200px de altura total. 
+# Desse espaço, ~50px são reservados para o texto do valor e o rótulo.
+# Usamos essa constante LOCAL em vez de uma global para garantir que a barra NUNCA estoure o container cortando os textos.
 ALTURA_AREA_PLOTAGEM = 200
 
 
 def criar_coluna_grafico(layout, nome: str, nota: float, cor: str, altura_max: int = ALTURA_MAX) -> ft.Column:
-    """Desenha uma barra vertical individual do gráfico, calculando sua altura a partir da nota."""
+    """Desenha uma barra vertical individual do gráfico, calculando sua altura proporcionalmente a partir da nota."""
     altura_barra = (nota / 5.0) * altura_max
 
     return ft.Column(
-        alignment=ft.MainAxisAlignment.END,  # Faz as barras crescerem de baixo para cima
+        alignment=ft.MainAxisAlignment.END,  # Empurra o conteúdo para baixo, fazendo as barras crescerem de baixo para cima
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         spacing=6,
         controls=[
             ft.Text(f"{nota:.1f}", size=12, weight="bold", color=ft.Colors.GREY),
             ft.Container(
-                width=40,
-                height=altura_barra,
-                bgcolor=cor,
-                border_radius=4,
+                width=40, height=altura_barra, bgcolor=cor, border_radius=4,
                 tooltip=f"{nome}: {nota:.1f} / 5.0",
             ),
             ft.Text(nome, size=12, weight="w500", color=layout.cores[TEXTO_PRINCIPAL]),
@@ -37,25 +29,19 @@ def criar_coluna_grafico(layout, nome: str, nota: float, cor: str, altura_max: i
     )
 
 
-def criar_grafico_eixos(
-    layout,
-    medias_eixos: dict[int, float],
-    nomes_eixos: dict[int, str],
-    cores_barras: list[str],
-) -> ft.Container:
-    """Constrói o painel completo do gráfico, incluindo título e barras geradas a partir dos dados."""
+def criar_grafico_eixos(layout, medias_eixos: dict[int, float], nomes_eixos: dict[int, str], cores_barras: list[str]) -> ft.Container:
+    """Constrói o painel completo do gráfico, iterando pelos dados para renderizar as barras correspondentes."""
     barras_grafico = []
 
     for i, (eixo_id, nota) in enumerate(medias_eixos.items()):
         nome = nomes_eixos.get(eixo_id, f"Eixo {eixo_id}")
-        cor = cores_barras[i % len(cores_barras)]  # Módulo evita erro de índice se houver mais barras que cores
+        
+        # O uso do Módulo (%) evita erro de "Out of Index" se houverem mais eixos do que as cores cadastradas na lista.
+        cor = cores_barras[i % len(cores_barras)]
         barras_grafico.append(criar_coluna_grafico(layout, nome, nota, cor))
 
     return ft.Container(
-        bgcolor=layout.cores[CARD],
-        padding=20,
-        border_radius=8,
-        border=criar_borda_uniforme(layout.cores[BORDA]),
+        bgcolor=layout.cores[CARD], padding=20, border_radius=8, border=criar_borda_uniforme(layout.cores[BORDA]),
         content=ft.Column(
             spacing=14,
             controls=[
