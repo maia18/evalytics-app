@@ -7,48 +7,41 @@ from database.indicadores import INDICADORES
 
 logger = logging.getLogger(__name__)
 
+# Define onde salvar as modificações (sobrescreverá o próprio arquivo fonte de origem dos dados)
 CAMINHO_ARQUIVO_INDICADORES = Path(__file__).resolve().parent / "indicadores.py"
 
-
 def persistir_indicadores() -> None:
-    """Grava o estado atual de INDICADORES de volta no arquivo de banco de dados.
+    """Grava o estado atual de INDICADORES de volta no arquivo de texto.
 
-    NOTA ARQUITETURAL: usar um arquivo .py como banco de dados (reescrito via
-    json.dumps a cada alteração) é frágil — sem transações, sem lock de
-    concorrência, e um valor None em qualquer campo quebra a reimportação do
-    arquivo na próxima inicialização. O projeto já possui uma camada real de
-    banco (Firestore); migrar os indicadores para lá é recomendado. Note também
-    que existe uma coleção Firestore "indicadores" separada (indicadores_service.py),
-    não sincronizada com este arquivo — ver observação arquitetural.
+    NOTA ARQUITETURAL: O uso de arquivo .py reescrito por json.dumps é frágil para concorrência.
+    É uma abordagem válida de prototipagem, mas recomenda-se migrar este módulo para usar o Firestore 
+    da mesma forma que os arquivos da primeira seção.
     """
     try:
+        # Formata como string e injeta a variável no topo para ser importada como módulo Python válido depois.
         conteudo = f"INDICADORES = {json.dumps(INDICADORES, indent=4, ensure_ascii=False)}\n"
         CAMINHO_ARQUIVO_INDICADORES.write_text(conteudo, encoding="utf-8")
     except Exception:
         logger.exception("Erro ao persistir indicadores em disco.")
         raise
 
-
 def buscar_indicador(titulo: str, eixo: int) -> Optional[dict]:
-    """Busca linearmente o indicador correspondente ao título e eixo informados."""
+    """Busca um indicador específico varrendo a lista em memória."""
     for item in INDICADORES:
         if item.get("titulo") == titulo and item.get("eixo") == eixo:
             return item
     return None
 
-
 def contar_indicadores_por_eixo(eixo: int) -> int:
-    """Conta quantos indicadores existem para um determinado eixo."""
+    """Calcula quantidade usando Generators eficientes em memória."""
     return sum(1 for item in INDICADORES if item.get("eixo") == eixo)
 
-
 def listar_indicadores_por_eixo(eixo: Optional[int]) -> list[dict]:
-    """Retorna todos os indicadores pertencentes a um eixo específico."""
+    """Filtra indicadores de uma categoria (eixo) com List Comprehension."""
     return [item for item in INDICADORES if item.get("eixo") == eixo]
 
-
 def adicionar_indicador(titulo: str, eixo: Optional[int], descricao: str) -> None:
-    """Cria e persiste um novo indicador, com 5 critérios vazios por padrão."""
+    """Adiciona na lista de memória e comanda o salvamento no arquivo físico."""
     novo_item = {
         "titulo": titulo,
         "eixo": eixo,
@@ -59,9 +52,8 @@ def adicionar_indicador(titulo: str, eixo: Optional[int], descricao: str) -> Non
     INDICADORES.append(novo_item)
     persistir_indicadores()
 
-
 def atualizar_indicador(titulo_atual: str, eixo: int, novo_titulo: str, nova_descricao: str) -> bool:
-    """Atualiza título e descrição de um indicador existente. Retorna True se encontrado."""
+    """Altera campos textuais básicos se o indicador existir."""
     item = buscar_indicador(titulo_atual, eixo)
     if item is None:
         return False
@@ -71,9 +63,8 @@ def atualizar_indicador(titulo_atual: str, eixo: int, novo_titulo: str, nova_des
     persistir_indicadores()
     return True
 
-
 def atualizar_criterios(titulo: str, eixo: int, novos_criterios: dict) -> bool:
-    """Substitui os critérios de avaliação de um indicador. Retorna True se encontrado."""
+    """Altera apenas o bloco contendo a definição das notas dos critérios."""
     item = buscar_indicador(titulo, eixo)
     if item is None:
         return False
@@ -82,9 +73,8 @@ def atualizar_criterios(titulo: str, eixo: int, novos_criterios: dict) -> bool:
     persistir_indicadores()
     return True
 
-
 def excluir_indicador(titulo: str, eixo: int) -> bool:
-    """Remove permanentemente um indicador. Retorna True se encontrado e removido."""
+    """Remove definitivamente o indicador via POP da lista e reescreve o arquivo físico."""
     for idx, item in enumerate(INDICADORES):
         if item.get("titulo") == titulo and item.get("eixo") == eixo:
             INDICADORES.pop(idx)

@@ -6,35 +6,24 @@ from utils.services.indicadores_service import listar_indicadores
 logger = logging.getLogger(__name__)
 
 COLECAO_AVALIACOES = "avaliacoes"
-EIXO_PADRAO = 1  # Assumido quando um indicador não tem eixo definido
+EIXO_PADRAO = 1  # Eixo fallback assumido quando um indicador não tem eixo definido explicitamente.
 EIXOS_PADRAO = (1, 2, 3)
 
-
 def calcular_medias_eixos() -> dict[int, float]:
-    """Calcula a média das avaliações por eixo temático.
+    """Calcula a média das avaliações cruzando dados de Eixos e Notas.
 
-    Fluxo:
-        1. Lista os indicadores e mapeia cada um ao seu eixo.
-        2. Busca todas as avaliações no Firestore.
-        3. Agrupa as notas por eixo.
-        4. Calcula a média de cada eixo.
-
-    NOTA: esta função espera que `respostas` (dentro de cada avaliação) esteja
-    chaveada pelo ID do documento Firestore do indicador. O FormularioController
-    atual (form_controller.py) grava as respostas chaveadas pelo TÍTULO do
-    indicador, não pelo ID — ou seja, mesmo com dados reais na coleção
-    "avaliacoes", o cruzamento de chaves aqui não teria correspondência.
-    Ver observação arquitetural na análise deste lote.
-
-    Returns:
-        Dicionário {eixo_id: média}.
+    NOTA ARQUITETURAL: a lógica cruza as respostas pelo ID do indicador, porém o FormularioController 
+    atual está gravando usando o TÍTULO do indicador. Para que essa função opere corretamente 
+    em produção, é necessário parear as chaves (usar ID em ambos os lados).
     """
     try:
+        # Monta um dicionário em memória relacionando o ID de cada indicador ao seu eixo pertencente
         todos_indicadores = listar_indicadores()
         mapa_eixo = {ind['id']: ind.get('eixo', EIXO_PADRAO) for ind in todos_indicadores}
 
         avaliacoes = db.collection(COLECAO_AVALIACOES).stream()
 
+        # Inicializa o acumulador com listas vazias para receber as notas de cada eixo
         acumulador: dict[int, list[float]] = {eixo: [] for eixo in EIXOS_PADRAO}
 
         for av in avaliacoes:
@@ -44,6 +33,7 @@ def calcular_medias_eixos() -> dict[int, float]:
                 if eixo_id in acumulador:
                     acumulador[eixo_id].append(float(nota))
 
+        # Resolve a média (soma total dividida pela quantidade), prevenindo erro de divisão por zero
         return {
             eixo: (sum(notas) / len(notas) if notas else 0.0)
             for eixo, notas in acumulador.items()
