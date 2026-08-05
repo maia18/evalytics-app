@@ -9,18 +9,21 @@ from models.dashboard.widgets.kpi_cards import criar_kpi_card
 from models.dashboard.widgets.grafico_eixos import criar_grafico_eixos
 from models.dashboard.layout.card_grafico_desempenho import criar_card_grafico_desempenho
 
-# Cores das barras do gráfico de eixos. 
-# A segunda e a terceira cores são decorativas (verde/vermelho de gráfico) e não fazem parte da paleta dinâmica de tema claro/escuro.
+''' 
+Cores das barras do gráfico de eixos. 
+    A segunda e a terceira cores são decorativas (verde/vermelho de gráfico) e não fazem parte da paleta dinâmica de tema claro/escuro.
+'''
 CORES_BARRAS_GRAFICO_EIXOS = [COR_PRIMARIA, "#34D399", "#F87171"]
 
 def ViewDashboard(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """Constrói a página principal do Dashboard com navegação por abas."""
     layout = ResponsiveLayout(
-        page, titulo_pagina="Dashboard", subtitulo="Indicadores de avaliação institucional", mudar_tela=mudar_tela,
+        page, titulo_pagina="Dashboard", 
+        subtitulo="Indicadores de avaliação institucional", 
+        mudar_tela=mudar_tela,
     )
 
-    # === Dados simulados (Mock data) ===
-    # Estes dados dos KPIs e do gráfico de eixos poderão ser substituídos por funções do Firestore futuramente.
+    ''' === Dados simulados (Mock data) === '''
     dados_kpi = {
         "avaliacoes_ativas": "4",
         "respostas_coletadas": "1.248",
@@ -31,7 +34,7 @@ def ViewDashboard(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     medias_eixos = {1: 4.5, 2: 4.1, 3: 3.4}
     nomes_eixos = {1: "Didático", 2: "Docente", 3: "Infra."}
 
-    # === Montagem da linha de KPIs ===
+    ''' === Montagem da linha de KPIs === '''
     linha_kpis = ft.Row(
         wrap=True,  # Responsividade: cards descem para a próxima linha automaticamente se a tela encolher
         spacing=20, run_spacing=20,
@@ -46,9 +49,7 @@ def ViewDashboard(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     area_graficos = criar_grafico_eixos(layout, medias_eixos, nomes_eixos, CORES_BARRAS_GRAFICO_EIXOS)
     card_desempenho = criar_card_grafico_desempenho(layout)
 
-    # IMPORTANTE ARQUITETURAL: expand=True fica no Container (dando o limite de altura vindo do TabBarView).
-    # O scroll=AUTO fica isolado na Column interna, sem expand=True nela mesma.
-    # Isso evita o bug do Flet de espaço em branco e scroll fantasma quando combinados na mesma Column.
+    # IMPORTANTE ARQUITETURAL: expand=True fica no Container (dando o limite de altura vindo do TabBarView). O scroll=AUTO fica isolado na Column interna, sem expand=True nela mesma. Isso evita o bug do Flet de espaço em branco e scroll fantasma quando combinados na mesma Column.
     conteudo_dashboard_executivo = ft.Container(
         expand=True,
         content=ft.Column(
@@ -62,7 +63,7 @@ def ViewDashboard(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         ),
     )
 
-    # === Configuração das Abas (Tabs) ===
+    ''' === Configuração das Abas (Tabs) === '''
     barra_abas = ft.TabBar(
         tabs=[
             ft.Tab(label="Dashboard", icon=ft.Icons.GRID_VIEW_ROUNDED),

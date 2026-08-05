@@ -29,9 +29,9 @@ def atualizar_estatisticas(page: ft.Page, tabela_cursos: ft.DataTable, linha_sta
     ]
     page.update()
 
-
 def carregar_cursos_iniciais(contexto_tabela: ContextoTabelaCursos, tabela_cursos: ft.DataTable, atualizar_interface_callback: Callable[[], None]) -> None:
     """Faz a requisição inicial ao Firestore e popula a interface."""
+    
     cursos = obter_cursos_db()
     tabela_cursos.rows.clear()
 

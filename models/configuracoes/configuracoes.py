@@ -18,7 +18,10 @@ from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 # Constrói a tela de configurações, unindo layout responsivo, pastas e controle de dados
 def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     layout = ResponsiveLayout(
-        page, titulo_pagina="Configurações", subtitulo="Gerencie indicadores e critérios de avaliação.", mudar_tela=mudar_tela,
+        page, 
+        titulo_pagina="Configurações", 
+        subtitulo="Gerencie indicadores e critérios de avaliação.", 
+        mudar_tela=mudar_tela,
     )
 
     estado = EstadoIndicadores() # Inicia o gerenciador de estado
