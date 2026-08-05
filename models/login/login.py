@@ -1,27 +1,38 @@
 from typing import Callable
 import flet as ft
 
-from models.login.core.cabecalho_login import criar_cabecalho
-from models.login.widgets.campos_login import criar_campo_nome, criar_campo_email, criar_campo_senha
-from models.login.widgets.extras_login import criar_opcoes_extras # Supõe-se existir um arquivo correspondente.
-from models.login.widgets.card_login import criar_card_login
-from models.login.widgets.social_login import criar_login_social # Supõe-se existir um arquivo correspondente.
-from models.login.core.rodape import criar_rodape_termos
 from models.login.core.logica_abas import obter_funcao_alternar
+from models.login.core.cabecalho_login import criar_cabecalho
 from models.login.core.tab_style import criar_estilo_aba
+from models.login.core.rodape import criar_rodape_termos
+from models.login.widgets.campos_login import (
+    criar_campo_nome, 
+    criar_campo_email, 
+    criar_campo_senha,
+)
+from models.login.widgets.card_login import criar_card_login
+from models.login.widgets.social_login import criar_login_social
+from models.login.widgets.extras_login import criar_opcoes_extras
 
 from components.core.constants.constants import (
-    COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO, COR_BORDA, COR_PRIMARIA, COR_CARD, COR_FUNDO,
+    COR_TEXTO_TITULO, 
+    COR_TEXTO_SECUNDARIO, 
+    COR_BORDA, 
+    COR_PRIMARIA, 
+    COR_CARD, 
+    COR_FUNDO,
 )
 
 def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
-    """Constrói a tela de Login e Registro (ponto de entrada da aplicação).
+    """
+    Constrói a tela de Login e Registro (ponto de entrada da aplicação).
     
     NOTA ARQUITETURAL: esta tela usa as constantes de cor do modo claro diretamente,
     então não se adapta ao modo escuro automaticamente. Validar se isso é intencional para a identidade da marca.
     """
+    
+    # Autenticação simulada: por ora, apenas redireciona para a tela inicial
     def fazer_login(e: ft.ControlEvent) -> None:
-        """Autenticação simulada: por ora, apenas redireciona para a tela inicial."""
         mudar_tela("/inicio")
 
     cabecalho = criar_cabecalho(COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO)
@@ -68,7 +79,10 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     )
 
     return ft.View(
-        route="/", bgcolor=COR_FUNDO,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER, vertical_alignment=ft.MainAxisAlignment.CENTER,
-        padding=20, controls=[ft.Container(content=ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=30, controls=[cabecalho, card_login, rodape_termos]))],
+        route="/", 
+        bgcolor=COR_FUNDO,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
+        padding=20, 
+        controls=[ft.Container(content=ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=30, controls=[cabecalho, card_login, rodape_termos]))],
     )
