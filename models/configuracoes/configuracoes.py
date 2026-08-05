@@ -13,7 +13,7 @@ from models.configuracoes.core.painel_seguranca import criar_painel_seguranca
 from models.configuracoes.core.painel_banco import criar_painel_banco
 from models.configuracoes.core.pastas import criar_layout_pastas
 from models.configuracoes.core.abas import criar_abas
-from models.configuracoes.core.estado_indicadores import EstadoIndicadores
+from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 
 # Constrói a tela de configurações, unindo layout responsivo, pastas e controle de dados
 def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
@@ -37,8 +37,8 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.Vi
 
     # Área dinâmica que renderiza as pastas ou a lista de indicadores
     area_dinamica_indicadores = ft.Container(expand=True)
-    area_dinamica_indicadores.content = criar_layout_pastas(page, estado)
-
+    area_dinamica_indicadores.content = criar_layout_pastas(page, estado, callback_abrir=ir_para_pasta)
+    
     # Inicializa as outras telas de configurações
     painel_seguranca = criar_painel_seguranca()
     painel_banco = criar_painel_banco()

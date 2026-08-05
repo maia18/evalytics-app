@@ -3,7 +3,7 @@ from typing import Optional
 from components.core.constants.constants import TEXTO_PRINCIPAL
 from components.widgets.card.card_base import criar_card_base
 from models.avaliacoes.core.export_csv import exportar_csv
-from models.avaliacoes.layout.card_tabela_linha import criar_linha
+from models.avaliacoes.layout.cards.card_tabela_linha import criar_linha
 from database.services.firestore_avaliacoes import obter_respostas_tabela # Chama o serviço do banco de dados
 
 def criar_card_tabela_dados(

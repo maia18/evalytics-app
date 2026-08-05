@@ -1,7 +1,7 @@
 import flet as ft
 from typing import Callable, Optional
 from utils.services.indicadores.indicadores_repository import atualizar_criterios
-from models.configuracoes.core.estado_indicadores import EstadoIndicadores
+from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 
 NUM_CRITERIOS = 5
 

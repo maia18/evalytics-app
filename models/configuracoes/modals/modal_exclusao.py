@@ -1,7 +1,7 @@
 import flet as ft
 from typing import Callable
 from utils.services.indicadores.indicadores_repository import excluir_indicador
-from models.configuracoes.core.estado_indicadores import EstadoIndicadores
+from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 
 # Painel de confirmação ('Tem certeza?') que exclui um indicador.
 def criar_modal_exclusao(

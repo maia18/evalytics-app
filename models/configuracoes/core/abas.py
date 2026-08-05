@@ -1,9 +1,19 @@
 import flet as ft
 
-# Cria a barra de navegação superior (tabs) e o container que exibirá os painéis correspondentes
-def criar_abas(page: ft.Page, area_dinamica_indicadores: ft.Container, painel_seguranca: ft.Container, painel_banco: ft.Container,) -> tuple[ft.Row, ft.Container]:
+def criar_abas(
+    page: ft.Page, 
+    area_dinamica_indicadores: ft.Container, 
+    painel_seguranca: ft.Container, 
+    painel_banco: ft.Container,
+) -> tuple[ft.Row, ft.Container]:
+    """Cria a barra de navegação superior (tabs) e o container que exibirá os painéis correspondentes"""
     
-    area_conteudo_aba = ft.Container(content=area_dinamica_indicadores, expand=True, padding=20) # Injeta a tela de indicadores como aba inicial ativa
+    # Injeta a tela de indicadores como aba inicial ativa
+    area_conteudo_aba = ft.Container(
+        content=area_dinamica_indicadores, 
+        expand=True, 
+        padding=20
+    )
 
     # Injeta o novo painel no container e atualiza a cor de fundo dos botões para indicar a aba ativa
     def mudar_aba(
