@@ -12,7 +12,10 @@ from models.relatorios.views.resultados_view import TelaResultados
 def ViewRelatorios(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """Renderiza a tela de 'Relatórios e Exportações', com abas para Dashboard Executivo e Dados Brutos."""
     layout = ResponsiveLayout(
-        page, titulo_pagina="Relatórios e Exportações", subtitulo="Analise indicadores visuais e exporte resultados consolidados.", mudar_tela=mudar_tela,
+        page, 
+        titulo_pagina="Relatórios e Exportações", 
+        subtitulo="Analise indicadores visuais e exporte resultados consolidados.", 
+        mudar_tela=mudar_tela,
     )
 
     # Cria uma borda consistente com o tema atual para ser injetada nos sub-componentes.

@@ -5,7 +5,6 @@ from typing import Optional
 
 from models.avaliacoes.core.feedback import mostrar_feedback
 
-# Importações dos módulos extraídos
 from models.relatorios.core.pdf_template import RelatorioEvalytics
 from models.relatorios.core.grafico_radar import salvar_grafico_radar
 
