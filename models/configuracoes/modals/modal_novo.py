@@ -1,14 +1,10 @@
 import flet as ft 
 from typing import Callable 
-from utils.services.indicadores.indicadores_repository import adicionar_indicador 
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores 
+from utils.services.indicadores.indicadores_repository import adicionar_indicador 
 
 # Cria o modal de cadastro de um novo indicador
-def criar_modal_novo( 
-    page: ft.Page, 
-    estado: EstadoIndicadores, 
-    abrir_pasta: Callable[[str], None], 
-) -> tuple[ft.AlertDialog, ft.TextField, ft.TextField, Callable]:
+def criar_modal_novo(page: ft.Page, estado: EstadoIndicadores, abrir_pasta: Callable[[str], None]) -> tuple[ft.AlertDialog, ft.TextField, ft.TextField, Callable]:
     
     # Instancia os campos de entrada de dados vazios.
     campo_titulo = ft.TextField(label="Título do Indicador", border_color=ft.Colors.BLUE_200) 
@@ -23,9 +19,7 @@ def criar_modal_novo(
         '''
         adicionar_indicador(campo_titulo.value or "", estado.pasta_eixo, campo_desc.value or "") 
 
-        '''
-        Limpa os campos após salvar. Se não fizermos isso, o modal vai abrir com os textos do indicador anterior na próxima vez que o usuário clicar em "Novo".
-        '''
+        '''Limpa os campos após salvar. Se não fizermos isso, o modal vai abrir com os textos do indicador anterior na próxima vez que o usuário clicar em "Novo".'''
         campo_titulo.value = "" 
         campo_desc.value = "" 
 
@@ -35,9 +29,7 @@ def criar_modal_novo(
         
         modal.open = False # Fecha o popup.
         
-        '''
-        Força a lista visual a recarregar, fazendo com que o novo item recém-criado apareça instantaneamente na interface sem precisar atualizar a página inteira.
-        '''
+        '''Força a lista visual a recarregar, fazendo com que o novo item recém-criado apareça instantaneamente na interface sem precisar atualizar a página inteira.'''
         abrir_pasta(estado.pasta_titulo) 
         page.update() 
 
@@ -54,9 +46,7 @@ def criar_modal_novo(
     
     # Exibe o modal com os campos limpos, pronto para um novo cadastro.
     def abrir_modal_novo() -> None: 
-        '''
-        O framework Flet exige que componentes flutuantes (como diálogos e modais) sejam explicitamente adicionados à camada de sobreposição (overlay) da página.
-        '''
+        '''O framework Flet exige que componentes flutuantes (como diálogos e modais) sejam explicitamente adicionados à camada de sobreposição (overlay) da página.'''
         if modal not in page.overlay: 
             page.overlay.append(modal) 
             

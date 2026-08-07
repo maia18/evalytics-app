@@ -1,12 +1,7 @@
 from typing import Callable
 import flet as ft
 
-def criar_linha_indicador(
-    item: dict,
-    abrir_modal_criterios: Callable[..., None],
-    abrir_modal_edicao: Callable[..., None],
-    preparar_exclusao: Callable[[dict], None],
-) -> ft.Container:
+def criar_linha_indicador(item: dict, abrir_modal_criterios: Callable[..., None], abrir_modal_edicao: Callable[..., None], preparar_exclusao: Callable[[dict], None]) -> ft.Container:
     """Cria o card retangular (linha) para representar um único indicador cadastrado na lista."""
 
     # Define a cor de destaque (verde ou amarelo) dependendo do status do indicador.

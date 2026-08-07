@@ -4,7 +4,6 @@ from typing import Callable, Optional
 class EstadoIndicadores:
     """
     Estado compartilhado entre a listagem de pastas/indicadores e os modais de gerenciamento.
-
     Centraliza as referências às funções que abrem cada modal e ao container de conteúdo da aba ativa — evitando que sejam repassadas (e esquecidas) através de lambdas.
     """
     
@@ -13,7 +12,8 @@ class EstadoIndicadores:
         self.pasta_titulo: str = ""
         self.pasta_eixo: Optional[int] = 0
         
-        self.item_alvo: dict = {} # Guarda os dados do indicador clicado para edição/exclusão
+        '''Guarda os dados do indicador clicado para edição/exclusão'''
+        self.item_alvo: dict = {} 
 
         # Callbacks injetados posteriormente pela View, permitindo disparo global de eventos
         self.area_conteudo_aba: Optional[ft.Container] = None

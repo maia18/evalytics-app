@@ -1,6 +1,6 @@
 """
 Módulo agregador dos componentes de UI de Indicadores (Facade).
-Centraliza as importações dos widgets extraídos para manter a compatibilidade.
+    Centraliza as importações dos widgets extraídos para manter a compatibilidade.
 """
 
 # Altere os caminhos de importação conforme a estrutura real de pastas do seu projeto

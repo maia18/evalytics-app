@@ -1,10 +1,13 @@
-from typing import Callable
 import flet as ft
+from typing import Callable
 
 def criar_pasta_indicador(titulo: str, qtd: int, abrir_pasta: Callable[[str], None]) -> ft.Container:
     """Cria um grande botão com visual de 'Pasta' para agrupar indicadores de um mesmo eixo na visualização raiz."""
+    
     return ft.Container(
-        bgcolor="#F4F6F9", border_radius=8, padding=20,
+        bgcolor="#F4F6F9", 
+        border_radius=8, 
+        padding=20,
         ink=True,  # Adiciona Efeito visual de 'ripple' interativo
         on_click=lambda e: abrir_pasta(titulo),
         content=ft.Row(

@@ -1,14 +1,10 @@
 import flet as ft
 from typing import Callable
-from utils.services.indicadores.indicadores_repository import excluir_indicador
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
+from utils.services.indicadores.indicadores_repository import excluir_indicador
 
-# Painel de confirmação ('Tem certeza?') que exclui um indicador.
-def criar_modal_exclusao(
-    page: ft.Page,
-    estado: EstadoIndicadores,
-    abrir_pasta: Callable[[str], None],
-) -> tuple[ft.AlertDialog, Callable]:
+def criar_modal_exclusao(page: ft.Page, estado: EstadoIndicadores, abrir_pasta: Callable[[str], None]) -> tuple[ft.AlertDialog, Callable]:    
+    """Painel de confirmação ('Tem certeza?') que exclui um indicador"""
     
     # Remove o indicador alvo e persiste a alteração.
     def confirmar_exclusao(e: ft.ControlEvent) -> None:
@@ -19,6 +15,7 @@ def criar_modal_exclusao(
         modal.open = False
         abrir_pasta(estado.pasta_titulo)
         page.update()
+        
     modal = ft.AlertDialog(
         title=ft.Text("Confirmar Exclusão", size=18, weight="bold", color=ft.Colors.RED_700),
         content=ft.Text("Tem certeza que deseja excluir este indicador?"),
@@ -35,6 +32,7 @@ def criar_modal_exclusao(
         if modal not in page.overlay:
             page.overlay.append(modal)
         modal.open = True
+        
         page.update()
 
     return modal, preparar_exclusao

@@ -3,12 +3,9 @@ from typing import Callable
 from utils.services.indicadores.indicadores_repository import atualizar_indicador
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 
-# Permite reescrever os metadados textuais básicos de um indicador
-def criar_modal_edicao(
-    page: ft.Page,
-    estado: EstadoIndicadores,
-    abrir_pasta: Callable[[str], None],
-) -> tuple[ft.AlertDialog, ft.TextField, ft.TextField, Callable]:
+def criar_modal_edicao(page: ft.Page, estado: EstadoIndicadores, abrir_pasta: Callable[[str], None]) -> tuple[ft.AlertDialog, ft.TextField, ft.TextField, Callable]:
+    """Permite reescrever os metadados textuais básicos de um indicador"""
+    
     campo_titulo = ft.TextField(label="Título", border_color=ft.Colors.BLUE_200)
     campo_descricao = ft.TextField(label="Descrição", multiline=True, border_color=ft.Colors.BLUE_200)
     
@@ -24,6 +21,7 @@ def criar_modal_edicao(
         page.snack_bar.open = True
         modal.open = False
         abrir_pasta(estado.pasta_titulo)
+        
         page.update()
 
     modal = ft.AlertDialog(

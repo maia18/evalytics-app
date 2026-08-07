@@ -1,16 +1,14 @@
 import flet as ft
 from typing import Callable, Optional
-from utils.services.indicadores.indicadores_repository import atualizar_criterios_indicador
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
+from utils.services.indicadores.indicadores_repository import atualizar_criterios_indicador
 
 NUM_CRITERIOS = 5
 
-# Gera um popup para gerenciar os critérios de avaliação de um indicador
 def criar_modal_criterios(page: ft.Page, estado: EstadoIndicadores) -> tuple[ft.AlertDialog, list[ft.TextField], Callable]:
-    campos_criterios = [
-        ft.TextField(label=f"Critério {i + 1}", multiline=True, width=600, border_color=ft.Colors.BLUE_200)
-        for i in range(NUM_CRITERIOS)
-    ]
+    """Gera um popup para gerenciar os critérios de avaliação de um indicador"""
+
+    campos_criterios = [ft.TextField(label=f"Critério {i + 1}", multiline=True, width=600, border_color=ft.Colors.BLUE_200) for i in range(NUM_CRITERIOS)]
     
     # Coleta os dados dos campos e persiste os novos critérios do indicador
     def salvar_criterios(e: ft.ControlEvent) -> None:
@@ -20,6 +18,7 @@ def criar_modal_criterios(page: ft.Page, estado: EstadoIndicadores) -> tuple[ft.
         page.snack_bar = ft.SnackBar(ft.Text("Critérios atualizados com sucesso!", color=ft.Colors.GREEN))
         page.snack_bar.open = True
         modal.open = False
+        
         page.update()
 
     modal = ft.AlertDialog(
@@ -45,6 +44,7 @@ def criar_modal_criterios(page: ft.Page, estado: EstadoIndicadores) -> tuple[ft.
             page.overlay.append(modal)
 
         modal.open = True
+        
         page.update()
 
     return modal, campos_criterios, abrir_modal_criterios
