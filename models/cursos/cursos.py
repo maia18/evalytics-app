@@ -1,21 +1,21 @@
-from typing import Callable
-
 import flet as ft
-
+from typing import Callable
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.constants.constants import COR_PRIMARIA, TEXTO_PRINCIPAL, CARD
-
+from components.core.constants.constants import (
+    COR_PRIMARIA, 
+    TEXTO_PRINCIPAL, 
+    CARD,
+)
+from models.cursos.core.cursos_controller import atualizar_estatisticas, carregar_cursos_iniciais
+from models.cursos.widgets.campos_curso import criar_campos_formulario_curso
 from models.cursos.widgets.tabela_cursos import ContextoTabelaCursos
 from models.cursos.widgets.stats_cards import criar_stats_card
-from models.cursos.modals.modal_add import criar_modal_add
 from models.cursos.modals.modal_edit import criar_modal_edit
-
-# Novas importações das lógicas e componentes extraídos
-from models.cursos.widgets.campos_curso import criar_campos_formulario_curso
-from models.cursos.core.cursos_controller import atualizar_estatisticas, carregar_cursos_iniciais
+from models.cursos.modals.modal_add import criar_modal_add
 
 def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """Renderiza a tela completa de Gestão de Cursos, instanciando layouts, formulários e tabela de dados."""
+    
     layout = ResponsiveLayout(
         page,
         titulo_pagina="Gestão de Cursos",
@@ -27,8 +27,7 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     campos_add = criar_campos_formulario_curso()
     campos_edit = criar_campos_formulario_curso()
 
-    # Estado compartilhado
-    estado = {"linha_atual": None, "id_firebase": None}
+    estado = {"linha_atual": None, "id_firebase": None} # Estado compartilhado
 
     # Estrutura da Tabela principal
     tabela_cursos = ft.DataTable(
@@ -57,9 +56,8 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     def wrapper_atualizar_interface() -> None:
         atualizar_estatisticas(page, tabela_cursos, linha_stats, layout.cores)
 
-    # === Inicialização dos Modais e Contextos ===
+    ''' === Inicialização dos Modais e Contextos === '''
     modal_edit = criar_modal_edit(page, estado, campos_edit, wrapper_atualizar_interface)
-
     contexto_tabela = ContextoTabelaCursos(
         page=page,
         tabela_cursos=tabela_cursos,
@@ -70,11 +68,9 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     )
 
     abrir_modal_add = criar_modal_add(contexto_tabela, campos_add)
+    carregar_cursos_iniciais(contexto_tabela, tabela_cursos, wrapper_atualizar_interface) # Executa a carga antes da tela terminar de ser desenhada delegando ao Controller
 
-    # Executa a carga antes da tela terminar de ser desenhada delegando ao Controller
-    carregar_cursos_iniciais(contexto_tabela, tabela_cursos, wrapper_atualizar_interface)
-
-    # Estrutura visual final
+    '''Estrutura visual final'''
     conteudo = ft.Column(
         expand=True,
         spacing=25,
@@ -83,10 +79,7 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
             ft.Row(
                 alignment=ft.MainAxisAlignment.END,
                 controls=[
-                    ft.ElevatedButton(
-                        "Novo curso", icon=ft.Icons.ADD, bgcolor=COR_PRIMARIA, color=ft.Colors.WHITE,
-                        on_click=abrir_modal_add,
-                    )
+                    ft.ElevatedButton("Novo curso", icon=ft.Icons.ADD, bgcolor=COR_PRIMARIA, color=ft.Colors.WHITE, on_click=abrir_modal_add,)
                 ],
             ),
             linha_stats,

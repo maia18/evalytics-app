@@ -1,6 +1,6 @@
-from typing import Callable
 import flet as ft
-
+from typing import Callable
+from components.core.constants.constants import TEXTO_PRINCIPAL
 from database.services.firestore_courses import obter_cursos_db
 from models.cursos.widgets.stats_cards import criar_stats_card
 from models.cursos.widgets.tabela_cursos import criar_linha_curso, ContextoTabelaCursos
@@ -19,7 +19,7 @@ def atualizar_estatisticas(page: ft.Page, tabela_cursos: ft.DataTable, linha_sta
     }
     total_deptos = str(len(departamentos_unicos))
 
-    cor_texto = cores_layout["TEXTO_PRINCIPAL"]
+    cor_texto = cores_layout[TEXTO_PRINCIPAL]
     
     # Sobrescreve a linha de cards com os novos valores calculados
     linha_stats.controls = [

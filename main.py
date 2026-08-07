@@ -9,8 +9,7 @@ ROTA_INICIAL = "/" # Define uma constante para a rota inicial. O padrão "/" ger
 def main(page: ft.Page) -> None:
     """
     Ponto de entrada (entry point) da aplicação Flet.
-    
-    O Flet chama esta função automaticamente, passando o objeto 'page' (que representa a janela do app ou a aba do navegador).
+        O Flet chama esta função automaticamente, passando o objeto 'page' (que representa a janela do app ou a aba do navegador)
     """
     try:
         configurar_aplicacao(page) # Configura os aspectos globais da interface da página (cores, fontes, alinhamentos, etc).

@@ -1,11 +1,11 @@
 import flet as ft
 
 def criar_campos_formulario_curso() -> dict[str, ft.TextField]:
-    """Cria um novo conjunto de campos de formulário para cadastro/edição de curso.
+    """
+    Cria um novo conjunto de campos de formulário para cadastro/edição de curso.
 
     Uma função separada garante instâncias próprias de TextField por chamada: 
-    compartilhar os mesmos widgets entre os formulários de adicionar e editar 
-    faria o texto digitado em um vazar para o outro.
+        Compartilhar os mesmos widgets entre os formulários de adicionar e editar faria o texto digitado em um vazar para o outro.
     """
     return {
         # 'dense=True' diminui a altura interna do campo, deixando o formulário mais compacto

@@ -1,18 +1,15 @@
+import flet as ft
 from dataclasses import dataclass
 from typing import Callable, Optional
-
-import flet as ft
-
 from database.services.firestore_courses import excluir_curso_db
 
 @dataclass
 class ContextoTabelaCursos:
-    """Agrupa as dependências compartilhadas para construir e operar uma linha da tabela de cursos.
+    """
+    Agrupa as dependências compartilhadas para construir e operar uma linha da tabela de cursos.
 
-    NOTA ARQUITETURAL: Um único objeto de contexto, criado uma vez e reutilizado em todos os
-    pontos que criam linhas (carga inicial e cadastro via modal), evita que
-    algum desses pontos passe por engano um conjunto de campos ou um estado
-    diferente do que é realmente compartilhado com o modal de edição, simplificando as assinaturas de funções.
+    NOTA ARQUITETURAL: 
+        Um único objeto de contexto, criado uma vez e reutilizado em todos os pontos que criam linhas (carga inicial e cadastro via modal), evita que algum desses pontos passe por engano um conjunto de campos ou um estado diferente do que é realmente compartilhado com o modal de edição, simplificando as assinaturas de funções.
     """
     page: ft.Page
     tabela_cursos: ft.DataTable
@@ -21,15 +18,7 @@ class ContextoTabelaCursos:
     campos_edit: dict[str, ft.TextField]
     estado: dict
 
-
-def criar_linha_curso(
-    contexto: ContextoTabelaCursos,
-    doc_id: Optional[str],
-    codigo: str,
-    nome: str,
-    depto: str,
-    coord: str,
-) -> ft.DataRow:
+def criar_linha_curso(contexto: ContextoTabelaCursos, doc_id: Optional[str], codigo: str, nome: str, depto: str, coord: str,) -> ft.DataRow:
     """Gera uma linha oficial (DataRow) para a tabela, com os callbacks de editar e excluir já acoplados."""
     
     # Destaca em verde o código da linha se ele acabou de ser criado e não está salvo com código definitivo no banco
@@ -50,14 +39,14 @@ def criar_linha_curso(
 
     def acao_deletar(e: ft.ControlEvent) -> None:
         """Remove o curso permanentemente no Firestore e, em caso de sucesso, retira a linha visual da tabela."""
+        
         sucesso = excluir_curso_db(doc_id)
         if sucesso:
             # Remove a linha atual utilizando a lista do contexto
             contexto.tabela_cursos.rows.remove(linha)
             contexto.page.update()
-            
-            # Recalcula as estatísticas (KPIs superiores) já que uma linha foi removida
-            contexto.atualizar_interface()
+
+            contexto.atualizar_interface() # Recalcula as estatísticas (KPIs superiores) já que uma linha foi removida
 
     def acao_editar(e: ft.ControlEvent) -> None:
         """Carrega os dados específicos desta linha nos campos do modal de edição e o exibe para o usuário."""
@@ -74,6 +63,7 @@ def criar_linha_curso(
         # Processo padrão do Flet para renderizar modais flutuantes
         if contexto.modal_editar not in contexto.page.overlay:
             contexto.page.overlay.append(contexto.modal_editar)
+            
         contexto.modal_editar.open = True
         contexto.page.update()
 

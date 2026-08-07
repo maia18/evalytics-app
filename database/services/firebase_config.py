@@ -15,8 +15,9 @@ CAMINHO_CREDENCIAIS = DIRETORIO_ATUAL / "firebase_credentials.json"
 
 try:
     ''' 
-    Garante que a inicialização ocorra apenas uma vez
-        Sem essa checagem, o Firebase lançaria um erro caso este arquivo fosse importado por múltiplos módulos simultaneamente (ex: ValueError: The default Firebase app already exists)
+    Garante que a inicialização ocorra apenas uma vez.
+        Sem essa checagem, o Firebase lançaria um erro caso este arquivo fosse importado por múltiplos módulos simultaneamente:
+        (Ex: ValueError: The default Firebase app already exists)
     '''
     if not firebase_admin._apps:
         cred = credentials.Certificate(str(CAMINHO_CREDENCIAIS))
@@ -27,4 +28,5 @@ try:
 
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")
+    
     raise # O raise propaga o erro para impedir que a aplicação inicie se o banco estiver indisponível (Fail-fast).

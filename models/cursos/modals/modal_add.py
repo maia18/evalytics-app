@@ -1,12 +1,11 @@
-from typing import Callable
-
 import flet as ft
-
+from typing import Callable
+from components.core.constants.constants import ESTILO_BOTAO_CANCELAR
 from database.services.firestore_courses import adicionar_curso_db
 from models.cursos.widgets.tabela_cursos import ContextoTabelaCursos, criar_linha_curso
-from models.cursos.modals.modal_utils import ESTILO_BOTAO_CANCELAR, abrir_modal, fechar_modal
+from models.cursos.modals.modal_utils import abrir_modal, fechar_modal
 
-# Código provisório exibido na coluna "Código" até a próxima sincronização com o banco
+'''Código provisório exibido na coluna "Código" até a próxima sincronização com o banco'''
 CODIGO_CURSO_PLACEHOLDER = "NOVO"
 
 def criar_modal_add(contexto: ContextoTabelaCursos, campos_add: dict[str, ft.TextField]) -> Callable[[ft.ControlEvent], None]:
@@ -14,6 +13,7 @@ def criar_modal_add(contexto: ContextoTabelaCursos, campos_add: dict[str, ft.Tex
 
     def salvar_curso(e: ft.ControlEvent) -> None:
         """Coleta o texto dos campos, grava no Firestore e reflete a nova linha na tabela dinamicamente."""
+        
         nome = campos_add["nome"].value
         depto = campos_add["departamento"].value
         coord = campos_add["coordenador"].value
@@ -24,8 +24,7 @@ def criar_modal_add(contexto: ContextoTabelaCursos, campos_add: dict[str, ft.Tex
         novo_id = adicionar_curso_db(CODIGO_CURSO_PLACEHOLDER, nome, depto, coord)
 
         if novo_id:
-            # Reaproveita o mesmo contexto compartilhado (modal de edição, campos e estado)
-            # usado na carga inicial, para que editar esta linha nova logo em seguida funcione corretamente
+            # Reaproveita o mesmo contexto compartilhado (modal de edição, campos e estado) usado na carga inicial, para que editar esta linha nova logo em seguida funcione corretamente
             nova_linha = criar_linha_curso(contexto, novo_id, CODIGO_CURSO_PLACEHOLDER, nome, depto, coord)
             contexto.tabela_cursos.rows.append(nova_linha)
 
@@ -35,8 +34,7 @@ def criar_modal_add(contexto: ContextoTabelaCursos, campos_add: dict[str, ft.Tex
 
             fechar_modal(contexto.page, modal)
             
-            # Chama o método que recalcula a quantidade de cursos e departamentos no topo da tela
-            contexto.atualizar_interface()
+            contexto.atualizar_interface() # Chama o método que recalcula a quantidade de cursos e departamentos no topo da tela
 
     modal = ft.AlertDialog(
         modal=True,

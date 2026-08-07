@@ -83,3 +83,5 @@ BORDA_NOT_DARKMODE: Final[str] = COR_BORDA
 OVERLAY_MODAL: Final[str] = "#00000088"  # Preto com transparência (Alpha 88) - fundo de Modais/Popups
 HOVER: Final[str] = "#3C3C3C"            # Cor de fundo ao passar o mouse (hover)
 SURFACE: Final[str] = "#3C3C3C"          # Cor de superfícies elevadas (menus soltos, tooltips)
+
+ESTILO_BOTAO_CANCELAR = ft.ButtonStyle(color=ft.Colors.RED_700) # Estilo global compartilhado do botão "Cancelar" em todos os modais de curso para manter consistência de UI

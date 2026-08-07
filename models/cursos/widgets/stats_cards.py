@@ -2,6 +2,7 @@ import flet as ft
 
 def criar_stats_card(titulo: str, valor: str, cor_texto: str) -> ft.Container:
     """Renderiza um bloco que exibe um título cinza com um valor numérico em destaque abaixo."""
+    
     return ft.Container(
         expand=1,  # Faz os três cards dividirem o espaço horizontal da Row igualmente (1/3 cada)
         padding=15,

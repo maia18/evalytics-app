@@ -1,6 +1,6 @@
 import flet as ft
 from typing import Callable, Optional
-from utils.services.indicadores.indicadores_repository import atualizar_criterios
+from utils.services.indicadores.indicadores_repository import atualizar_criterios_indicador
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 
 NUM_CRITERIOS = 5
@@ -15,7 +15,7 @@ def criar_modal_criterios(page: ft.Page, estado: EstadoIndicadores) -> tuple[ft.
     # Coleta os dados dos campos e persiste os novos critérios do indicador
     def salvar_criterios(e: ft.ControlEvent) -> None:
         novos_criterios = {str(i + 1): (campos_criterios[i].value or "") for i in range(NUM_CRITERIOS)}
-        atualizar_criterios(estado.item_alvo.get("titulo"), estado.item_alvo.get("eixo"), novos_criterios)
+        atualizar_criterios_indicador(estado.item_alvo.get("titulo"), estado.item_alvo.get("eixo"), novos_criterios)
 
         page.snack_bar = ft.SnackBar(ft.Text("Critérios atualizados com sucesso!", color=ft.Colors.GREEN))
         page.snack_bar.open = True
