@@ -6,10 +6,11 @@ from database.services.firebase_config import db # Importa a instância ativa do
 logger = lg.getLogger(__name__)
 COLECAO_CURSOS = "cursos"
 
-# Adiciona um curso na coleção de cursos. Retorna o ID do documento criado, ou None em caso de erro.
 def adicionar_curso_db(codigo: str, nome: str, depto: str, coord: str) -> Optional[str]:
+    """Adiciona um curso na coleção de cursos. Retorna o ID do documento criado, ou None em caso de erro"""
+    
     try:
-        # Cria um dicionário (documento) para ser salvo no NoSQL do Firestore.
+        '''Cria um dicionário (documento) para ser salvo no NoSQL do Firestore'''
         novo_curso = {
             "codigo": codigo,
             "nome": nome,
@@ -23,16 +24,18 @@ def adicionar_curso_db(codigo: str, nome: str, depto: str, coord: str) -> Option
         logger.exception("Erro ao adicionar curso.")
         return None
 
-# Retorna a lista de cursos cadastrados, cada um incluindo seu ID de documento
 def obter_cursos_db() -> list[dict]:
+    """Retorna a lista de cursos cadastrados, cada um incluindo seu ID de documento"""    
+    
     try:
-        docs = db.collection(COLECAO_CURSOS).stream() # O .stream() busca todos os documentos de forma eficiente, em formato de gerador (generator).
+        docs = db.collection(COLECAO_CURSOS).stream() # O .stream() busca todos os documentos, em formato de gerador (generator).
         lista_cursos = []
         for doc in docs:
             dado = doc.to_dict() # Converte o documento bruto do Firebase para um dicionário Python normal.
             
             '''
-            É essencial injetar o ID no dicionário, caso contrário a interface gráfica (Flet) não saberá qual ID enviar de volta na hora de editar ou excluir a linha.
+            É essencial injetar o ID no dicionário. 
+                Caso contrário a interface gráfica (Flet) não saberá qual ID enviar de volta na hora de editar ou excluir a linha.
             '''
             dado["id"] = doc.id
             lista_cursos.append(dado)
@@ -41,8 +44,9 @@ def obter_cursos_db() -> list[dict]:
         logger.exception("Erro ao obter cursos.")
         return []
 
-# Atualiza um curso existente. Retorna True em caso de sucesso
 def atualizar_curso_db(doc_id: str, nome: str, depto: str, coord: str) -> bool:
+    """Atualiza um curso existente. Retorna True em caso de sucesso"""
+    
     try:
         # Busca o documento específico usando o ID e atualiza apenas os campos fornecidos.
         db.collection(COLECAO_CURSOS).document(doc_id).update({
@@ -55,8 +59,9 @@ def atualizar_curso_db(doc_id: str, nome: str, depto: str, coord: str) -> bool:
         logger.exception("Erro ao atualizar curso.")
         return False
 
-# Exclui um curso pelo ID do documento. Retorna True em caso de sucesso
 def excluir_curso_db(doc_id: str) -> bool:
+    """Exclui um curso pelo ID do documento. Retorna True em caso de sucesso"""
+    
     try:
         db.collection(COLECAO_CURSOS).document(doc_id).delete() # Remove o documento do Firestore permanentemente.
         return True

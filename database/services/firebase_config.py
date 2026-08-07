@@ -28,5 +28,4 @@ try:
 
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")
-    
     raise # O raise propaga o erro para impedir que a aplicação inicie se o banco estiver indisponível (Fail-fast).

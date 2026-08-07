@@ -1,15 +1,10 @@
 import flet as ft
 from typing import Callable
-
 from components.layout.responsive.responsive import ResponsiveLayout
-
 from models.avaliacoes.layout.conteudo_avaliacoes import criar_conteudo_avaliacoes
 
-def ViewAvaliacoes(
-    page: ft.Page, 
-    mudar_tela: Callable[[str], None]
-) -> ft.View:
-    """Constrói a página principal de Avaliações."""
+def ViewAvaliacoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
+    """Constrói a página principal de Avaliações"""
     
     # Configura a estrutura principal (Sidebar, Topbar) chamando o gerenciador de layout base
     layout = ResponsiveLayout(
@@ -23,4 +18,5 @@ def ViewAvaliacoes(
     conteudo = criar_conteudo_avaliacoes(layout, mudar_tela, page) 
     layout.add_content(conteudo) 
     
-    return layout.criar_view("/avaliacoes") # Retorna a View finalizada e montada para o roteador do Flet
+    # Retorna a View finalizada e montada para o roteador do Flet
+    return layout.criar_view("/avaliacoes") 

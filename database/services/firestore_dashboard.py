@@ -6,7 +6,7 @@ logger = lg.getLogger(__name__)
 COLECAO_AVALIACOES = "avaliacoes_institucionais"
 
 '''
-Mapeia a chave de nota (como armazenada no Firestore) para a chave de saída do resumo
+Mapeia a chave de nota (como armazenada no Firestore) para a chave de saída do resumo.
     O uso de uma tupla constante garante que você não itere sobre campos indesejados.
 '''
 CAMPOS_NOTAS = (
@@ -20,7 +20,7 @@ CAMPOS_NOTAS = (
 def obter_medias_dashboard() -> Optional[dict[str, float]]:
     """
     Calcula a média de cada indicador de avaliação institucional para o dashboard.
-    Retorna None se não houver avaliações registradas ou em caso de erro.
+        Retorna None se não houver avaliações registradas ou em caso de erro.
     """
     try:
         docs = db.collection(COLECAO_AVALIACOES).stream()
@@ -43,18 +43,18 @@ def obter_medias_dashboard() -> Optional[dict[str, float]]:
                 total_avaliacoes += 1
 
         '''
-        Cláusula de guarda essencial: impede um erro fatal de "Divisão por Zero" caso a coleção esteja vazia ou ninguém tenha preenchido o formulário.
+        Cláusula de guarda essencial: 
+            Impede um erro fatal de "Divisão por Zero" caso a coleção esteja vazia ou ninguém tenha preenchido o formulário.
         '''
         if total_avaliacoes == 0:
             return None
 
-        '''
-        Divide a soma total pelo número de avaliações, usando round(..., 1) para manter a interface visual limpa (ex: 4.3 em vez de 4.3333333).
-        '''
+        '''Divide a soma total pelo número de avaliações, usando round(..., 1) para manter a interface visual limpa (ex: 4.3 em vez de 4.3333333)'''
         return {
             campo: round(soma[campo] / total_avaliacoes, 1)
             for campo in CAMPOS_NOTAS
         }
+        
     except Exception:
         logger.exception("Erro ao buscar médias do dashboard.")
         return None

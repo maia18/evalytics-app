@@ -1,6 +1,5 @@
 import flet as ft
 from typing import Callable
-
 from components.core.constants.constants import (
     TEXTO_PRINCIPAL, 
     ALTURA_CARD_TABELA_DADOS,
@@ -22,7 +21,6 @@ def criar_conteudo_avaliacoes(layout, mudar_tela: Callable[[str], None], page: f
     '''
     Mesmo padrão de correção usado no dashboard: 
         expand=True fica no Container "de fora", enquanto scroll=AUTO fica isolado na Column "de dentro". 
-        O Flet possui um bug conhecido se os dois atributos forem combinados na mesma Column.
     '''
     return ft.Container(
         expand=True,
@@ -30,8 +28,7 @@ def criar_conteudo_avaliacoes(layout, mudar_tela: Callable[[str], None], page: f
             spacing=14,
             scroll=ft.ScrollMode.AUTO,
             controls=[
-                # Spacer invisível no topo para desgrudar a interface da margem superior da tela
-                ft.Container(height=8), 
+                ft.Container(height=8), # Spacer invisível no topo para desgrudar a interface da margem superior da tela
                 ft.Column(
                     spacing=4,
                     controls=[
