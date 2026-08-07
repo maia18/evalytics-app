@@ -1,5 +1,4 @@
 import logging
-
 from database.services.firebase_config import db
 from utils.services.indicadores_service import listar_indicadores
 
@@ -10,11 +9,12 @@ EIXO_PADRAO = 1  # Eixo fallback assumido quando um indicador não tem eixo defi
 EIXOS_PADRAO = (1, 2, 3)
 
 def calcular_medias_eixos() -> dict[int, float]:
-    """Calcula a média das avaliações cruzando dados de Eixos e Notas.
+    """
+    Calcula a média das avaliações cruzando dados de Eixos e Notas.
 
-    NOTA ARQUITETURAL: a lógica cruza as respostas pelo ID do indicador, porém o FormularioController 
-    atual está gravando usando o TÍTULO do indicador. Para que essa função opere corretamente 
-    em produção, é necessário parear as chaves (usar ID em ambos os lados).
+    NOTA ARQUITETURAL: 
+        A lógica cruza as respostas pelo ID do indicador, porém o FormularioController atual está gravando usando o TÍTULO do indicador.
+        Para que essa função opere corretamente  em produção, é necessário parear as chaves (usar ID em ambos os lados).
     """
     try:
         # Monta um dicionário em memória relacionando o ID de cada indicador ao seu eixo pertencente

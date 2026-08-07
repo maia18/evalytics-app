@@ -1,19 +1,19 @@
 from typing import Optional
 
 class AvaliacaoSession:
-    """Gerencia o estado temporário (State Management) de uma avaliação em andamento.
+    """
+    Gerencia o estado temporário (State Management) de uma avaliação em andamento.
 
-    NOTA: Identificado que o Controller do formulário atual gerencia seu próprio estado local. 
-    Esta classe pode atuar comso um excelente componente futuro para isolar o estado no `page.session.set()` do Flet, 
-    garantindo sobrevivência dos dados durante a navegação.
+    NOTA: 
+        O Controller do formulário atual gerencia seu próprio estado local. 
+        Esta classe pode atuar como um excelente componente futuro para isolar o estado no `page.session.set()` do Flet, garantindo sobrevivência dos dados durante a navegação.
     """
 
     def __init__(self) -> None:
         """Inicializa a sessão com valores nulos e um dicionário de respostas vazio."""
         self.professor_id: Optional[str] = None
         self.disciplina_id: Optional[str] = None
-        # Formato esperado: {"id_do_indicador_X": 4, "id_do_indicador_Y": 5}
-        self.respostas: dict[str, int] = {}
+        self.respostas: dict[str, int] = {} # Formato esperado: {"id_do_indicador_X": 4, "id_do_indicador_Y": 5}
 
     def iniciar_avaliacao(self, professor_id: str, disciplina_id: str) -> None:
         """Prepara a sessão para uma nova avaliação, reaproveitando a mesma instância na memória."""

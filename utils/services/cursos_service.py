@@ -1,16 +1,18 @@
 import logging
-
 from database.services.firebase_config import db
 
 logger = logging.getLogger(__name__)
 
-# ATENÇÃO ARQUITETURAL: esta constante aponta para a coleção "cursos" do Firestore, 
-# mas espera um formato de documento diferente (nome/modalidade/ativo) do outro arquivo de cursos do sistema. 
-# Recomenda-se unificar as assinaturas antes de ir para produção.
+'''
+ATENÇÃO ARQUITETURAL: 
+    Esta constante aponta para a coleção "cursos" do Firestore, mas espera um formato de documento diferente (nome/modalidade/ativo) do outro arquivo de cursos do sistema. 
+    Recomenda-se unificar as assinaturas antes de ir para produção.
+'''
 COLECAO_CURSOS = "cursos"
 
 def listar_cursos() -> list[dict]:
     """Busca todos os cursos cadastrados na coleção 'cursos' do Firestore."""
+    
     try:
         docs = db.collection(COLECAO_CURSOS).stream()
         return [{"id": doc.id, **doc.to_dict()} for doc in docs]
@@ -21,6 +23,7 @@ def listar_cursos() -> list[dict]:
 
 def criar_curso(nome: str, modalidade: str) -> None:
     """Cadastra um novo curso no Firestore."""
+    
     try:
         novo_curso = {
             "nome": nome,
