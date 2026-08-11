@@ -14,9 +14,7 @@ def ViewAvaliacoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         mudar_tela=mudar_tela,
     )
     
-    # Prepara o "miolo" da tela delegando a construção para a função extraída e injeta o conteúdo no layout global da aplicação
-    conteudo = criar_conteudo_avaliacoes(layout, mudar_tela, page) 
-    layout.add_content(conteudo) 
+    conteudo = criar_conteudo_avaliacoes(layout, mudar_tela, page) # Prepara o "miolo" da tela delegando a construção para a função extraída
+    layout.add_content(conteudo) # Injeta o conteúdo no layout global da aplicação
     
-    # Retorna a View finalizada e montada para o roteador do Flet
-    return layout.criar_view("/avaliacoes") 
+    return layout.criar_view("/avaliacoes") # Retorna a View finalizada e montada para o roteador do Flet

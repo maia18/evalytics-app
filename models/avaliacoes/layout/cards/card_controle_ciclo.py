@@ -12,14 +12,16 @@ def criar_card_controle_ciclo(layout, mudar_tela: Callable[[str], None], page: f
         content=ft.Text("EM ANDAMENTO", color=ft.Colors.WHITE, size=12, weight="bold"),
         bgcolor=ft.Colors.GREEN_600,
         padding=8,
-        border_radius=15,  # Bordas bem arredondadas, estilo pílula
+        border_radius=15,  # Bordas arredondadas, estilo pílula
     )
     
-    # Estrutura principal dividida em Parte Superior e Parte Inferior, separadas por um Divider
+    '''Estrutura principal dividida em Parte Superior e Parte Inferior, separadas por um Divider'''
     conteudo = ft.Column(
         spacing=14,
         controls=[
-            # --- PARTE SUPERIOR ---
+            # =====================================================================
+            #                           PARTE SUPERIOR
+            # =====================================================================
             ft.Row(
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 controls=[
@@ -48,19 +50,17 @@ def criar_card_controle_ciclo(layout, mudar_tela: Callable[[str], None], page: f
                                 icon=ft.Icons.CONTENT_COPY,
                                 bgcolor=ft.Colors.BLUE_50,
                                 color=ft.Colors.BLUE_700,
-                                on_click=lambda _: mostrar_feedback(
-                                    page, "Link copiado para a área de transferência!", sucesso=True
-                                ),
+                                on_click=lambda _: mostrar_feedback(page, "Link copiado para a área de transferência!", sucesso=True),
                             ),
                         ],
                     ),
                 ],
             ),
+            ft.Divider(color=ft.Colors.GREY_200), # Separador visual
             
-            # --- SEPARADOR VISUAL ---
-            ft.Divider(color=ft.Colors.GREY_200),
-            
-            # --- PARTE INFERIOR ---
+            # =====================================================================
+            #                           PARTE INFERIOR
+            # =====================================================================
             ft.Row(
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 controls=[

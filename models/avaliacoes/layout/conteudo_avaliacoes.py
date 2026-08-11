@@ -8,7 +8,7 @@ from models.avaliacoes.layout.cards.card_controle_ciclo import criar_card_contro
 from models.avaliacoes.layout.cards.card_tabela_dados import criar_card_tabela_dados
 
 def criar_conteudo_avaliacoes(layout, mudar_tela: Callable[[str], None], page: ft.Page) -> ft.Container:
-    """Isola os componentes visuais da tela de avaliações para permitir reaproveitamento em outras rotas."""
+    """Isola os componentes visuais da tela de avaliações para permitir reaproveitamento em outras rotas"""
 
     card_controle_ciclo = criar_card_controle_ciclo(layout, mudar_tela, page) # Instancia o card superior que exibe o status atual do ciclo e ações de controle
         
@@ -19,7 +19,7 @@ def criar_conteudo_avaliacoes(layout, mudar_tela: Callable[[str], None], page: f
     card_tabela_dados = criar_card_tabela_dados(layout, page, expand=False, height=ALTURA_CARD_TABELA_DADOS)
 
     '''
-    Mesmo padrão de correção usado no dashboard: 
+    Mesmo padrão de correção usado no dashboard:
         expand=True fica no Container "de fora", enquanto scroll=AUTO fica isolado na Column "de dentro". 
     '''
     return ft.Container(
