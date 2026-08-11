@@ -3,16 +3,22 @@ from typing import Callable
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from utils.services.indicadores.indicadores_repository import excluir_indicador
 
-def criar_modal_exclusao(page: ft.Page, estado: EstadoIndicadores, abrir_pasta: Callable[[str], None]) -> tuple[ft.AlertDialog, Callable]:    
-    """Painel de confirmação ('Tem certeza?') que exclui um indicador"""
+def criar_modal_exclusao(page: ft.Page, estado: EstadoIndicadores, abrir_pasta: Callable[[str], None]) -> tuple[ft.AlertDialog, Callable]:
+    """Painel de confirmação ('Tem certeza?') que exclui um indicador permanentemente."""
     
-    # Remove o indicador alvo e persiste a alteração.
+    # Remove o indicador da base de dados e recarrega a lista.
     def confirmar_exclusao(e: ft.ControlEvent) -> None:
         excluir_indicador(estado.item_alvo.get("titulo"), estado.item_alvo.get("eixo"))
 
-        page.snack_bar = ft.SnackBar(ft.Text("Indicador removido!", color=ft.Colors.RED))
+        page.snack_bar = ft.SnackBar(
+            ft.Text(
+                "Indicador removido!", 
+                color=ft.Colors.RED
+            )
+        )
         page.snack_bar.open = True
         modal.open = False
+        
         abrir_pasta(estado.pasta_titulo)
         page.update()
         
@@ -26,7 +32,7 @@ def criar_modal_exclusao(page: ft.Page, estado: EstadoIndicadores, abrir_pasta: 
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    # Captura o item selecionado antes de exibir a confirmação de exclusão
+    # Memoriza qual item foi clicado antes de revelar a tela de confirmação.
     def preparar_exclusao(item: dict) -> None:
         estado.definir_item_alvo(item)
         if modal not in page.overlay:

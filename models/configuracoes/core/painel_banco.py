@@ -8,10 +8,12 @@ def criar_painel_banco() -> ft.Container:
         content=ft.Column(
             spacing=20,
             controls=[
+                # Cabeçalho da seção
                 ft.Text("Gerenciamento de Dados", size=18, weight="bold"),
                 ft.Divider(color=ft.Colors.GREY_300),
                 ft.Text("Ferramentas para manutenção periódica do sistema.", color=ft.Colors.GREY_700),
 
+                # Linha agrupando as ações positivas/seguras de manutenção
                 ft.Row(
                     controls=[
                         ft.ElevatedButton("Backup Completo", icon=ft.Icons.DOWNLOAD, bgcolor=ft.Colors.GREEN_700, color=ft.Colors.WHITE),
@@ -19,6 +21,7 @@ def criar_painel_banco() -> ft.Container:
                     ]
                 ),
 
+                # Título de alerta para ações destrutivas
                 ft.Text(
                     "Zona de Risco", 
                     size=16, 
@@ -26,7 +29,7 @@ def criar_painel_banco() -> ft.Container:
                     weight="bold"
                 ),
                 
-                # Container vermelho para destacar funções de alto risco/destrutivas
+                # Container estilizado com fundo avermelhado (RED_50) para destacar funções de alto risco.
                 ft.Container(
                     padding=15, 
                     bgcolor=ft.Colors.RED_50, 
