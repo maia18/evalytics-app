@@ -1,5 +1,4 @@
 import flet as ft
-
 from components.core.constants.texts import NOMES_EIXOS
 from models.formulario.widgets.card_pergunta import criar_card_pergunta
 from models.formulario.widgets.stepper_eixos import criar_stepper_eixos
@@ -7,10 +6,10 @@ from models.formulario.widgets.stepper_eixos import criar_stepper_eixos
 class FormularioRenderMixin:
     """Mixin responsável por ler o estado atual do Controller e refleti-lo graficamente na tela."""
 
+    # Reconstrói cabeçalho, pergunta atual e rodapé com base no índice atual do formulário (estado)
     def atualizar_renderizacao(self) -> None:
-        """Reconstrói cabeçalho, pergunta atual e rodapé com base no índice atual do formulário (estado)."""
         
-        # Fallback de segurança se nenhum indicador foi cadastrado no banco
+        '''Fallback de segurança se nenhum indicador foi cadastrado no banco'''
         if not self.indicadores_ativos:
             self.area_dinamica.controls = [ft.Text("Nenhum indicador ativo.", color="onSurfaceVariant")]
             self.page.update()
@@ -47,14 +46,26 @@ class FormularioRenderMixin:
             ],
         )
 
-        # Constroi o card principal de slider
-        card = criar_card_pergunta(self.page, ind_atual, self.estado)
+        card = criar_card_pergunta(self.page, ind_atual, self.estado) # Constroi o card principal de slider
 
         # Monta os botões de ação do rodapé
-        btn_cancelar = ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="error", style=ft.ButtonStyle(color="error"), on_click=lambda _: self.mudar_tela("/inicio"))
+        btn_cancelar = ft.TextButton(
+            "Cancelar", 
+            icon=ft.Icons.CANCEL, 
+            icon_color="error", 
+            style=ft.ButtonStyle(color="error"), 
+            on_click=lambda _: self.mudar_tela("/inicio")
+        )
         
         # Desabilita o botão 'Anterior' se estivermos na primeira pergunta (índice 0)
-        btn_anterior = ft.ElevatedButton("Anterior", icon=ft.Icons.ARROW_BACK, bgcolor="surfaceVariant", color="onSurface", disabled=(self.estado["indice_atual"] == 0), on_click=self.anterior)
+        btn_anterior = ft.ElevatedButton(
+            "Anterior", 
+            icon=ft.Icons.ARROW_BACK, 
+            bgcolor="surfaceVariant", 
+            color="onSurface", 
+            disabled=(self.estado["indice_atual"] == 0), 
+            on_click=self.anterior
+        )
 
         eh_ultima_pergunta = self.estado["indice_atual"] == len(self.indicadores_ativos) - 1
         btn_avancar = ft.ElevatedButton(

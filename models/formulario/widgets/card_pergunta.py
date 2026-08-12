@@ -75,9 +75,7 @@ def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict) -> ft.Cont
 
     # Verifica se existe descrição para evitar criar espaço à toa
     descricao_texto = indicador.get("descricao", "")
-    controles_coluna = [
-        ft.Text(titulo_ind, size=18, weight="bold", color="onSurface"),
-    ]
+    controles_coluna = [ft.Text(titulo_ind, size=18, weight="bold", color="onSurface")]
     
     if descricao_texto:
         controles_coluna.append(ft.Text(descricao_texto, size=14, color="onSurfaceVariant"))
@@ -90,7 +88,9 @@ def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict) -> ft.Cont
     ])
 
     return ft.Container(
-        bgcolor="surface", padding=25, border_radius=12, 
+        bgcolor="surface", 
+        padding=25, 
+        border_radius=12, 
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="shadow"),
         content=ft.Column(
             spacing=10, 

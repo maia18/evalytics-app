@@ -7,8 +7,8 @@ from models.formulario.core.render import FormularioRenderMixin
 
 class FormularioController(FormularioStepsMixin, FormularioRenderMixin):
     """
-    Controller central do formulário: guarda o estado da pergunta atual e orquestra transições, 
-    delegando a montagem visual e a navegação aos mixins.
+    Controller central do formulário:
+        Guarda o estado da pergunta atual e orquestra transições, delegando a montagem visual e a navegação aos mixins.
     """
 
     def __init__(
