@@ -27,6 +27,7 @@ def main(page: ft.Page) -> None:
 if __name__ == "__main__":
     lg.basicConfig(level=lg.INFO) # Configura o sistema de logs para exibir mensagens a partir do nível INFO (ignora mensagens de DEBUG, mas mostra avisos e erros).
     ft.run(
+        
         main, 
         assets_dir="assets", # Pasta onde ficam os arquivos estáticos (imagens, ícones, etc.)
     )

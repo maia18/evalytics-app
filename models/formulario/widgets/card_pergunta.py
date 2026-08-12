@@ -35,9 +35,19 @@ def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict) -> ft.Cont
         )
         opcoes_radio.append(linha_opcao)
 
+<<<<<<< HEAD
     # Envolvemos a coluna de opções em um Container com altura máxima (height) 
     # e ativamos o scroll automático caso ultrapasse o limite.
+<<<<<<< HEAD
     # Se preferir que o card inteiro tenha scroll, você pode ajustar conforme sua necessidade.
+=======
+    # Se preferir que o card inteiro tenha scroll, você pode ajustar conforme sua necessidade
+>>>>>>> bcf34a3 ("card_pergunta atualizações")
+=======
+    
+    # scroll automático caso ultrapasse o limite.
+    
+>>>>>>> 6538c14 (Salva alteracoes locais antes do pull)
     container_opcoes_rolavel = ft.Container(
         content=ft.Column(
             spacing=10, 
@@ -48,7 +58,7 @@ def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict) -> ft.Cont
         padding=5,
     )
 
-    # Grupo de rádio gerencia as linhas
+
     grupo_radio = ft.RadioGroup(
         content=container_opcoes_rolavel,
         value=valor_inicial,
@@ -56,6 +66,7 @@ def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict) -> ft.Cont
     )
 
     # Verifica se existe descrição para evitar criar espaço à toa
+
     descricao_texto = indicador.get("descricao", "")
     controles_coluna = [
         ft.Text(titulo_ind, size=18, weight="bold", color="onSurface"),
