@@ -5,9 +5,9 @@ from components.layout.responsive.responsive import ResponsiveLayout
 from models.formulario.core.form_controller import FormularioController
 
 def ViewFormulario(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
-    """Constrói a tela de Avaliação Institucional (Formulário).
-
-    Delega a lógica de transição das perguntas e validação dos dados para o FormularioController.
+    """
+    Constrói a tela de Avaliação Institucional (Formulário).
+        Delega a lógica de transição das perguntas e validação dos dados para o FormularioController.
     """
     layout = ResponsiveLayout(
         page, titulo_pagina="Avaliação Institucional", subtitulo="Preencha o formulário abaixo para contribuir com a melhoria contínua.", mudar_tela=mudar_tela,
