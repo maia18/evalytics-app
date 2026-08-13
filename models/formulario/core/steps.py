@@ -18,7 +18,7 @@ class FormularioStepsMixin:
             if ind.get("eixo") == eixo_alvo:
                 self.estado["indice_atual"] = i
                 break
-
+        
         self.atualizar_renderizacao()
 
     # Soma +1 ao índice e avança. Caso seja a última pergunta, encerra o fluxo e carrega a tela de sucesso

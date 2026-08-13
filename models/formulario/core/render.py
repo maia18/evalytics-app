@@ -26,7 +26,7 @@ class FormularioRenderMixin:
 
         linha_stepper = criar_stepper_eixos(eixo_atual, self.pular_para_eixo)
         progresso_geral = (self.estado["indice_atual"] + 1) / len(self.indicadores_ativos)
-
+        
         cabecalho = ft.Column(
             spacing=15,
             controls=[
@@ -48,11 +48,13 @@ class FormularioRenderMixin:
 
         # Monta os botões de ação do rodapé
         btn_cancelar = ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="error", style=ft.ButtonStyle(color="error"), on_click=lambda _: self.mudar_tela("/inicio"))
-        
+            
         # Desabilita o botão 'Anterior' se estivermos na primeira pergunta (índice 0)
         btn_anterior = ft.OutlinedButton("Anterior", icon=ft.Icons.ARROW_BACK, disabled=(self.estado["indice_atual"] == 0), on_click=self.anterior)
-
+        
         eh_ultima_pergunta = self.estado["indice_atual"] == len(self.indicadores_ativos) - 1
+        
+        # Botão liberado por padrão, sem exigência de preenchimento
         btn_avancar = ft.ElevatedButton(
             "Finalizar" if eh_ultima_pergunta else "Avançar",
             icon=ft.Icons.CHECK if eh_ultima_pergunta else ft.Icons.ARROW_FORWARD,
@@ -69,6 +71,6 @@ class FormularioRenderMixin:
         
         # O card principal agora engole o rodapé para parecer uma coisa só!
         card_unificado = criar_card_pergunta(self.page, ind_atual, self.estado, rodape_integrado)
-
+        
         self.area_dinamica.controls = [cabecalho, card_unificado]
         self.page.update()
