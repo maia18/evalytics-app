@@ -29,3 +29,14 @@ try:
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")
     raise # O raise propaga o erro para impedir que a aplicação inicie se o banco estiver indisponível (Fail-fast).
+
+
+def load_firebase_config():
+  return {
+      "apiKey": "xxxxxxxxxxxxxxxxxxxxxx",
+      "authDomain": "xxxxxxxxxxxxxxxxxxxxx",
+      "projectId":  "xxxxxxxxxxxxxxxxxxxxx",
+      "storageBucket": "xxxxxxxxxxxxxxxxxxxxx",
+      "messagingSenderId": "xxxxxxxxxxxxxxxxxxxxx",
+      "appId": "xxxxxxxxxxxxxxxxxxxxx",
+  }
