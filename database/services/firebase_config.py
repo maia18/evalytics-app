@@ -22,6 +22,7 @@ try:
     if not firebase_admin._apps:
         cred = credentials.Certificate(str(CAMINHO_CREDENCIAIS))
         firebase_admin.initialize_app(cred)
+        
 
     '''Cria e exporta o cliente Firestore'''
     db: Client = firestore.client() # A variável 'db' se torna o ponto de entrada principal para ler e gravar dados
