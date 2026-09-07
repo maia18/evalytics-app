@@ -26,7 +26,7 @@ class FormularioRenderMixin:
 
         linha_stepper = criar_stepper_eixos(eixo_atual, self.pular_para_eixo)
         progresso_geral = (self.estado["indice_atual"] + 1) / len(self.indicadores_ativos)
-
+        
         cabecalho = ft.Column(
             spacing=15,
             controls=[
@@ -46,41 +46,31 @@ class FormularioRenderMixin:
             ],
         )
 
-        card = criar_card_pergunta(self.page, ind_atual, self.estado) # Constroi o card principal de slider
-
         # Monta os botões de ação do rodapé
-        btn_cancelar = ft.TextButton(
-            "Cancelar", 
-            icon=ft.Icons.CANCEL, 
-            icon_color="error", 
-            style=ft.ButtonStyle(color="error"), 
-            on_click=lambda _: self.mudar_tela("/inicio")
-        )
-        
+        btn_cancelar = ft.TextButton("Cancelar", icon=ft.Icons.CANCEL, icon_color="error", style=ft.ButtonStyle(color="error"), on_click=lambda _: self.mudar_tela("/inicio"))
+            
         # Desabilita o botão 'Anterior' se estivermos na primeira pergunta (índice 0)
-        btn_anterior = ft.ElevatedButton(
-            "Anterior", 
-            icon=ft.Icons.ARROW_BACK, 
-            bgcolor="surfaceVariant", 
-            color="onSurface", 
-            disabled=(self.estado["indice_atual"] == 0), 
-            on_click=self.anterior
-        )
-
+        btn_anterior = ft.OutlinedButton("Anterior", icon=ft.Icons.ARROW_BACK, disabled=(self.estado["indice_atual"] == 0), on_click=self.anterior)
+        
         eh_ultima_pergunta = self.estado["indice_atual"] == len(self.indicadores_ativos) - 1
+        
+        # Botão liberado por padrão, sem exigência de preenchimento
         btn_avancar = ft.ElevatedButton(
             "Finalizar" if eh_ultima_pergunta else "Avançar",
             icon=ft.Icons.CHECK if eh_ultima_pergunta else ft.Icons.ARROW_FORWARD,
-            bgcolor=ft.Colors.GREEN if eh_ultima_pergunta else "primary",
-            color=ft.Colors.WHITE if eh_ultima_pergunta else "onPrimary",
+            bgcolor=ft.Colors.GREEN_700 if eh_ultima_pergunta else ft.Colors.BLUE_700,
+            color=ft.Colors.WHITE,
             on_click=self.avancar,
         )
 
-        rodape = ft.Container(
-            padding=20, bgcolor="surface", border_radius=8, shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color="shadow"),
+        # Rodapé agora é apenas um conteiner sem bordas ou sombras próprias
+        rodape_integrado = ft.Container(
+            padding=ft.Padding.only(top=10),
             content=ft.Row(alignment=ft.MainAxisAlignment.SPACE_BETWEEN, controls=[btn_cancelar, ft.Row([btn_anterior, btn_avancar], spacing=10)])
         )
-
-        # Injeta os 3 blocos renderizados na tela ao mesmo tempo
-        self.area_dinamica.controls = [cabecalho, card, rodape]
+        
+        # O card principal agora engole o rodapé para parecer uma coisa só!
+        card_unificado = criar_card_pergunta(self.page, ind_atual, self.estado, rodape_integrado)
+        
+        self.area_dinamica.controls = [cabecalho, card_unificado]
         self.page.update()

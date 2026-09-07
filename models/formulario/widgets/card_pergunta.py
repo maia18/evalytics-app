@@ -1,100 +1,120 @@
 import flet as ft
 
-def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict) -> ft.Container:
+def criar_card_pergunta(page: ft.Page, indicador: dict, estado: dict, rodape: ft.Container) -> ft.Container:
     """Constrói o cartão central com opções, rolagem e um campo de justificativa para a pergunta."""
+    
     titulo_ind = indicador["titulo"]
     criterios = indicador.get("criterios", {})
 
-    # Resgata a resposta anterior do usuário (ou usa 3 como padrão inicial)
-    valor_inicial = str(estado["respostas"].get(titulo_ind, 3))
+    # Busca a resposta salva (se houver), sem forçar um falso positivo no Nível 3
+    valor_inicial = str(estado["respostas"].get(titulo_ind, ""))
     
     # Resgata a justificativa anterior (caso já exista no estado)
     # Certifique-se de inicializar o dicionário "justificativas" no seu estado global se ainda não houver.
-    if "justificativas" not in estado:
-        estado["justificativas"] = {}
-    justificativa_inicial = estado["justificativas"].get(titulo_ind, "")
+    # if "justificativas" not in estado:
+    #     estado["justificativas"] = {}
+    # justificativa_inicial = estado["justificativas"].get(titulo_ind, "")
 
     # Função disparada quando o usuário clica na bolinha de uma opção
     def ao_mudar_opcao(e: ft.ControlEvent) -> None:
         estado["respostas"][titulo_ind] = int(e.control.value)
-        page.update()
 
     # Função disparada quando o usuário digita algo na justificativa
-    def ao_mudar_justificativa(e: ft.ControlEvent) -> None:
-        estado["justificativas"][titulo_ind] = e.control.value
+    # def ao_mudar_justificativa(e: ft.ControlEvent) -> None:
+    #     estado["justificativas"][titulo_ind] = e.control.value
 
     # Cria a lista de opções com as bolinhas e os textos lado a lado
     opcoes_radio = []
     for chave, texto_criterio in sorted(criterios.items(), key=lambda x: str(x[0])):
-        label_texto = f"Nível {chave}: {texto_criterio}"
-        
-        linha_opcao = ft.Row(
-            alignment=ft.MainAxisAlignment.START,
-            vertical_alignment=ft.CrossAxisAlignment.START,
-            controls=[
-                ft.Radio(value=str(chave), fill_color="primary"),
-                ft.Container(
-                    expand=True, 
-                    content=ft.Text(
-                        label_texto, 
-                        color="onSurface", 
-                        size=14
+        linha_opcao = ft.Container(
+            padding=ft.Padding.symmetric(vertical=4),
+            content=ft.Row(
+                alignment=ft.MainAxisAlignment.START,
+                vertical_alignment=ft.CrossAxisAlignment.START,
+                controls=[
+                    ft.Radio(value=str(chave), active_color=ft.Colors.BLUE_700),
+                    ft.Container(
+                        expand=True, 
+                        padding=ft.Padding.only(top=12),
+                        content=ft.Text(f"Nível {chave}: {texto_criterio}", color=ft.Colors.BLACK87, size=14)
                     )
-                )
-            ]
+                ]
+            )
         )
         opcoes_radio.append(linha_opcao)
 
-    container_opcoes_rolavel = ft.Container(
-        content=ft.Column(
-            spacing=10, 
-            controls=opcoes_radio,
-            scroll=ft.ScrollMode.AUTO,
-        ),
-        height=200, # Reduzido levemente para dar espaço ao campo de texto no card
-        padding=5,
-    )
-
     grupo_radio = ft.RadioGroup(
-        content=container_opcoes_rolavel,
+        content=ft.Column(spacing=0, controls=opcoes_radio),
         value=valor_inicial,
         on_change=ao_mudar_opcao,
     )
 
-    # Campo de texto para a justificativa
     campo_justificativa = ft.TextField(
         label="Justificativa (Opcional)",
-        hint_text="Digite aqui os motivos ou evidências...",
-        value=justificativa_inicial,
         multiline=True,
-        min_lines=2,
+        min_lines=1,
         max_lines=3,
+        border_color=ft.Colors.GREY_300,
         text_size=14,
-        on_change=ao_mudar_justificativa,
+        content_padding=15,
+    )
+    
+    # Verifica se existe descrição adicional
+    descricao_texto = indicador.get("descricao", "")
+    
+    # Constrói os elementos da coluna principal
+    controles_coluna = [
+        ft.Text(titulo_ind, size=20, weight="bold", color=ft.Colors.BLACK87),
+    ]
+    if descricao_texto:
+        controles_coluna.append(ft.Text(descricao_texto, size=14, color="onSurfaceVariant", italic=True))
+        
+    controles_coluna.extend([
+        ft.Divider(height=1, color=ft.Colors.GREY_200),
+        grupo_radio,
+        ft.Container(height=10),
+        campo_justificativa,
+        ft.Divider(height=1, color=ft.Colors.GREY_200),
+        rodape 
+    ])
+    
+    # 1. CABEÇALHO FIXO
+    descricao_texto = indicador.get("descricao", "")
+    cabecalho_card = [
+        ft.Text(titulo_ind, size=20, weight="bold", color=ft.Colors.BLACK87),
+    ]
+    if descricao_texto:
+        cabecalho_card.append(ft.Text(descricao_texto, size=14, color="onSurfaceVariant", italic=True))
+    cabecalho_card.append(ft.Divider(height=1, color=ft.Colors.GREY_200))
+
+    # 2. ÁREA CENTRAL ROLÁVEL
+    # Isolamos as opções e a justificativa em uma coluna separada que expande e rola.
+    area_rolavel = ft.Column(
+        expand=True, # Empurra o rodapé para baixo, ocupando o espaço livre
+        scroll=ft.ScrollMode.AUTO, # A barra de rolagem só vai aparecer AQUI dentro
+        spacing=10,
+        controls=[
+            grupo_radio,
+            ft.Container(height=10),
+            campo_justificativa,
+        ]
     )
 
-    # Verifica se existe descrição para evitar criar espaço à toa
-    descricao_texto = indicador.get("descricao", "")
-    controles_coluna = [ft.Text(titulo_ind, size=18, weight="bold", color="onSurface")]
-    
-    if descricao_texto:
-        controles_coluna.append(ft.Text(descricao_texto, size=14, color="onSurfaceVariant"))
-    
-    # Adiciona os elementos na coluna principal do card
-    controles_coluna.extend([
-        grupo_radio,
-        ft.Divider(height=10, color="transparent"), # Pequeno espaçamento
-        campo_justificativa
-    ])
-
     return ft.Container(
-        bgcolor="surface", 
-        padding=25, 
+        bgcolor=ft.Colors.WHITE, 
+        padding=30, 
         border_radius=12, 
-        shadow=ft.BoxShadow(spread_radius=1, blur_radius=10, color="shadow"),
+        border=ft.Border.all(1, ft.Colors.GREY_200),
+        shadow=ft.BoxShadow(spread_radius=1, blur_radius=15, color=ft.Colors.BLACK12, offset=ft.Offset(0, 4)),
+        expand=True,
         content=ft.Column(
-            spacing=10, 
-            horizontal_alignment=ft.CrossAxisAlignment.START,
-            controls=controles_coluna,
+            spacing=15, 
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+            controls=[
+                *cabecalho_card,
+                area_rolavel,
+                ft.Divider(height=1, color=ft.Colors.GREY_200),
+                rodape # Fica ancorado no final, imune ao scroll!
+            ],
         ),
     )
