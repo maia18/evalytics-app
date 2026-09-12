@@ -19,6 +19,7 @@ try:
         (Ex: ValueError: The default Firebase app already exists)
     '''
     if not firebase_admin._apps:
+        
         #cred = credentials.Certificate(str(CAMINHO_CREDENCIAIS))
         # Força explicitamente o projectId do projeto ativo
         #firebase_admin.initialize_app(cred, {
