@@ -34,10 +34,10 @@ except Exception:
 
 def load_firebase_config():
   return {
-      "apiKey": "xxxxxxxxxxxxxxxxxxxxxx",
-      "authDomain": "xxxxxxxxxxxxxxxxxxxxx",
-      "projectId":  "xxxxxxxxxxxxxxxxxxxxx",
-      "storageBucket": "xxxxxxxxxxxxxxxxxxxxx",
-      "messagingSenderId": "xxxxxxxxxxxxxxxxxxxxx",
-      "appId": "xxxxxxxxxxxxxxxxxxxxx",
+      "apiKey": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "authDomain": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "projectId":  "XXXXXXXXXXXXXXXXXXXXX",
+      "storageBucket": "XXXXXXXXXXXXXXXXXXX",
+      "messagingSenderId": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      "appId": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   }
