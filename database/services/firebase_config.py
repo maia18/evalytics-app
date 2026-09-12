@@ -12,20 +12,25 @@ Resolve o caminho de forma robusta, independentemente de onde o script principal
 '''
 DIRETORIO_ATUAL = Path(__file__).resolve().parent
 CAMINHO_CREDENCIAIS = DIRETORIO_ATUAL / "firebase_credentials.json"
-
 try:
-    ''' 
+    '''      
     Garante que a inicialização ocorra apenas uma vez.
         Sem essa checagem, o Firebase lançaria um erro caso este arquivo fosse importado por múltiplos módulos simultaneamente:
         (Ex: ValueError: The default Firebase app already exists)
     '''
     if not firebase_admin._apps:
-        cred = credentials.Certificate(str(CAMINHO_CREDENCIAIS))
-        firebase_admin.initialize_app(cred)
+        #cred = credentials.Certificate(str(CAMINHO_CREDENCIAIS))
+        # Força explicitamente o projectId do projeto ativo
+        #firebase_admin.initialize_app(cred, {
+        #    "projectId": "avaliacao-mec"
+        #})
+        cred = credentials.Certificate("database/services/firebase_credentials.json")
+    firebase_admin.initialize_app(cred)
+    db = firestore.client(database_id="default")
         
 
-    '''Cria e exporta o cliente Firestore'''
-    db: Client = firestore.client() # A variável 'db' se torna o ponto de entrada principal para ler e gravar dados
+    # Especifica o database_id padrão do Firestore
+    #db: Client = firestore.client(database_id="(default)")
 
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")

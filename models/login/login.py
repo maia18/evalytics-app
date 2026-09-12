@@ -26,7 +26,7 @@ from components.core.constants.constants import (
 
 def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     
-    FIREBASE_API_KEY = "xxxxxxxxxxxxxxxxx"
+    FIREBASE_API_KEY = "xxxxxxxxxxxxxxxxxxxx"
 
     campo_nome = criar_campo_nome(COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO, COR_BORDA)
     campo_email = criar_campo_email(COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO, COR_BORDA)
@@ -48,7 +48,10 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         email = campo_email.controls[1].value.strip()
         senha = campo_senha.controls[1].value.strip()
         if not email or not senha:
-            page.open(ft.SnackBar(ft.Text("Preencha e-mail e senha!"), bgcolor=ft.Colors.RED_400))
+            snack = ft.SnackBar(ft.Text("Preencha e-mail e senha!"), bgcolor=ft.Colors.RED_400)
+            page.overlay.append(snack)
+            snack.open = True
+            page.update()
             return
 
         # Descobre se está na aba de Cadastro ou Entrar pelo estado do botão
