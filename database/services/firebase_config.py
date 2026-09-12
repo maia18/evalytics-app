@@ -19,7 +19,7 @@ try:
         (Ex: ValueError: The default Firebase app already exists)
     '''
     if not firebase_admin._apps:
-        
+
         #cred = credentials.Certificate(str(CAMINHO_CREDENCIAIS))
         # Força explicitamente o projectId do projeto ativo
         #firebase_admin.initialize_app(cred, {
@@ -28,6 +28,7 @@ try:
         cred = credentials.Certificate("database/services/firebase_credentials.json")
     firebase_admin.initialize_app(cred)
     db = firestore.client(database_id="default")
+    
         
 
     # Especifica o database_id padrão do Firestore
