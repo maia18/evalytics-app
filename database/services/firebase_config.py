@@ -29,10 +29,6 @@ try:
     firebase_admin.initialize_app(cred)
     db = firestore.client(database_id="default")
     
-        
-
-    # Especifica o database_id padrão do Firestore
-    
 
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")
