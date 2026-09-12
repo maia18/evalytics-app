@@ -30,7 +30,7 @@ try:
         
 
     # Especifica o database_id padrão do Firestore
-    #db: Client = firestore.client(database_id="(default)")
+    
 
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")
