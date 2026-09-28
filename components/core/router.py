@@ -15,7 +15,7 @@ from models.dashboard.dashboard import ViewDashboard
 from models.inicio.inicio import ViewInicio
 from models.cursos.cursos import ViewCursos
 from models.login.login import ViewLogin
-from models.landing.landing import ViewLanding
+from components.landing.landing import ViewLanding
 
 logger = lg.getLogger(__name__)
 

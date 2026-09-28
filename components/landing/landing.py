@@ -8,8 +8,8 @@ from components.landing.header import criar_header
 from components.landing.hero import criar_hero
 from components.landing.recursos import criar_secao_recursos
 from components.landing.sobre import criar_secao_sobre
-from components.landing.cta import criar_cta
-from components.landing.rodape import criar_rodape
+from components.landing.widgets.cta import criar_cta
+from components.landing.widgets.rodape import criar_rodape
 
 def ViewLanding(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """Cria e retorna a View principal da Landing Page."""

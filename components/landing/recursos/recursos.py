@@ -6,7 +6,7 @@ from components.core.constants.constants import (
     COR_CARD,
 )
 
-from components.landing.helpers import criar_card_recurso
+from components.landing.recursos.card import criar_card_responsivo
 
 
 def criar_secao_recursos() -> ft.Container:
@@ -44,28 +44,28 @@ def criar_secao_recursos() -> ft.Container:
         alignment=ft.MainAxisAlignment.CENTER,
         run_spacing=18,
         controls=[
-            _card(
+            criar_card_responsivo(
                 ft.Icons.RATE_REVIEW_OUTLINED,
                 "Avaliações",
                 "Colete e organize avaliações institucionais "
                 "de forma estruturada.",
             ),
 
-            _card(
+            criar_card_responsivo(
                 ft.Icons.INSERT_CHART_OUTLINED,
                 "Indicadores",
                 "Acompanhe indicadores para compreender "
                 "os resultados das avaliações.",
             ),
 
-            _card(
+            criar_card_responsivo(
                 ft.Icons.SCHOOL_OUTLINED,
                 "Cursos",
                 "Organize informações relacionadas aos "
                 "cursos e à realidade acadêmica.",
             ),
 
-            _card(
+            criar_card_responsivo(
                 ft.Icons.ASSESSMENT_OUTLINED,
                 "Relatórios",
                 "Visualize resultados de forma organizada "
@@ -88,28 +88,5 @@ def criar_secao_recursos() -> ft.Container:
                 titulo_recursos,
                 cards_recursos,
             ],
-        ),
-    )
-
-
-def _card(
-    icone,
-    titulo: str,
-    descricao: str,
-) -> ft.Container:
-
-    return ft.Container(
-        col={
-            "xs": 12,
-            "sm": 12,
-            "md": 6,
-            "lg": 3,
-            "xl": 3,
-        },
-        alignment=ft.Alignment.CENTER,
-        content=criar_card_recurso(
-            icone,
-            titulo,
-            descricao,
         ),
     )
