@@ -15,6 +15,7 @@ from models.dashboard.dashboard import ViewDashboard
 from models.inicio.inicio import ViewInicio
 from models.cursos.cursos import ViewCursos
 from models.login.login import ViewLogin
+from models.landing.landing import ViewLanding
 
 logger = lg.getLogger(__name__)
 
@@ -28,7 +29,8 @@ ViewBuilder = Callable[[ft.Page, Callable[[str], None]], ft.View]
 Constantes que definem os caminhos (paths) da aplicação.
     O uso de constantes previne bugs causados por erros de digitação (ex: "/dshboard") e facilita a alteração de nomes no futuro, centralizando as rotas em um só lugar.
 '''
-ROTA_LOGIN = "/"
+ROTA_INICIAL = "/"
+ROTA_LOGIN = "/login"
 ROTA_INICIO = "/inicio"
 ROTA_DASHBOARD = "/dashboard"
 ROTA_AVALIACOES = "/avaliacoes"
@@ -42,7 +44,8 @@ O dicionário ROTAS funciona como uma "Tabela de Roteamento".
 Ele vincula diretamente a string da rota (chave) ao construtor da tela (valor).
 '''
 ROTAS: dict[str, ViewBuilder] = {
-    ROTA_LOGIN: ViewLogin,                  # Rota inicial (login)
+    ROTA_INICIAL: ViewLanding,              # Rota inicial
+    ROTA_LOGIN: ViewLogin,                  # Rota de login
     ROTA_INICIO: ViewInicio,                # Página principal
     ROTA_DASHBOARD: ViewDashboard,          # Página de Dashboard
     ROTA_AVALIACOES: ViewAvaliacoes,        # Página de avaliações

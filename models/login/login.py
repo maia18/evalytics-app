@@ -124,7 +124,7 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     )
 
     return ft.View(
-        route="/", 
+        route="/login", 
         bgcolor=COR_FUNDO,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
         vertical_alignment=ft.MainAxisAlignment.CENTER,
