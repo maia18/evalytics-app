@@ -6,7 +6,6 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
 )
 
-
 def criar_sobre_conteudo() -> ft.Column:
 
     return ft.Column(

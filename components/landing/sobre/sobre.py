@@ -3,7 +3,6 @@ import flet as ft
 from components.landing.sobre.conteudo import criar_sobre_conteudo
 from components.landing.sobre.visual import criar_sobre_visual
 
-
 def criar_secao_sobre() -> ft.Container:
 
     sobre_conteudo = criar_sobre_conteudo()

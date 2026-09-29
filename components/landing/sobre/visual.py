@@ -8,7 +8,6 @@ from components.core.constants.constants import (
 
 from components.landing.helpers import criar_etapa
 
-
 def criar_sobre_visual() -> ft.Container:
 
     return ft.Container(
