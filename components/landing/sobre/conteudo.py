@@ -7,10 +7,16 @@ from components.core.constants.constants import (
 )
 
 def criar_sobre_conteudo() -> ft.Column:
+    """
+    Gera o bloco de texto explicativo da seção "Sobre o Evalytics".
+        Define a hierarquia visual usando diferentes tamanhos e pesos de fonte.
+    """
 
     return ft.Column(
-        spacing=16,
+        spacing=16, # Espaçamento uniforme entre os parágrafos para boa legibilidade
         controls=[
+            
+            # Título principal da seção
             ft.Text(
                 "Sobre o Evalytics",
                 size=28,
@@ -18,6 +24,7 @@ def criar_sobre_conteudo() -> ft.Column:
                 color=COR_TEXTO_TITULO,
             ),
 
+            # Primeiro parágrafo (Introdução)
             ft.Text(
                 "O Evalytics foi pensado para centralizar o processo "
                 "de avaliação institucional em uma única plataforma.",
@@ -25,6 +32,7 @@ def criar_sobre_conteudo() -> ft.Column:
                 color=COR_TEXTO_SECUNDARIO,
             ),
 
+            # Segundo parágrafo (Detalhes práticos)
             ft.Text(
                 "A proposta é facilitar a coleta, organização e "
                 "análise das informações produzidas pelas avaliações, "
@@ -34,11 +42,12 @@ def criar_sobre_conteudo() -> ft.Column:
                 color=COR_TEXTO_SECUNDARIO,
             ),
 
+            # Frase de impacto final (Destaque visual)
             ft.Text(
                 "Da avaliação à melhoria contínua.",
                 size=16,
-                weight=ft.FontWeight.BOLD,
-                color=COR_PRIMARIA,
+                weight=ft.FontWeight.BOLD, # Negrito para reforçar o slogan
+                color=COR_PRIMARIA,        # Uso da cor da marca para chamar atenção
             ),
         ],
     )
