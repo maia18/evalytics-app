@@ -36,7 +36,7 @@ ALTURA_CARD_TABELA_DADOS = 420 # Define uma altura fixa para o card da tabela, e
 # Centraliza as configurações visuais para manter consistência
 PADDING_CARD_PADRAO = 20
 BORDA_RADIUS_CARD_PADRAO = 10
-SOMBRA_CARD_PADRAO = ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK12)
+SOMBRA_CARD_PADRAO = ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK_12)
 
 # =====================================================================
 # COMPONENTES (MENU)
