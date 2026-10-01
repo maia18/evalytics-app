@@ -16,11 +16,9 @@ def montar_botoes_menu(
     cor_texto: str,
     mudar_tela: Callable[[str], None],
 ) -> list[ft.Control]:
-    """Constrói a lista de controles de menu aplicando `builder` a cada item.
-
-    Compartilhado entre a sidebar completa e a sidebar colapsada, que diferem
-    apenas na função construtora (`criar_item_menu` vs `criar_botao_icon`) e
-    na lista de itens percorrida.
+    """
+    Constrói a lista de controles de menu aplicando `builder` a cada item.
+        Compartilhado entre a sidebar completa e a sidebar colapsada, que diferem apenas na função construtora (`criar_item_menu` vs `criar_botao_icon`) e na lista de itens percorrida.
     """
     
     # Utiliza List Comprehension nativa do Python para gerar a lista de botões finais de forma otimizada

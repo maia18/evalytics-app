@@ -14,8 +14,7 @@ def criar_secao_sobre() -> ft.Container:
     sobre_visual = criar_sobre_visual()
 
     return ft.Container(
-        # Cria uma âncora para permitir navegação direta via scroll (ex: link no menu superior)
-        key=ft.ScrollKey("sobre"),
+        key=ft.ScrollKey("sobre"), # Cria uma âncora para permitir navegação direta via scroll (ex: link no menu superior)
         padding=ft.Padding.symmetric(
             horizontal=20,
             vertical=75, # Mantém a consistência de respiro vertical com as outras seções
@@ -24,7 +23,7 @@ def criar_secao_sobre() -> ft.Container:
         # O ResponsiveRow divide a tela em 12 colunas imaginárias
         content=ft.ResponsiveRow(
             columns=12,
-            alignment=ft.MainAxisAlignment.CENTER,       # Centraliza o bloco todo horizontalmente
+            alignment=ft.MainAxisAlignment.CENTER, # Centraliza o bloco todo horizontalmente
             vertical_alignment=ft.CrossAxisAlignment.CENTER, # Centraliza os itens pelo eixo vertical (meio a meio)
             run_spacing=35, # Espaçamento gerado quando a tela é pequena e o visual "cai" para debaixo do texto
             controls=[

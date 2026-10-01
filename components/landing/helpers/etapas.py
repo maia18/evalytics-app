@@ -56,10 +56,8 @@ def criar_etapa(numero: str, titulo: str, descricao: str) -> ft.Row:
             # Agrupa título e descrição.
             ft.Column(
                 spacing=2,
-
-                # Permite que o conteúdo utilize toda a largura disponível.
-                expand=True,
-
+                expand=True, # Permite que o conteúdo utilize toda a largura disponível.
+                
                 controls=[
 
                     # Título principal da etapa.

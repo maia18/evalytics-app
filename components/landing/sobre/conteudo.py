@@ -7,10 +7,7 @@ from components.core.constants.constants import (
 )
 
 def criar_sobre_conteudo() -> ft.Column:
-    """
-    Gera o bloco de texto explicativo da seção "Sobre o Evalytics".
-        Define a hierarquia visual usando diferentes tamanhos e pesos de fonte.
-    """
+    """Gera o bloco de texto explicativo da seção "Sobre o Evalytics"."""
 
     return ft.Column(
         spacing=16, # Espaçamento uniforme entre os parágrafos para boa legibilidade

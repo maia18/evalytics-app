@@ -8,9 +8,7 @@ from components.core.constants.constants import (
 )
 
 def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callable) -> ft.Column:
-    """
-    Cria a estrutura de texto e botões da seção Hero (Copywriting da página).
-    """
+    """Cria a estrutura de texto e botões da seção Hero (Copywriting da página)."""
 
     return ft.Column(
         spacing=18,
@@ -49,7 +47,6 @@ def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callab
             ft.Container(height=5),
 
             # 4. Botões de Ação (CTAs) em uma ResponsiveRow
-            # Usar ResponsiveRow aqui garante que os botões fiquem lado a lado no PC e empilhados um embaixo do outro no Celular.
             ft.ResponsiveRow(
                 columns=12,
                 run_spacing=10, # Espaço vertical entre os botões quando eles quebram de linha no mobile

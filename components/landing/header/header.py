@@ -6,13 +6,16 @@ from components.landing.header.logo import criar_logo
 from components.landing.header.desktop import criar_menu_desktop
 from components.landing.header.mobile import criar_menu_mobile
 
-def criar_header(page: ft.Page, mudar_tela: Callable[[str], None], ir_para_recursos: Callable, ir_para_sobre: Callable) -> ft.ResponsiveRow:
+def criar_header(
+    page: ft.Page, 
+    mudar_tela: Callable[[str], None], 
+    ir_para_recursos: Callable, 
+    ir_para_sobre: Callable
+) -> ft.ResponsiveRow:
     """
     Cria o cabeçalho responsivo da Landing Page.
 
-    Este componente atua como uma camada de composição,
-    reunindo os elementos responsáveis pela identidade
-    visual e pela navegação da aplicação.
+    Este componente atua como uma camada de composição, reunindo os elementos responsáveis pela identidade visual e pela navegação da aplicação.
 
     Estrutura:
 
@@ -109,10 +112,7 @@ def criar_header(page: ft.Page, mudar_tela: Callable[[str], None], ir_para_recur
         xs / sm  -> Mobile
         md / lg / xl -> Desktop
     
-    A estratégia adotada consiste em manter
-    os dois layouts disponíveis e controlar
-    sua exibição através das colunas do
-    ResponsiveRow.
+    A estratégia adotada consiste em manter os dois layouts disponíveis e controlar sua exibição através das colunas do ResponsiveRow.
     '''
     return ft.ResponsiveRow(
         columns=12,

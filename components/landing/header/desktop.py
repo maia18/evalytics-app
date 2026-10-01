@@ -6,7 +6,11 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
 )
 
-def criar_menu_desktop(mudar_tela: Callable[[str], None], ir_para_recursos: Callable, ir_para_sobre: Callable) -> ft.Row:
+def criar_menu_desktop(
+    mudar_tela: Callable[[str], None], 
+    ir_para_recursos: Callable, 
+    ir_para_sobre: Callable
+) -> ft.Row:
     """
     Cria o menu de navegação para dispositivos desktop.
 

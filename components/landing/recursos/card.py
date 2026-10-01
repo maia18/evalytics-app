@@ -1,6 +1,6 @@
 import flet as ft
 
-from components.landing.helpers import criar_card_recurso # Importa o componente visual base (o design do card em si) 
+from components.landing.helpers import criar_card_recurso
 
 def criar_card_responsivo(icone, titulo: str, descricao: str) -> ft.Container:
     """

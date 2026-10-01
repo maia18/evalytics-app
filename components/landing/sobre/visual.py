@@ -9,10 +9,7 @@ from components.core.constants.constants import (
 from components.landing.helpers import criar_etapa # Importação de um helper que cria as linhas de passo-a-passo (01, 02, 03)
 
 def criar_sobre_visual() -> ft.Container:
-    """
-    Cria um componente visual simulando um mini-painel ou infográfico.
-        Exibe o "Fluxo de avaliação" passo a passo.
-    """
+    """Cria um componente visual simulando um mini-painel ou infográfico."""
 
     return ft.Container(
         width=420,       # Limita a largura para manter a estética de um card elegante

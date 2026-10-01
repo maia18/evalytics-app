@@ -2,9 +2,9 @@ import flet as ft
 from components.core.constants.constants import COR_PRIMARIA, TEXTO_PRINCIPAL
 
 def criar_logo(cores: dict[str, str], compact: bool = False) -> ft.Container:
-    """Cria o cabeçalho da marca na parte superior do menu.
-
-    Responde à flag de menu compactado para omitir o texto da marca se necessário.
+    """
+    Cria o cabeçalho da marca na parte superior do menu.
+        Responde à flag de menu compactado para omitir o texto da marca se necessário.
     """
     
     # Se a flag 'compact' for True, renderiza apenas o ícone centralizado, ideal para o menu colapsado

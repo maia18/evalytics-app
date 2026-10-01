@@ -32,8 +32,7 @@ def criar_rodape() -> ft.Container:
             alignment=ft.MainAxisAlignment.CENTER,       # Alinha o conteúdo horizontalmente
             vertical_alignment=ft.CrossAxisAlignment.CENTER, # Alinha os textos pelo meio na vertical
             
-            # Espaço vertical de 8px caso os itens precisem quebrar de linha (ex: no celular)
-            run_spacing=8, 
+            run_spacing=8, # Espaço vertical de 8px caso os itens precisem quebrar de linha (ex: no celular)
             
             controls=[
                 
