@@ -7,10 +7,13 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
 )
 
-def criar_menu_mobile(page: ft.Page, mudar_tela: Callable[[str], None], ir_para_recursos: Callable, ir_para_sobre: Callable) -> ft.Column:
-    """
-    Cria o menu de navegação mobile, incluindo abertura e fechamento do menu.
-    """
+def criar_menu_mobile(
+    page: ft.Page, 
+    mudar_tela: Callable[[str], None], 
+    ir_para_recursos: Callable, 
+    ir_para_sobre: Callable
+) -> ft.Column:
+    """Cria o menu de navegação mobile, incluindo abertura e fechamento do menu."""
 
     menu_mobile_aberto = False
 

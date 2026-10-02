@@ -13,7 +13,6 @@ def montar_view(
     ajustar_responsividade: Callable[..., None],
     page: ft.Page,
 ) -> ft.View:
-    
     """Estrutura fisicamente a página final, definindo camadas (z-index) e eixos."""
     
     page.on_resize = ajustar_responsividade  # Vincula o resize nativo à função de ajuste
@@ -49,6 +48,7 @@ def montar_view(
                             ),
                         ],
                     ),
+                    
                     overlay,          # Camada oculta ativada ao abrir o menu mobile
                     sidebar_mobile,   # Menu fora de tela inicialmente
                 ],

@@ -3,9 +3,7 @@ import flet as ft
 from components.core.constants.constants import COR_TEXTO_TITULO
 
 def criar_logo() -> ft.Row:
-    """
-    Cria o componente de identidade visual da aplicação.
-    """
+    """Cria o componente de identidade visual da aplicação."""
 
     return ft.Row(
         spacing=10,

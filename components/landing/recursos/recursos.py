@@ -6,8 +6,7 @@ from components.core.constants.constants import (
     COR_CARD,
 )
 
-from components.landing.recursos.card import criar_card_responsivo # Importa o wrapper responsivo que acabamos de comentar acima
-
+from components.landing.recursos.card import criar_card_responsivo
 
 def criar_secao_recursos() -> ft.Container:
     """
@@ -78,8 +77,7 @@ def criar_secao_recursos() -> ft.Container:
 
     # 3. Retorna o Container "Pai" da seção
     return ft.Container(
-        # Permite usar page.scroll_to(key="recursos") no clique do botão "Conhecer a plataforma" do Hero.
-        key=ft.ScrollKey("recursos"), 
+        key=ft.ScrollKey("recursos"), # Permite usar page.scroll_to(key="recursos") no clique do botão "Conhecer a plataforma" do Hero.
 
         # Espaçamento generoso para separar visualmente esta seção da anterior e da próxima
         padding=ft.Padding.symmetric(

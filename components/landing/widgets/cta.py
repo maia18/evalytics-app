@@ -6,7 +6,7 @@ from components.core.constants.constants import COR_PRIMARIA
 def criar_cta(mudar_tela: Callable[[str], None]) -> ft.Container:
     """
     Cria a seção CTA (Call To Action) da Landing Page.
-        Esta seção tem o objetivo de incentivar o usuário a acessar a plataforma através de uma chamada visual destacada e um botão de ação.
+        Tem o objetivo de incentivar o usuário a acessar a plataforma através de uma chamada visual destacada e um botão de ação.
     """
 
     return ft.Container(

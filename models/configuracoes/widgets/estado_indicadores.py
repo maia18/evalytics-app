@@ -4,7 +4,7 @@ from typing import Callable, Optional
 class EstadoIndicadores:
     """
     Estado compartilhado entre a listagem de pastas/indicadores e os modais de gerenciamento.
-    Centraliza as referências às funções que abrem cada modal e ao container de conteúdo da aba ativa — evitando que sejam repassadas (e esquecidas) através de lambdas.
+        Centraliza as referências às funções que abrem cada modal e ao container de conteúdo da aba ativa — evitando que sejam repassadas (e esquecidas) através de lambdas.
     """
     
     def __init__(self) -> None:

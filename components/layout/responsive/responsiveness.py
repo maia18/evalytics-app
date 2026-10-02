@@ -24,11 +24,7 @@ def ajustar_responsividade(
     dark_mode: bool,
     mudar_tela: Optional[Callable[[str], None]],
 ) -> None:
-    """
-    Ajusta o layout da interface conforme a largura da janela.
-
-    Evita reconstruir a sidebar quando a categoria de layout (mobile / compacta / desktop) não mudou desde o último ajuste, para não reconstruir widgets a cada pixel de redimensionamento.
-    """
+    """Ajusta o layout da interface conforme a largura da janela."""
     categoria = _categoria_layout(page.width)
 
     if sidebar_desktop.data == categoria:
