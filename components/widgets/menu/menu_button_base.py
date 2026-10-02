@@ -9,6 +9,7 @@ from components.core.constants.constants import (
     HOVER_CLARO_BOTAO_MENU,
 )
 
+
 def criar_botao_menu_base(
     content: ft.Control,
     rota: str,
@@ -18,53 +19,47 @@ def criar_botao_menu_base(
     expand: bool = False,
     on_click: Optional[Callable[[ft.ControlEvent], None]] = None,
 ) -> ft.Container:
-<<<<<<< HEAD
-    """Casca compartilhada de um botão de navegação do menu (sidebar).
-
-    Usada tanto pelo botão só-com-ícone (versão colapsada) quanto pelo
-    botão ícone+texto (versão completa) — a diferença entre eles fica
-    inteiramente no `content` recebido.
     """
-    
+    Casca compartilhada de um botão de navegação do menu (sidebar).
+
+    É utilizada tanto pelo botão somente com ícone
+    quanto pelo botão com ícone + texto.
+
+    A diferença visual entre eles fica no parâmetro `content`.
+    """
+
     def executar_click(e: ft.ControlEvent) -> None:
+        # Se houver uma ação específica, ela tem prioridade.
         if on_click:
             on_click(e)
+
+        # Caso contrário, utiliza a navegação padrão.
         elif mudar_tela:
             mudar_tela(rota)
 
-=======
-    """Casca compartilhada de um botão de navegação do menu (sidebar)."""
-    
->>>>>>> ea794a06b2548ae4a0bed3f239fa3214c9fd367e
     return ft.Container(
-        height=ALTURA_BOTAO_MENU, # Trava a altura do botão com base na sua constante global
-        alignment=alignment, # Útil para centralizar o botão de ícone ou alinhar o de texto
+        height=ALTURA_BOTAO_MENU,
+        alignment=alignment,
 
         content=ft.TextButton(
             expand=expand,
-            content=content, # Aqui é injetado o conteúdo visual (Row com texto ou só o Icon)
+            content=content,
+
             style=ft.ButtonStyle(
                 padding=PADDING_BOTAO_MENU,
-<<<<<<< HEAD
+
                 shape=ft.RoundedRectangleBorder(
-                    radius=RAIO_BOTAO_MENU
+                    radius=RAIO_BOTAO_MENU,
                 ),
-                
-                # Define a cor de fundo dinamicamente quando o mouse passa por cima, com base no tema claro/escuro
+
+                # Hover adaptado ao tema atual
                 overlay_color=(
                     HOVER
                     if dark_mode
                     else HOVER_CLARO_BOTAO_MENU
                 ),
             ),
-            
-            # Executa a função de mudança de rota se houver uma função injetada (evita erro caso mudar_tela seja None)
+
             on_click=executar_click,
-=======
-                shape=ft.RoundedRectangleBorder(radius=RAIO_BOTAO_MENU),
-                overlay_color=HOVER if dark_mode else HOVER_CLARO_BOTAO_MENU, # Define a cor de fundo dinamicamente quando o mouse passa por cima, com base no tema claro/escuro
-            ),
-            on_click=lambda _: mudar_tela(rota) if mudar_tela else None, # Executa a função de mudança de rota se houver uma função injetada (evita erro caso mudar_tela seja None)
->>>>>>> ea794a06b2548ae4a0bed3f239fa3214c9fd367e
         ),
     )

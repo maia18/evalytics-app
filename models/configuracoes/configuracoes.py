@@ -1,17 +1,13 @@
 import flet as ft
 from typing import Callable
-
 from components.layout.responsive.responsive import ResponsiveLayout
-<<<<<<< HEAD
 from components.core.constants.constants import (
     TEXTO_PRINCIPAL, 
     CARD,
     TEXTO_SECUNDARIO,
     BORDA,
 )
-=======
 from models.configuracoes.widgets.configuracoes_ui import criar_layout_principal
->>>>>>> ea794a06b2548ae4a0bed3f239fa3214c9fd367e
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from models.configuracoes.modals.modal_criterios import criar_modal_criterios
 from models.configuracoes.modals.modal_exclusao import criar_modal_exclusao
@@ -39,12 +35,8 @@ def ViewConfiguracoes(
     # INICIA O GERENCIADOR DE ESTADO
     # =====================================================================
     estado = EstadoIndicadores() 
-<<<<<<< HEAD
     estado.cores = layout.cores
-
-=======
     
->>>>>>> ea794a06b2548ae4a0bed3f239fa3214c9fd367e
     def ir_para_pasta(titulo: str) -> None:
         """Injetada nos modais para forçar a atualização visual da pasta atual após salvar/deletar dados."""
         abrir_pasta(page, titulo, estado)
@@ -78,7 +70,6 @@ def ViewConfiguracoes(
     )
     estado.area_conteudo_aba = area_conteudo_aba
 
-<<<<<<< HEAD
     '''Montagem da hierarquia visual final da página'''
     conteudo = ft.Column(
         expand=True,
@@ -110,10 +101,8 @@ def ViewConfiguracoes(
         ],
     )
 
-=======
     # Montagem e renderização
     conteudo = criar_layout_principal(layout.cores, menu_abas, area_conteudo_aba)
->>>>>>> ea794a06b2548ae4a0bed3f239fa3214c9fd367e
     layout.add_content(conteudo)
     
     return layout.criar_view("/configuracoes")

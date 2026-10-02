@@ -27,7 +27,6 @@ MAPA_EIXOS: dict[str, int] = {
     "Infraestrutura": 3,
 }
 
-<<<<<<< HEAD
 
 def criar_layout_pastas(
     page: ft.Page,
@@ -46,6 +45,7 @@ def criar_layout_pastas(
         expand=True,
         spacing=25,
         controls=[
+            # Título
             ft.Text(
                 "Gerenciar Indicadores",
                 size=22,
@@ -53,30 +53,14 @@ def criar_layout_pastas(
                 color=cores[TEXTO_PRINCIPAL],
             ),
 
+            # Descrição
             ft.Text(
                 "Organize os indicadores por eixo de avaliação.",
                 size=14,
                 color=cores[TEXTO_SECUNDARIO],
             ),
 
-=======
-def criar_layout_pastas(
-    page: ft.Page, 
-    estado: EstadoIndicadores, 
-    callback_abrir: Callable[[str], None]
-) -> ft.Column:
-    """Monta a listagem inicial visual de pastas (uma por eixo), buscando as contagens atualizadas."""
-    return ft.Column(
-        expand=True, 
-        spacing=25,
-        controls=[
-            ft.Text(
-                "Gerenciar Indicadores", 
-                size=22, 
-                weight="bold", 
-                color=ft.Colors.BLACK87
-            ),
->>>>>>> ea794a06b2548ae4a0bed3f239fa3214c9fd367e
+            # Lista de Eixos
             ft.Column(
                 spacing=15,
                 controls=[
