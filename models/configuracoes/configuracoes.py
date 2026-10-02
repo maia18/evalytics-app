@@ -15,7 +15,7 @@ from models.configuracoes.modals.modal_edicao import criar_modal_edicao
 from models.configuracoes.modals.modal_novo import criar_modal_novo
 from models.configuracoes.core.painel_seguranca import criar_painel_seguranca
 from models.configuracoes.core.painel_banco import criar_painel_banco
-from models.configuracoes.core.pastas import criar_layout_pastas, abrir_pasta
+from models.configuracoes.core.pastas import criar_layout_pastas, abrir_pasta, voltar_para_pastas
 from models.configuracoes.core.abas import criar_abas
 
 def ViewConfiguracoes(
@@ -34,27 +34,69 @@ def ViewConfiguracoes(
     # =====================================================================
     # INICIA O GERENCIADOR DE ESTADO
     # =====================================================================
-    estado = EstadoIndicadores() 
+    if not hasattr(page, "_estado_indicadores"):
+        page._estado_indicadores = EstadoIndicadores()
+
+    estado = page._estado_indicadores
     estado.cores = layout.cores
     
     def ir_para_pasta(titulo: str) -> None:
         """Injetada nos modais para forçar a atualização visual da pasta atual após salvar/deletar dados."""
         abrir_pasta(page, titulo, estado)
-
+        
+    def voltar_para_pastas_config() -> None:
+        from models.configuracoes.core.pastas import voltar_para_pastas
+        voltar_para_pastas(page, estado)
+        
     ''' === Inicialização dos Modais === '''
-    modal_edicao, _, _, estado.abrir_modal_edicao = criar_modal_edicao(page, estado, ir_para_pasta)
-    modal_criterios, _, estado.abrir_modal_criterios = criar_modal_criterios(page, estado)
-    modal_exclusao, estado.preparar_exclusao = criar_modal_exclusao(page, estado, ir_para_pasta)
-    modal_novo, _, _, estado.abrir_modal_novo = criar_modal_novo(page, estado, ir_para_pasta)
+    modal_edicao, campo_titulo, campo_descricao, estado.abrir_modal_edicao = criar_modal_edicao(
+        page,
+        estado,
+        ir_para_pasta,
+        layout.cores,
+    )
+
+    modal_criterios, _, estado.abrir_modal_criterios = criar_modal_criterios(
+        page,
+        estado,
+        layout.cores,
+    )
+
+    modal_exclusao, estado.preparar_exclusao = criar_modal_exclusao(
+        page,
+        estado,
+        ir_para_pasta,
+        layout.cores,
+    )
+
+    modal_novo, campo_titulo_novo, campo_desc_novo, estado.abrir_modal_novo = criar_modal_novo(
+        page,
+        estado,
+        ir_para_pasta,
+        layout.cores,
+    )
 
     # Área dinâmica que renderiza as pastas ou a lista de indicadores
     area_dinamica_indicadores = ft.Container(expand=True)
-    area_dinamica_indicadores.content = criar_layout_pastas(
-        page,
-        estado,
-        callback_abrir=ir_para_pasta,
-        cores=layout.cores,
-    )
+
+    if estado.pasta_titulo and estado.pasta_eixo:
+        from models.configuracoes.widgets.layout_lista import criar_layout_lista
+
+        area_dinamica_indicadores.content = criar_layout_lista(
+            page,
+            estado,
+            estado.pasta_titulo,
+            estado.pasta_eixo,
+            callback_voltar=lambda: voltar_para_pastas(page, estado),
+            cores=layout.cores,
+        )
+    else:
+        area_dinamica_indicadores.content = criar_layout_pastas(
+            page,
+            estado,
+            callback_abrir=ir_para_pasta,
+            cores=layout.cores,
+        )
     
     # Inicializa as outras telas de configurações
     painel_seguranca = criar_painel_seguranca()

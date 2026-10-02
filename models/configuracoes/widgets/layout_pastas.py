@@ -43,6 +43,7 @@ def criar_layout_pastas(
 
     return ft.Column(
         expand=True,
+        scroll=ft.ScrollMode.AUTO,
         spacing=25,
         controls=[
             # Título
