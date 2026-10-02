@@ -50,6 +50,7 @@ def ajustar_responsividade(
             LARGURA_SIDEBAR_EXPANDIDA if categoria == "desktop" else LARGURA_SIDEBAR_COLAPSADA
         )
         sidebar_desktop.content = criar_sidebar_desktop(
+            page=page,
             dark_mode=dark_mode,
             mudar_tela=mudar_tela,
             collapsed=categoria == "compacta",

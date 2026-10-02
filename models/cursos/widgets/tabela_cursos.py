@@ -1,6 +1,13 @@
 import flet as ft
 from dataclasses import dataclass
 from typing import Callable, Optional
+
+from components.core.constants.constants import (
+    COR_PRIMARIA,
+    PERIGO,
+    SUCESSO,
+    TEXTO_PRINCIPAL,
+)
 from database.services.firestore_courses import excluir_curso_db
 
 @dataclass
@@ -17,15 +24,37 @@ class ContextoTabelaCursos:
     modal_editar: ft.AlertDialog
     campos_edit: dict[str, ft.TextField]
     estado: dict
+    cores: dict[str, str]
 
 def criar_linha_curso(contexto: ContextoTabelaCursos, doc_id: Optional[str], codigo: str, nome: str, depto: str, coord: str,) -> ft.DataRow:
     """Gera uma linha oficial (DataRow) para a tabela, com os callbacks de editar e excluir já acoplados."""
     
     # Destaca em verde o código da linha se ele acabou de ser criado e não está salvo com código definitivo no banco
-    txt_codigo = ft.Text(codigo, color=ft.Colors.GREEN if codigo == "NOVO" else ft.Colors.BLACK, weight="bold")
-    txt_nome = ft.Text(nome, weight="bold")
-    txt_depto = ft.Text(depto)
-    txt_coord = ft.Text(coord)
+    txt_codigo = ft.Text(
+        codigo,
+        color=(
+            contexto.cores[SUCESSO]
+            if codigo == "NOVO"
+            else contexto.cores[TEXTO_PRINCIPAL]
+        ),
+        weight=ft.FontWeight.BOLD,
+    )
+
+    txt_nome = ft.Text(
+        nome,
+        weight=ft.FontWeight.BOLD,
+        color=contexto.cores[TEXTO_PRINCIPAL],
+    )
+
+    txt_depto = ft.Text(
+        depto,
+        color=contexto.cores[TEXTO_PRINCIPAL],
+    )
+
+    txt_coord = ft.Text(
+        coord,
+        color=contexto.cores[TEXTO_PRINCIPAL],
+    )
 
     linha = ft.DataRow(
         cells=[
@@ -68,9 +97,22 @@ def criar_linha_curso(contexto: ContextoTabelaCursos, doc_id: Optional[str], cod
         contexto.page.update()
 
     # Injeta os botões na última DataCell reservada acima
-    linha.cells[4].content = ft.Row([
-        ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.BLUE_700, tooltip="Editar", on_click=acao_editar),
-        ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED_700, tooltip="Excluir", on_click=acao_deletar),
-    ])
+    linha.cells[4].content = ft.Row(
+        controls=[
+            ft.IconButton(
+                icon=ft.Icons.EDIT,
+                icon_color=contexto.cores[COR_PRIMARIA],
+                tooltip="Editar",
+                on_click=acao_editar,
+            ),
+            ft.IconButton(
+                icon=ft.Icons.DELETE,
+                icon_color=contexto.cores[PERIGO],
+                tooltip="Excluir",
+                on_click=acao_deletar,
+            ),
+        ],
+        spacing=4,
+    )
 
     return linha

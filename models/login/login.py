@@ -2,6 +2,7 @@ from typing import Callable
 import requests
 import flet as ft
 
+from components.core.auth import auth_state
 from models.login.core.logica_abas import obter_funcao_alternar
 from models.login.core.cabecalho_login import criar_cabecalho
 from models.login.core.tab_style import criar_estilo_aba
@@ -26,12 +27,16 @@ from components.core.constants.constants import (
 
 def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     
-    FIREBASE_API_KEY = "xxxxxxxxxxxxxxxxxxxx"
+    # FIREBASE_API_KEY = "xxxxxxxxxxxxxxxxxxxx"
+    FIREBASE_API_KEY = "AIzaSyAqGHhj3-BihICWHvD70smkjcbP2D8Sxnk"
 
     campo_nome = criar_campo_nome(COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO, COR_BORDA)
     campo_email = criar_campo_email(COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO, COR_BORDA)
     campo_senha = criar_campo_senha(COR_TEXTO_TITULO, COR_TEXTO_SECUNDARIO, COR_BORDA)
-    opcoes_extras = criar_opcoes_extras(COR_TEXTO_SECUNDARIO, COR_PRIMARIA)
+    opcoes_extras, checkbox_lembrar = criar_opcoes_extras(
+        COR_TEXTO_SECUNDARIO,
+        COR_PRIMARIA,
+    )
 
     # === Lógica de Abas para Alternar entre Login e Cadastro ===
     btn_aba_signin = ft.TextButton(
@@ -43,7 +48,7 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         style=criar_estilo_aba(ativo=False, cor_primaria=COR_PRIMARIA, cor_texto_inativo=COR_TEXTO_SECUNDARIO),
     )
 
-    def fazer_login(e: ft.ControlEvent) -> None:
+    async def fazer_login(e: ft.ControlEvent) -> None:
        # Acessa o TextField que está na segunda posição (índice 1) da Column
         email = campo_email.controls[1].value.strip()
         senha = campo_senha.controls[1].value.strip()
@@ -74,10 +79,24 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
             data = response.json()
 
             if response.status_code == 200:
-                sucesso = ft.SnackBar(ft.Text("Autenticação realizada com sucesso!"), bgcolor=ft.Colors.GREEN_400)
+
+                lembrar_me = checkbox_lembrar.value is True
+
+                await auth_state.iniciar_sessao(
+                    dados=data,
+                    page=page,
+                    lembrar_me=lembrar_me,
+                )
+
+                sucesso = ft.SnackBar(
+                    ft.Text("Autenticação realizada com sucesso!"),
+                    bgcolor=ft.Colors.GREEN_400,
+                )
+
                 page.overlay.append(sucesso)
                 sucesso.open = True
                 page.update()
+
                 mudar_tela("/inicio")
             else:
                 erro_msg = data.get("error", {}).get("message", "Erro desconhecido")

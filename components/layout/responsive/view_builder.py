@@ -27,20 +27,23 @@ def montar_view(
             ft.Stack(  # Permite que sidebar_mobile e overlay "voem" sobre o conteúdo principal
                 expand=True,
                 controls=[
-                    ft.Row(  # Distribuição horizontal principal
+                    ft.Row(
                         expand=True,
                         spacing=0,
+                        vertical_alignment=ft.CrossAxisAlignment.STRETCH,
                         controls=[
-                            sidebar_desktop,  # Lado esquerdo: navegação
-                            ft.Column(  # Lado direito: topbar + área de trabalho
+                            sidebar_desktop,
+
+                            ft.Column(
                                 expand=True,
                                 spacing=0,
                                 controls=[
-                                    topbar,  # Fixo no topo da área direita
+                                    topbar,
+
                                     ft.Container(
                                         expand=True,
                                         padding=16,
-                                        content=conteudo_principal,  # Injeta a tela atual
+                                        content=conteudo_principal,
                                     ),
                                 ],
                             ),

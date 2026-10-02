@@ -1,10 +1,20 @@
 import flet as ft
 from typing import Callable
 from components.core.constants.constants import ESTILO_BOTAO_CANCELAR
+from components.core.constants.constants import (
+    COR_PRIMARIA,
+    ESTILO_BOTAO_CANCELAR,
+)
 from database.services.firestore_courses import atualizar_curso_db
 from models.cursos.modals.modal_utils import fechar_modal
 
-def criar_modal_edit(page: ft.Page, estado: dict, campos_edit: dict[str, ft.TextField], atualizar_interface: Callable[[], None],) -> ft.AlertDialog:
+def criar_modal_edit(
+    page: ft.Page,
+    estado: dict,
+    campos_edit: dict[str, ft.TextField],
+    atualizar_interface: Callable[[], None],
+    cores: dict[str, str],
+) -> ft.AlertDialog:
     """Constrói a janela de edição de curso, usando `estado` para saber qual linha visual e ID do banco editar."""
 
     def salvar_edicao(e: ft.ControlEvent) -> None:
@@ -36,7 +46,12 @@ def criar_modal_edit(page: ft.Page, estado: dict, campos_edit: dict[str, ft.Text
         content=ft.Column(width=400, height=220, spacing=15, controls=list(campos_edit.values())),
         actions=[
             ft.TextButton("Cancelar", on_click=lambda e: fechar_modal(page, modal), style=ESTILO_BOTAO_CANCELAR),
-            ft.ElevatedButton("Atualizar", on_click=salvar_edicao, bgcolor=ft.Colors.BLUE_700, color=ft.Colors.WHITE),
+            ft.ElevatedButton(
+                "Atualizar",
+                on_click=salvar_edicao,
+                bgcolor=cores[COR_PRIMARIA],
+                color=ft.Colors.WHITE,
+            )
         ],
     )
 

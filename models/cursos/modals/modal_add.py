@@ -1,6 +1,10 @@
 import flet as ft
 from typing import Callable
 from components.core.constants.constants import ESTILO_BOTAO_CANCELAR
+from components.core.constants.constants import (
+    COR_PRIMARIA,
+    ESTILO_BOTAO_CANCELAR,
+)
 from database.services.firestore_courses import adicionar_curso_db
 from models.cursos.widgets.tabela_cursos import ContextoTabelaCursos, criar_linha_curso
 from models.cursos.modals.modal_utils import abrir_modal, fechar_modal
@@ -8,7 +12,10 @@ from models.cursos.modals.modal_utils import abrir_modal, fechar_modal
 '''Código provisório exibido na coluna "Código" até a próxima sincronização com o banco'''
 CODIGO_CURSO_PLACEHOLDER = "NOVO"
 
-def criar_modal_add(contexto: ContextoTabelaCursos, campos_add: dict[str, ft.TextField]) -> Callable[[ft.ControlEvent], None]:
+def criar_modal_add(
+    contexto: ContextoTabelaCursos,
+    campos_add: dict[str, ft.TextField],
+) -> Callable[[ft.ControlEvent], None]:
     """Constrói a janela de cadastro de curso e lida com a inserção no banco."""
 
     def salvar_curso(e: ft.ControlEvent) -> None:
@@ -42,7 +49,12 @@ def criar_modal_add(contexto: ContextoTabelaCursos, campos_add: dict[str, ft.Tex
         content=ft.Column(width=400, height=220, spacing=15, controls=list(campos_add.values())),
         actions=[
             ft.TextButton("Cancelar", on_click=lambda e: fechar_modal(contexto.page, modal), style=ESTILO_BOTAO_CANCELAR),
-            ft.ElevatedButton("Salvar", on_click=salvar_curso, bgcolor=ft.Colors.BLUE_700, color=ft.Colors.WHITE),
+            ft.ElevatedButton(
+                "Salvar",
+                on_click=salvar_curso,
+                bgcolor=contexto.cores[COR_PRIMARIA],
+                color=ft.Colors.WHITE,
+            )
         ],
     )
 

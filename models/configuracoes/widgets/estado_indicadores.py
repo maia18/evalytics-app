@@ -8,6 +8,9 @@ class EstadoIndicadores:
     """
     
     def __init__(self) -> None:
+        
+        self.cores: dict[str, str] = {}
+        
         # Rastreia onde o usuário está navegando
         self.pasta_titulo: str = ""
         self.pasta_eixo: Optional[int] = 0

@@ -1,32 +1,55 @@
 import flet as ft
 from typing import Callable
-from components.core.constants.constants import TEXTO_PRINCIPAL
 from database.services.firestore_courses import obter_cursos_db
 from models.cursos.widgets.stats_cards import criar_stats_card
 from models.cursos.widgets.tabela_cursos import criar_linha_curso, ContextoTabelaCursos
+from components.core.constants.constants import (
+    TEXTO_PRINCIPAL,
+)
+def atualizar_estatisticas(
+    page: ft.Page,
+    tabela_cursos: ft.DataTable,
+    linha_stats: ft.Row,
+    cores_layout: dict,
+    estado_vazio: ft.Text,
+) -> None:
 
-def atualizar_estatisticas(page: ft.Page, tabela_cursos: ft.DataTable, linha_stats: ft.Row, cores_layout: dict) -> None:
-    """Recalcula e atualiza as métricas dos cartões superiores varrendo os dados visíveis na tabela."""
-    
-    # A quantidade de cursos é o número total de linhas
     total_cursos = str(len(tabela_cursos.rows))
 
-    # Set Comprehension para pegar departamentos únicos direto da UI, ignorando valores em branco
     departamentos_unicos = {
         linha.cells[2].content.value.strip()
         for linha in tabela_cursos.rows
-        if hasattr(linha.cells[2].content, "value") and linha.cells[2].content.value.strip()
+        if (
+            hasattr(linha.cells[2].content, "value")
+            and linha.cells[2].content.value.strip()
+        )
     }
+
     total_deptos = str(len(departamentos_unicos))
 
     cor_texto = cores_layout[TEXTO_PRINCIPAL]
-    
-    # Sobrescreve a linha de cards com os novos valores calculados
+
     linha_stats.controls = [
-        criar_stats_card("Total de Cursos", total_cursos, cor_texto),
-        criar_stats_card("Cursos Ativos", "0", cor_texto),  # Fixo em 0, aguardando implementação futura
-        criar_stats_card("Departamentos", total_deptos, cor_texto),
+        criar_stats_card(
+            "Total de Cursos",
+            total_cursos,
+            cores_layout,
+        ),
+        criar_stats_card(
+            "Cursos Ativos",
+            "0",
+            cores_layout,
+        ),
+        criar_stats_card(
+            "Departamentos",
+            total_deptos,
+            cores_layout,
+        ),
     ]
+
+    estado_vazio.visible = len(tabela_cursos.rows) == 0
+    tabela_cursos.visible = len(tabela_cursos.rows) > 0
+
     page.update()
 
 def carregar_cursos_iniciais(contexto_tabela: ContextoTabelaCursos, tabela_cursos: ft.DataTable, atualizar_interface_callback: Callable[[], None]) -> None:

@@ -1,18 +1,46 @@
 import flet as ft
 
-def criar_stats_card(titulo: str, valor: str, cor_texto: str) -> ft.Container:
-    """Renderiza um bloco que exibe um título cinza com um valor numérico em destaque abaixo."""
-    
+from components.core.constants.constants import (
+    CARD,
+    BORDA,
+    TEXTO_PRINCIPAL,
+    TEXTO_SECUNDARIO,
+)
+
+
+def criar_stats_card(
+    titulo: str,
+    valor: str,
+    cores: dict[str, str],
+) -> ft.Container:
+    """
+    Renderiza um cartão de métrica utilizando os tokens
+    do Design System para funcionar em Light e Dark Mode.
+    """
+
     return ft.Container(
-        expand=1,  # Faz os três cards dividirem o espaço horizontal da Row igualmente (1/3 cada)
+        expand=1,
         padding=15,
         border_radius=8,
-        bgcolor=ft.Colors.WHITE,
+        bgcolor=cores[CARD],
+        border=ft.Border.all(
+            1,
+            cores[BORDA],
+        ),
         content=ft.Column(
             spacing=5,
             controls=[
-                ft.Text(titulo, size=12, color=ft.Colors.GREY),
-                ft.Text(str(valor), size=20, weight="bold", color=cor_texto),
+                ft.Text(
+                    titulo,
+                    size=12,
+                    color=cores[TEXTO_SECUNDARIO],
+                ),
+                ft.Text(
+                    str(valor),
+                    size=20,
+                    weight=ft.FontWeight.BOLD,
+                    color=cores[TEXTO_PRINCIPAL],
+                ),
             ],
         ),
     )

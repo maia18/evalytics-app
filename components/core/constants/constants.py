@@ -52,36 +52,93 @@ HOVER_CLARO_BOTAO_MENU = "#CCCCCC" # Cor de hover do botão em modo claro. Não 
 # PALETA DE CORES
 # =====================================================================
 
-# --- Cor da Marca (Brand Color) ---
-COR_PRIMARIA: Final[str] = "#4809F4"  # Roxo/Azul vibrante - Cor principal de destaque e seed do tema
+# ---------------------------------------------------------------------
+# COR DA MARCA
+# ---------------------------------------------------------------------
 
-# --- Textos: MODO CLARO ---
-COR_TEXTO_TITULO: Final[str] = "#111827"      # Cinza muito escuro/quase preto para títulos
-COR_TEXTO_SECUNDARIO: Final[str] = "#6B7280"  # Cinza médio para textos secundários e descrições
+COR_PRIMARIA: Final[str] = "#4809F4"
 
-# --- Textos: MODO ESCURO ---
-TEXTO_PRINCIPAL: Final[str] = ft.Colors.WHITE       # Branco absoluto para textos principais
-TEXTO_SECUNDARIO: Final[str] = ft.Colors.GREY_300   # Cinza claro para textos secundários
+# ---------------------------------------------------------------------
+# TEXTOS — MODO CLARO
+# ---------------------------------------------------------------------
 
-# --- Fundos (Backgrounds) ---
-COR_FUNDO: Final[str] = "#F9FAFB"  # Cinza bem claro/off-white - fundo da tela no MODO CLARO
-FUNDO: Final[str] = "#1E1E1E"      # Cinza escuro profundo - fundo da tela no MODO ESCURO
+COR_TEXTO_TITULO: Final[str] = "#111827"
+COR_TEXTO_SECUNDARIO: Final[str] = "#5F6368"
+COR_TEXTO_MUTED: Final[str] = "#777777"
 
-# --- Cartões e Painéis (Cards) ---
-COR_CARD: Final[str] = "#FFFFFF"   # Branco puro - fundo dos cards no MODO CLARO
-CARD: Final[str] = "#2C2C2C"       # Cinza escuro elevado - fundo dos cards no MODO ESCURO
+# ---------------------------------------------------------------------
+# TEXTOS — MODO ESCURO
+# ---------------------------------------------------------------------
 
-# --- Bordas e Linhas Divisórias ---
-COR_BORDA: Final[str] = "#E5E7EB"  # Cinza claro para bordas gerais no MODO CLARO
-BORDA: Final[str] = "#3C3C3C"      # Cinza escuro para bordas no MODO ESCURO
+TEXTO_PRINCIPAL: Final[str] = "#FFFFFF"
+TEXTO_SECUNDARIO: Final[str] = "#A0A0A0"
+TEXTO_MUTED: Final[str] = "#777777"
 
-# Alias histórico de COR_BORDA (mesmo valor). Mantido por compatibilidade;
-# ao confirmar que nenhum outro módulo depende deste nome, pode ser removido.
+# ---------------------------------------------------------------------
+# FUNDOS
+# ---------------------------------------------------------------------
+
+# MODO CLARO
+COR_FUNDO: Final[str] = "#F7F7F8"
+
+# MODO ESCURO
+FUNDO: Final[str] = "#1E1E1E"
+
+# ---------------------------------------------------------------------
+# CARDS / SUPERFÍCIES
+# ---------------------------------------------------------------------
+
+# MODO CLARO
+COR_CARD: Final[str] = "#FFFFFF"
+COR_CARD_SECUNDARIO: Final[str] = "#F2F2F3"
+
+# MODO ESCURO
+CARD: Final[str] = "#2A2A2A"
+CARD_SECUNDARIO: Final[str] = "#252525"
+
+# ---------------------------------------------------------------------
+# BORDAS
+# ---------------------------------------------------------------------
+
+# MODO CLARO
+COR_BORDA: Final[str] = "#E2E2E5"
+
+# MODO ESCURO
+BORDA: Final[str] = "#3A3A3A"
+
+# Alias histórico — mantido por compatibilidade
 BORDA_NOT_DARKMODE: Final[str] = COR_BORDA
 
-# --- Elementos de Sobreposição e Interação (MODO ESCURO) ---
-OVERLAY_MODAL: Final[str] = "#00000088"  # Preto com transparência (Alpha 88) - fundo de Modais/Popups
-HOVER: Final[str] = "#3C3C3C"            # Cor de fundo ao passar o mouse (hover)
-SURFACE: Final[str] = "#3C3C3C"          # Cor de superfícies elevadas (menus soltos, tooltips)
+# ---------------------------------------------------------------------
+# ESTADOS
+# ---------------------------------------------------------------------
 
-ESTILO_BOTAO_CANCELAR = ft.ButtonStyle(color=ft.Colors.RED_700) # Estilo global compartilhado do botão "Cancelar" em todos os modais de curso para manter consistência de UI
+SUCESSO: Final[str] = "#81C784"
+PERIGO: Final[str] = "#E57373"
+AVISO: Final[str] = "#FFB74D"
+
+# ---------------------------------------------------------------------
+# ELEMENTOS DE INTERAÇÃO
+# ---------------------------------------------------------------------
+
+# Dark Mode
+HOVER: Final[str] = "#3A3A3A"
+SURFACE: Final[str] = "#333333"
+
+# Light Mode
+HOVER_CLARO: Final[str] = "#F0F0F2"
+SURFACE_CLARO: Final[str] = "#FFFFFF"
+
+# ---------------------------------------------------------------------
+# SOBREPOSIÇÕES
+# ---------------------------------------------------------------------
+
+OVERLAY_MODAL: Final[str] = "#00000088"
+
+# ---------------------------------------------------------------------
+# ESTILOS GLOBAIS
+# ---------------------------------------------------------------------
+
+ESTILO_BOTAO_CANCELAR = ft.ButtonStyle(
+    color=ft.Colors.RED_700
+)

@@ -2,27 +2,50 @@ import flet as ft
 import logging as lg # módulo nativo do Python usado para registrar mensagens, avisos e erros no console ou em arquivos.
 from components.core.globals import configurar_aplicacao # configurações visuais da página (título, tema, tamanho da janela, etc).
 from components.core.navigator import Navigator # classe customizada criada para gerenciar o roteamento/troca de telas no app.
+from components.core.auth import auth_state
+
 
 '''
 Cria uma instância de logger específica para este arquivo. 
     Usar __name__ ajuda a identificar nos logs exatamente de qual módulo (arquivo) a mensagem veio.
 '''
-logger = lg.getLogger(__name__) 
+logger = lg.getLogger(__name__)
 
 ROTA_INICIAL = "/" # Define uma constante para a rota inicial.
 
-def main(page: ft.Page) -> None:
-    """
-    Ponto de entrada (entry point) da aplicação Flet.
-        O Flet chama esta função automaticamente, passando o objeto 'page' (que representa a janela do app ou a aba do navegador)
-    """
+# FIREBASE_API_KEY = "xxxxxxxxxxxxxxxxxxxx"
+FIREBASE_API_KEY = "AIzaSyAqGHhj3-BihICWHvD70smkjcbP2D8Sxnk"
+
+async def main(page: ft.Page) -> None:
     try:
-        configurar_aplicacao(page) # Configura os aspectos globais da interface da página (cores, fontes, alinhamentos, etc).
-        Navigator(page).go(ROTA_INICIAL) # Instancia a classe de navegação passando a página atual, e envia o usuário para a primeira tela.
-        
+        configurar_aplicacao(page)
+
+        await auth_state.inicializar_storage(page)
+
+        sessao_restaurada = await auth_state.restaurar_sessao(
+            page=page,
+            api_key=FIREBASE_API_KEY,
+        )
+
+        if sessao_restaurada:
+            logger.info(
+                "Sessão persistida restaurada com sucesso."
+            )
+
+            Navigator(page).go("/inicio")
+
+        else:
+            logger.info(
+                "Nenhuma sessão persistida encontrada."
+            )
+
+            Navigator(page).go(ROTA_INICIAL)
+
     except Exception:
-        logger.exception("Falha ao inicializar a aplicação.") # Se qualquer erro crítico acontecer na montagem da tela inicial, o logger registra o erro completo (com o traceback)
-        raise # Propaga o erro para frente, forçando o programa a parar
+        logger.exception(
+            "Falha ao inicializar a aplicação."
+        )
+        raise
 
 if __name__ == "__main__":
     lg.basicConfig(level=lg.INFO) # Configura o sistema de logs para exibir mensagens a partir do nível INFO (ignora mensagens de DEBUG, mas mostra avisos e erros).

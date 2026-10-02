@@ -4,6 +4,8 @@ from components.layout.responsive.responsive import ResponsiveLayout
 from components.core.constants.constants import (
     TEXTO_PRINCIPAL, 
     CARD,
+    TEXTO_SECUNDARIO,
+    BORDA,
 )
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from models.configuracoes.modals.modal_criterios import criar_modal_criterios
@@ -27,6 +29,7 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.Vi
 
     # Inicia o gerenciador de estado
     estado = EstadoIndicadores() 
+    estado.cores = layout.cores
 
     def ir_para_pasta(titulo: str) -> None:
         """Injetada nos modais para forçar a atualização visual da pasta atual após salvar/deletar dados"""
@@ -42,14 +45,25 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.Vi
 
     # Área dinâmica que renderiza as pastas ou a lista de indicadores
     area_dinamica_indicadores = ft.Container(expand=True)
-    area_dinamica_indicadores.content = criar_layout_pastas(page, estado, callback_abrir=ir_para_pasta)
+    area_dinamica_indicadores.content = criar_layout_pastas(
+        page,
+        estado,
+        callback_abrir=ir_para_pasta,
+        cores=layout.cores,
+    )
     
     # Inicializa as outras telas de configurações
     painel_seguranca = criar_painel_seguranca()
     painel_banco = criar_painel_banco()
 
     # Agrupa os painéis sob o controle de Abas e salva a área de conteúdo no estado
-    menu_abas, area_conteudo_aba = criar_abas(page, area_dinamica_indicadores, painel_seguranca, painel_banco)
+    menu_abas, area_conteudo_aba = criar_abas(
+        page,
+        area_dinamica_indicadores,
+        painel_seguranca,
+        painel_banco,
+        layout.cores,
+    )
     estado.area_conteudo_aba = area_conteudo_aba
 
     '''Montagem da hierarquia visual final da página'''
@@ -57,18 +71,25 @@ def ViewConfiguracoes(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.Vi
         expand=True,
         controls=[
             ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
-            ft.Text("Gerencie indicadores, acessos e manutenção de dados.", size=16, color=ft.Colors.GREY),
+            ft.Text(
+                "Gerencie indicadores, acessos e manutenção de dados.",
+                size=16,
+                color=layout.cores[TEXTO_SECUNDARIO],
+            ),
             ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
             
             # Card master que abriga o conteúdo das abas
             ft.Container(
                 expand=True, bgcolor=layout.cores[CARD], border_radius=10, padding=20,
-                shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK12),
+                shadow=None,
                 content=ft.Column(
                     expand=True,
                     controls=[
                         menu_abas,
-                        ft.Divider(height=20, color=ft.Colors.GREY_200),
+                        ft.Divider(
+                            height=20,
+                            color=layout.cores[BORDA],
+                        ),
                         ft.Container(expand=True, padding=10, content=area_conteudo_aba),
                     ],
                 ),

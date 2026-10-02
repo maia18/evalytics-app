@@ -2,9 +2,11 @@ import flet as ft
 from typing import Callable
 from components.layout.responsive.responsive import ResponsiveLayout
 from components.core.constants.constants import (
-    COR_PRIMARIA, 
-    TEXTO_PRINCIPAL, 
+    COR_PRIMARIA,
     CARD,
+    CARD_SECUNDARIO,
+    TEXTO_PRINCIPAL,
+    TEXTO_SECUNDARIO,
 )
 from models.cursos.core.cursos_controller import atualizar_estatisticas, carregar_cursos_iniciais
 from models.cursos.widgets.campos_curso import criar_campos_formulario_curso
@@ -24,20 +26,50 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     )
 
     # Cria dois conjuntos independentes de campos via factory externa
-    campos_add = criar_campos_formulario_curso()
-    campos_edit = criar_campos_formulario_curso()
+    campos_add = criar_campos_formulario_curso(layout.cores)
+    campos_edit = criar_campos_formulario_curso(layout.cores)
 
     estado = {"linha_atual": None, "id_firebase": None} # Estado compartilhado
 
     # Estrutura da Tabela principal
     tabela_cursos = ft.DataTable(
-        heading_row_color=ft.Colors.BLUE_50,
+        heading_row_color=layout.cores[CARD_SECUNDARIO],
         columns=[
-            ft.DataColumn(ft.Text("Código", weight="bold", color=ft.Colors.BLACK)),
-            ft.DataColumn(ft.Text("Nome do Curso", weight="bold", color=ft.Colors.BLACK)),
-            ft.DataColumn(ft.Text("Departamento", weight="bold", color=ft.Colors.BLACK)),
-            ft.DataColumn(ft.Text("Coordenador", weight="bold", color=ft.Colors.BLACK)),
-            ft.DataColumn(ft.Text("Ações", weight="bold", color=ft.Colors.BLACK)),
+            ft.DataColumn(
+                ft.Text(
+                    "Código",
+                    weight=ft.FontWeight.BOLD,
+                    color=layout.cores[TEXTO_SECUNDARIO],
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Nome do Curso",
+                    weight=ft.FontWeight.BOLD,
+                    color=layout.cores[TEXTO_SECUNDARIO],
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Departamento",
+                    weight=ft.FontWeight.BOLD,
+                    color=layout.cores[TEXTO_SECUNDARIO],
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Coordenador",
+                    weight=ft.FontWeight.BOLD,
+                    color=layout.cores[TEXTO_SECUNDARIO],
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Ações",
+                    weight=ft.FontWeight.BOLD,
+                    color=layout.cores[TEXTO_SECUNDARIO],
+                )
+            ),
         ],
         rows=[],
     )
@@ -46,18 +78,48 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     linha_stats = ft.Row(
         spacing=20,
         controls=[
-            criar_stats_card("Total de Cursos", "0", layout.cores[TEXTO_PRINCIPAL]),
-            criar_stats_card("Cursos Ativos", "0", layout.cores[TEXTO_PRINCIPAL]),
-            criar_stats_card("Departamentos", "0", layout.cores[TEXTO_PRINCIPAL]),
+            criar_stats_card(
+                "Total de Cursos",
+                "0",
+                layout.cores,
+            ),
+            criar_stats_card(
+                "Cursos Ativos",
+                "0",
+                layout.cores,
+            ),
+            criar_stats_card(
+                "Departamentos",
+                "0",
+                layout.cores,
+            ),
         ],
+    )
+    
+    estado_vazio = ft.Text(
+        "Nenhum curso cadastrado ainda.",
+        color=layout.cores[TEXTO_SECUNDARIO],
+        size=14,
     )
 
     # Wrapper que envelopa os parâmetros necessários para repassar a função de forma limpa como callback
     def wrapper_atualizar_interface() -> None:
-        atualizar_estatisticas(page, tabela_cursos, linha_stats, layout.cores)
+        atualizar_estatisticas(
+            page,
+            tabela_cursos,
+            linha_stats,
+            layout.cores,
+            estado_vazio,
+        )
 
     ''' === Inicialização dos Modais e Contextos === '''
-    modal_edit = criar_modal_edit(page, estado, campos_edit, wrapper_atualizar_interface)
+    modal_edit = criar_modal_edit(
+        page,
+        estado,
+        campos_edit,
+        wrapper_atualizar_interface,
+        layout.cores,
+    )
     contexto_tabela = ContextoTabelaCursos(
         page=page,
         tabela_cursos=tabela_cursos,
@@ -65,6 +127,7 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         modal_editar=modal_edit,
         campos_edit=campos_edit,
         estado=estado,
+        cores=layout.cores,
     )
 
     abrir_modal_add = criar_modal_add(contexto_tabela, campos_add)
@@ -84,16 +147,24 @@ def ViewCursos(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
             ),
             linha_stats,
             ft.Container(
-                bgcolor=layout.cores[CARD], padding=30, border_radius=8,
+                bgcolor=layout.cores[CARD],
+                padding=30,
+                border_radius=8,
                 content=ft.Column(
                     spacing=20,
                     controls=[
-                        ft.Text("Lista de Cursos", size=16, weight="bold", color=ft.Colors.BLACK),
-                        tabela_cursos if tabela_cursos.rows else ft.Text("Nenhum curso cadastrado ainda.", color=ft.Colors.GREY, size=14),
+                        ft.Text(
+                            "Lista de Cursos",
+                            size=16,
+                            weight=ft.FontWeight.BOLD,
+                            color=layout.cores[TEXTO_PRINCIPAL],
+                        ),
+                        estado_vazio,
+                        tabela_cursos,
                     ],
                 ),
             ),
-        ],
+        ]
     )
 
     layout.add_content(conteudo)

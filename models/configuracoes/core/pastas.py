@@ -22,11 +22,12 @@ def abrir_pasta(page: ft.Page, titulo_pasta: str, estado: EstadoIndicadores) -> 
         Passa a função de retorno (voltar_para_pastas) envelopada em uma função anônima (lambda) como callback
     '''
     novo_layout = criar_layout_lista(
-        page, 
-        estado, 
-        titulo_pasta, 
+        page,
+        estado,
+        titulo_pasta,
         eixo_id,
-        callback_voltar=lambda: voltar_para_pastas(page, estado)
+        callback_voltar=lambda: voltar_para_pastas(page, estado),
+        cores=estado.cores,
     )
 
     # Substitui o conteúdo do container dinâmico principal (apagando as pastas da tela) e comanda o redesenho da interface
@@ -41,8 +42,10 @@ def voltar_para_pastas(page: ft.Page, estado: EstadoIndicadores) -> None:
         Esta injeção de dependência via parâmetro evita a necessidade de importar 'abrir_pasta' dentro do arquivo de layout
     '''
     layout_inicial = criar_layout_pastas(
-        page, estado,
-        callback_abrir=lambda titulo: abrir_pasta(page, titulo, estado)
+        page,
+        estado,
+        callback_abrir=lambda titulo: abrir_pasta(page, titulo, estado),
+        cores=estado.cores,
     )
     
     # Injeta novamente a grade de pastas no container dinâmico e atualiza a tela

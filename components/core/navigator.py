@@ -3,8 +3,9 @@ import flet as ft
 Importa 'Callable' do módulo de tipagem (typing). 
 Isso é usado para avisar ao Python (e ao seu editor de código) que uma variável vai receber uma função.
 '''
-from typing import Callable
 import logging as lg # módulo nativo de logs para rastreamento do sistema.
+from typing import Callable
+from components.core.auth import auth_state
 from components.core.router import ViewBuilder, obter_view # Importações customizadas do sistema de roteamento do seu projeto
 
 # Cria um logger específico para este módulo.
@@ -32,9 +33,25 @@ class Navigator:
     # Navega para a rota informada, substituindo a view (tela) atual
     def go(self, rota: str) -> None:
         
-        self.page.views.clear() # Limpa o histórico de telas (views) atual da página para garantir que a nova tela vai substituir a anterior por completo, em vez de empilhar uma tela sobre a outra (o que consumiria mais memória).
+        rotas_publicas = {
+            "/",
+            "/login",
+        }
 
-        view_builder: ViewBuilder = obter_view(rota) # Chama a função 'obter_view' passando a string da rota (ex: "/login" ou "/dashboard"). Ela retorna a função construtora (ViewBuilder) responsável por desenhar aquela tela específica.
+        if rota not in rotas_publicas and not auth_state.autenticado:
+            logger.warning(
+                "Acesso bloqueado à rota '%s'. Usuário não autenticado.",
+                rota,
+            )
+            rota = "/login"
+        
+        self.page.views.clear() # Limpa o histórico de telas (views) atual da página para garantir que a nova tela vai substituir a anterior por completo.
+        
+        '''
+        Chama a função 'obter_view' passando a string da rota (ex: "/login" ou "/dashboard").
+            Ela retorna a função construtora (ViewBuilder) responsável por desenhar aquela tela específica.
+        '''
+        view_builder: ViewBuilder = obter_view(rota) 
 
         '''
             1. view_builder(self.page, self.go) executa a função construtora da tela.
@@ -45,6 +62,6 @@ class Navigator:
 
         '''
         Avisa ao Flet que a estrutura da interface mudou e ele precisa renderizar a nova tela.
-        Sem o .update(), a tela ficaria travada visualmente na view antiga.
+            Sem o .update(), a tela ficaria travada visualmente na view antiga.
         '''
         self.page.update()
