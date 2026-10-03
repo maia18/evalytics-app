@@ -1,18 +1,15 @@
 import flet as ft
 from typing import Callable
-
-from models.configuracoes.widgets.indicadores_ui import (
-    criar_linha_indicador,
+from components.core.constants.constants import (
+    TEXTO_PRINCIPAL,
+    TEXTO_SECUNDARIO,
+    COR_PRIMARIA,
 )
-
-from models.configuracoes.widgets.estado_indicadores import (
-    EstadoIndicadores,
-)
-
+from models.configuracoes.widgets.indicadores_ui import criar_linha_indicador
+from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from utils.services.indicadores.indicadores_repository import (
     listar_indicadores_por_eixo,
 )
-
 
 def criar_layout_lista(
     page: ft.Page,
@@ -39,14 +36,14 @@ def criar_layout_lista(
                             titulo_pasta,
                             size=22,
                             weight=ft.FontWeight.BOLD,
-                            color=cores["#111827"],
+                            color=cores[TEXTO_PRINCIPAL],
                         ),
-                    ]
+                    ],
                 ),
                 ft.ElevatedButton(
                     "Novo Indicador",
                     icon=ft.Icons.ADD,
-                    bgcolor=cores["#4809F4"],
+                    bgcolor=cores[COR_PRIMARIA],
                     color=ft.Colors.WHITE,
                     on_click=lambda e: estado.abrir_modal_novo(),
                 ),
@@ -58,30 +55,12 @@ def criar_layout_lista(
         ),
     ]
 
-    if not lista_da_pasta:
-        controles_lista.append(
-            ft.Container(
-                padding=30,
-                alignment=ft.Alignment.CENTER,
-                content=ft.Text(
-                    "Nenhum indicador cadastrado neste eixo.",
-                    color=cores["#5F6368"],
-                ),
-            )
-        )
-
     for item in lista_da_pasta:
         controles_lista.append(
             criar_linha_indicador(
                 item,
-                lambda e, i=item: estado.abrir_modal_criterios(
-                    e,
-                    i,
-                ),
-                lambda e, i=item: estado.abrir_modal_edicao(
-                    e,
-                    i,
-                ),
+                lambda e, i=item: estado.abrir_modal_criterios(e, i),
+                lambda e, i=item: estado.abrir_modal_edicao(e, i),
                 lambda i=item: estado.preparar_exclusao(i),
                 cores,
             )

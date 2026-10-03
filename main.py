@@ -29,7 +29,7 @@ async def main(page: ft.Page) -> None:
 
         if sessao_restaurada:
             logger.info(
-                "Sessão persistida restaurada com sucesso."
+                "Sessão persistid'a restaurada com sucesso."
             )
 
             Navigator(page).go("/inicio")
