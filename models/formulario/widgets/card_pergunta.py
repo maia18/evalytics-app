@@ -13,13 +13,15 @@ def criar_card_pergunta(
     # DADOS DO INDICADOR
     # ==========================================================
 
-    indicador_id = indicador["id"]
+    indicador_id = indicador.get("id")
     titulo_ind = indicador["titulo"]
     criterios = indicador.get("criterios", {})
 
-    # Busca a resposta salva usando o ID REAL do indicador
     valor_inicial = str(
-        estado["respostas"].get(indicador_id, "")
+        estado["respostas"].get(
+            indicador_id,
+            ""
+        )
     )
 
     # ==========================================================
@@ -27,7 +29,10 @@ def criar_card_pergunta(
     # ==========================================================
 
     def ao_mudar_opcao(e: ft.ControlEvent) -> None:
-        estado["respostas"][indicador_id] = int(e.control.value)
+        if indicador_id:
+            estado["respostas"][indicador_id] = int(
+                e.control.value
+            )
 
     # ==========================================================
     # OPÇÕES DE RESPOSTA

@@ -4,6 +4,7 @@ from components.core.constants.constants import (
     CARD,
     TEXTO_PRINCIPAL,
 )
+
 from utils.services.relatorio_service import (
     listar_resultados_consolidados,
 )
@@ -17,18 +18,10 @@ NOMES_EIXOS = {
 
 
 def _formatar_nota(nota: float) -> str:
-    """
-    Formata uma nota numérica para exibição na tabela.
-    """
-
     return f"{nota:.1f}"
 
 
 def _formatar_data(data_iso: str) -> str:
-    """
-    Converte uma data ISO 8601 para o formato DD/MM/YYYY.
-    """
-
     if not data_iso:
         return "-"
 
@@ -42,9 +35,6 @@ def _formatar_data(data_iso: str) -> str:
 
 
 def _criar_linha_resultado(item: dict) -> ft.DataRow:
-    """
-    Constrói uma linha da tabela a partir de uma avaliação consolidada.
-    """
 
     eixos = item.get("eixos", {})
 
@@ -109,34 +99,18 @@ def _criar_linha_resultado(item: dict) -> ft.DataRow:
     )
 
 
-def criar_tabela_resultados(
+def _criar_conteudo_tabela(
     page: ft.Page,
-    layout,
-    borda_container: ft.Border,
-) -> ft.Container:
-    """
-    Tabela com o consolidado real das avaliações institucionais.
-
-    Os dados são carregados diretamente do Firestore através
-    do relatorio_service.
-    """
-
-    resultados = listar_resultados_consolidados()
-
-    linhas = [
-        _criar_linha_resultado(item)
-        for item in resultados
-    ]
-
-    # ==========================================================
-    # ESTADO VAZIO
-    # ==========================================================
+    resultados: list[dict],
+) -> ft.Control:
 
     if not resultados:
-        conteudo = ft.Column(
+
+        return ft.Column(
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=12,
             controls=[
+                ft.Container(height=10),
                 ft.Icon(
                     ft.Icons.INSERT_CHART_OUTLINED,
                     size=48,
@@ -149,8 +123,8 @@ def criar_tabela_resultados(
                     color=ft.Colors.ON_SURFACE,
                 ),
                 ft.Text(
-                    "Os resultados aparecerão aqui após "
-                    "a conclusão de uma avaliação.",
+                    "Não existem avaliações correspondentes "
+                    "aos filtros selecionados.",
                     size=13,
                     color=ft.Colors.GREY_600,
                     text_align=ft.TextAlign.CENTER,
@@ -158,63 +132,107 @@ def criar_tabela_resultados(
             ],
         )
 
-    else:
-        conteudo = ft.DataTable(
-            heading_row_color=(
-                ft.Colors.BLUE_GREY_900
-                if page.theme_mode == ft.ThemeMode.DARK
-                else ft.Colors.BLUE_50
+    linhas = [
+        _criar_linha_resultado(item)
+        for item in resultados
+    ]
+
+    return ft.DataTable(
+        heading_row_color=(
+            ft.Colors.BLUE_GREY_900
+            if page.theme_mode == ft.ThemeMode.DARK
+            else ft.Colors.BLUE_50
+        ),
+        columns=[
+            ft.DataColumn(
+                ft.Text(
+                    "Curso",
+                    weight="bold",
+                    color=ft.Colors.ON_SURFACE,
+                )
             ),
-            columns=[
-                ft.DataColumn(
-                    ft.Text(
-                        "Curso",
-                        weight="bold",
-                        color=ft.Colors.ON_SURFACE,
-                    )
-                ),
-                ft.DataColumn(
-                    ft.Text(
-                        "Data",
-                        weight="bold",
-                        color=ft.Colors.ON_SURFACE,
-                    )
-                ),
-                ft.DataColumn(
-                    ft.Text(
-                        "Eixo 1",
-                        weight="bold",
-                        color=ft.Colors.ON_SURFACE,
-                    )
-                ),
-                ft.DataColumn(
-                    ft.Text(
-                        "Eixo 2",
-                        weight="bold",
-                        color=ft.Colors.ON_SURFACE,
-                    )
-                ),
-                ft.DataColumn(
-                    ft.Text(
-                        "Eixo 3",
-                        weight="bold",
-                        color=ft.Colors.ON_SURFACE,
-                    )
-                ),
-                ft.DataColumn(
-                    ft.Text(
-                        "Média Geral",
-                        weight="bold",
-                        color=ft.Colors.ON_SURFACE,
-                    )
-                ),
-            ],
-            rows=linhas,
+            ft.DataColumn(
+                ft.Text(
+                    "Data",
+                    weight="bold",
+                    color=ft.Colors.ON_SURFACE,
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Eixo 1",
+                    weight="bold",
+                    color=ft.Colors.ON_SURFACE,
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Eixo 2",
+                    weight="bold",
+                    color=ft.Colors.ON_SURFACE,
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Eixo 3",
+                    weight="bold",
+                    color=ft.Colors.ON_SURFACE,
+                )
+            ),
+            ft.DataColumn(
+                ft.Text(
+                    "Média Geral",
+                    weight="bold",
+                    color=ft.Colors.ON_SURFACE,
+                )
+            ),
+        ],
+        rows=linhas,
+    )
+
+
+def criar_tabela_resultados(
+    page: ft.Page,
+    layout,
+    borda_container: ft.Border,
+) -> ft.Container:
+    """
+    Cria a tabela de resultados.
+
+    O conteúdo inicial é carregado diretamente do Firestore.
+    """
+
+    resultados = listar_resultados_consolidados()
+
+    conteudo_tabela = ft.Container(
+        content=_criar_conteudo_tabela(
+            page,
+            resultados,
+        ),
+    )
+
+    def atualizar_tabela(
+        semestre: str | None = None,
+        eixo: int | None = None,
+    ) -> None:
+
+        resultados_filtrados = (
+            listar_resultados_consolidados(
+                semestre=semestre,
+                eixo=eixo,
+            )
         )
 
-    # ==========================================================
-    # CONTAINER
-    # ==========================================================
+        conteudo_tabela.content = (
+            _criar_conteudo_tabela(
+                page,
+                resultados_filtrados,
+            )
+        )
+
+        page.update()
+
+    conteudo_tabela.atualizar = atualizar_tabela
 
     return ft.Container(
         expand=True,
@@ -232,7 +250,7 @@ def criar_tabela_resultados(
                     color=layout.cores[TEXTO_PRINCIPAL],
                 ),
                 ft.Container(height=15),
-                conteudo,
+                conteudo_tabela,
             ],
         ),
     )
