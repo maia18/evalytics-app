@@ -4,7 +4,6 @@ from components.core.globals import configurar_aplicacao # configurações visua
 from components.core.navigator import Navigator # classe customizada criada para gerenciar o roteamento/troca de telas no app.
 from components.core.auth import auth_state
 
-
 '''
 Cria uma instância de logger específica para este arquivo. 
     Usar __name__ ajuda a identificar nos logs exatamente de qual módulo (arquivo) a mensagem veio.
