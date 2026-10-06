@@ -178,18 +178,45 @@ def excluir_curso_db(
 ) -> bool:
     """
     Exclui um curso pelo ID do documento.
-
-    Retorna True em caso de sucesso.
+        Retorna True em caso de sucesso.
     """
 
     try:
-        db.collection(
+        curso_ref = db.collection(
             COLECAO_CURSOS
-        ).document(doc_id).delete()
+        ).document(doc_id)
+
+        # Recupera os dados antes da exclusão
+        curso = curso_ref.get()
+
+        if not curso.exists:
+            logger.warning(
+                "Curso '%s' não encontrado para exclusão.",
+                doc_id,
+            )
+            return False
+
+        dados_curso = curso.to_dict() or {}
+        nome_curso = dados_curso.get(
+            "nome",
+            doc_id,
+        )
+
+        # Exclui o curso
+        curso_ref.delete()
 
         logger.info(
             "Curso '%s' excluído com sucesso.",
-            doc_id,
+            nome_curso,
+        )
+
+        # Cria a notificação usando o nome real
+        _criar_notificacao_curso(
+            titulo="Curso removido",
+            descricao=(
+                f"O curso '{nome_curso}' "
+                "foi removido com sucesso."
+            ),
         )
 
         return True

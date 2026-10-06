@@ -1,11 +1,17 @@
 import flet as ft
-
+from components.core.constants.constants import (
+    COR_PRIMARIA,
+    TEXTO_PRINCIPAL,
+    BORDA,
+    CARD,
+)
 
 def criar_card_pergunta(
     page: ft.Page,
     indicador: dict,
     estado: dict,
     rodape: ft.Container,
+    cores: dict[str, str],
 ) -> ft.Container:
     """Constrói o cartão central com opções, rolagem e campo de justificativa."""
 
@@ -52,14 +58,14 @@ def criar_card_pergunta(
                 controls=[
                     ft.Radio(
                         value=str(chave),
-                        active_color=ft.Colors.BLUE_700,
+                        active_color=cores[COR_PRIMARIA],
                     ),
                     ft.Container(
                         expand=True,
                         padding=ft.Padding.only(top=12),
                         content=ft.Text(
                             f"Nível {chave}: {texto_criterio}",
-                            color=ft.Colors.BLACK87,
+                            color=cores[TEXTO_PRINCIPAL],
                             size=14,
                         ),
                     ),
@@ -87,7 +93,7 @@ def criar_card_pergunta(
         multiline=True,
         min_lines=1,
         max_lines=3,
-        border_color=ft.Colors.GREY_300,
+        border_color=cores[BORDA],
         text_size=14,
         content_padding=15,
     )
@@ -107,7 +113,7 @@ def criar_card_pergunta(
             titulo_ind,
             size=20,
             weight="bold",
-            color=ft.Colors.BLACK87,
+            color=cores[TEXTO_PRINCIPAL],
         ),
     ]
 
@@ -124,7 +130,7 @@ def criar_card_pergunta(
     cabecalho_card.append(
         ft.Divider(
             height=1,
-            color=ft.Colors.GREY_200,
+            color=cores[BORDA],
         )
     )
 
@@ -148,12 +154,12 @@ def criar_card_pergunta(
     # ==========================================================
 
     return ft.Container(
-        bgcolor=ft.Colors.WHITE,
+        bgcolor=cores[CARD],
         padding=30,
         border_radius=12,
         border=ft.Border.all(
             1,
-            ft.Colors.GREY_200,
+            cores[BORDA],
         ),
         shadow=ft.BoxShadow(
             spread_radius=1,
@@ -170,7 +176,7 @@ def criar_card_pergunta(
                 area_rolavel,
                 ft.Divider(
                     height=1,
-                    color=ft.Colors.GREY_200,
+                    color=cores[BORDA],
                 ),
                 rodape,
             ],

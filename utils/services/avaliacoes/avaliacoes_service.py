@@ -46,6 +46,11 @@ def salvar_avaliacao(
             )
 
         if usuario_id:
+
+            # ---------------------------------------------------------
+            # Notificação: nova avaliação
+            # ---------------------------------------------------------
+
             notificacao_id = adicionar_notificacao(
                 tipo="avaliacao",
                 titulo="Nova avaliação registrada",
@@ -59,7 +64,27 @@ def salvar_avaliacao(
             if not notificacao_id:
                 logger.warning(
                     "A avaliação foi salva, mas não foi possível "
-                    "criar a notificação."
+                    "criar a notificação de nova avaliação."
+                )
+
+            # ---------------------------------------------------------
+            # Notificação: relatório disponível
+            # ---------------------------------------------------------
+
+            notificacao_relatorio_id = adicionar_notificacao(
+                tipo="relatorio",
+                titulo="Relatório disponível",
+                descricao=(
+                    f"O relatório da avaliação do curso '{curso_nome}' "
+                    "já está disponível."
+                ),
+                usuario_id=usuario_id,
+            )
+
+            if not notificacao_relatorio_id:
+                logger.warning(
+                    "A avaliação foi salva, mas não foi possível "
+                    "criar a notificação de relatório disponível."
                 )
 
         else:

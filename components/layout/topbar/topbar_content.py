@@ -164,64 +164,87 @@ def criar_topbar_content(
             ft.Icons.NOTIFICATIONS_NONE
         )
 
-    itens_notificacoes = []
+    def criar_itens_notificacoes(
+        notificacoes_atualizadas: list[dict],
+    ) -> list[ft.Control]:
 
-    for notificacao in notificacoes:
+        itens = []
 
-        itens_notificacoes.append(
-            ft.Container(
-                padding=12,
-                content=ft.Row(
-                    spacing=12,
-                    vertical_alignment=(
-                        ft.CrossAxisAlignment.START
-                    ),
-                    controls=[
-                        # Ícone
-                        ft.Container(
-                            width=34,
-                            height=34,
-                            border_radius=8,
-                            bgcolor=cores[SURFACE],
-                            alignment=ft.Alignment.CENTER,
-                            content=ft.Icon(
-                                notificacao["icone"],
-                                size=18,
-                                color=COR_PRIMARIA,
+        for notificacao in notificacoes_atualizadas:
+
+            itens.append(
+                ft.Container(
+                    padding=12,
+                    content=ft.Row(
+                        spacing=12,
+                        vertical_alignment=ft.CrossAxisAlignment.START,
+                        controls=[
+
+                            # Ícone
+                            ft.Container(
+                                width=34,
+                                height=34,
+                                border_radius=8,
+                                bgcolor=cores[SURFACE],
+                                alignment=ft.Alignment.CENTER,
+                                content=ft.Icon(
+                                    notificacao["icone"],
+                                    size=18,
+                                    color=COR_PRIMARIA,
+                                ),
                             ),
-                        ),
 
-                        # Texto
-                        ft.Column(
-                            spacing=2,
-                            expand=True,
-                            controls=[
-                                ft.Text(
-                                    notificacao["titulo"],
-                                    size=13,
-                                    weight=ft.FontWeight.BOLD,
-                                    color=cores[
-                                        TEXTO_PRINCIPAL
-                                    ],
-                                ),
+                            # Texto
+                            ft.Column(
+                                spacing=2,
+                                expand=True,
+                                controls=[
 
-                                ft.Text(
-                                    notificacao["descricao"],
-                                    size=11,
-                                    color=ft.Colors.GREY,
-                                    max_lines=2,
-                                    overflow=ft.TextOverflow.ELLIPSIS,
-                                ),
+                                    ft.Text(
+                                        notificacao["titulo"],
+                                        size=13,
+                                        weight=ft.FontWeight.BOLD,
+                                        color=cores[
+                                            TEXTO_PRINCIPAL
+                                        ],
+                                    ),
 
-                                ft.Text(
-                                    notificacao["tempo"],
-                                    size=10,
-                                    color=ft.Colors.GREY,
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
+                                    ft.Text(
+                                        notificacao["descricao"],
+                                        size=11,
+                                        color=ft.Colors.GREY,
+                                        max_lines=2,
+                                        overflow=ft.TextOverflow.ELLIPSIS,
+                                    ),
+
+                                    ft.Text(
+                                        notificacao["tempo"],
+                                        size=10,
+                                        color=ft.Colors.GREY,
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                )
+            )
+
+        return itens
+    
+    lista_notificacoes = ft.Column(
+        spacing=0,
+        controls=criar_itens_notificacoes(
+            notificacoes
+        ),
+    )
+    
+    def atualizar_lista_notificacoes(
+        novas_notificacoes: list[dict],
+    ) -> None:
+
+        lista_notificacoes.controls = (
+            criar_itens_notificacoes(
+                novas_notificacoes
             )
         )
 
@@ -274,7 +297,9 @@ def criar_topbar_content(
             ft.ListView(
                 expand=True,
                 spacing=0,
-                controls=itens_notificacoes,
+                controls=[
+                    lista_notificacoes,
+                ],
                 scroll=ft.ScrollMode.AUTO,
             ),
 
@@ -425,8 +450,12 @@ def criar_topbar_content(
         badge_notificacoes
     )
 
-    conteudo.painel_notificacoes = (
+    conteudo.painel_notificacoes = (  
         painel_notificacoes
+    )
+    
+    conteudo.atualizar_lista_notificacoes = (
+       atualizar_lista_notificacoes 
     )
 
     return conteudo

@@ -25,7 +25,9 @@ class FormularioController(FormularioStepsMixin, FormularioRenderMixin):
         mudar_tela: Callable[[str], None],
         area_dinamica: ft.Column,
         area_central: ft.Container,
+        cores: dict[str, str],
     ) -> None:
+        self.cores = cores
         self.page = page
         self.mudar_tela = mudar_tela
         self.area_dinamica = area_dinamica
