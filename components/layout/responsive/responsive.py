@@ -67,25 +67,23 @@ class ResponsiveLayout:
         )
 
         self.topbar = criar_topbar(
-            self.titulo_pagina,
-            self.subtitulo,
-            self.dark_mode,
-            self._toggle_sidebar,
-            self._toggle_dark_mode,
+            page=self.page,
+            titulo=self.titulo_pagina,
+            subtitulo=self.subtitulo,
+            dark_mode=self.dark_mode,
+            toggle_sidebar=self._toggle_sidebar,
+            atualizar_tema=self._toggle_dark_mode,
         )
 
         # ======================================================
-        # PAINEL DE NOTIFICAÇÕES
+        # PAINEL GLOBAL DE NOTIFICAÇÕES
         # ======================================================
-        #
-        # O painel não fica dentro da TopBar.
-        # Ele é colocado no overlay da página para ficar acima
-        # de todo o conteúdo da aplicação.
-        #
+
         if hasattr(self.topbar, "painel_notificacoes"):
-            self.page.overlay.append(
-                self.topbar.painel_notificacoes
-            )
+            painel = self.topbar.painel_notificacoes
+
+            if painel not in self.page.overlay:
+                self.page.overlay.append(painel)
 
     # ==========================================================
     # SIDEBAR

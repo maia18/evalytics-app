@@ -26,6 +26,7 @@ from components.layout.topbar.core.notifications import (
 # ==========================================================
 
 def criar_topbar_content(
+    page: ft.Page,
     titulo: str,
     subtitulo: str,
     dark_mode: bool,
@@ -75,6 +76,7 @@ def criar_topbar_content(
 
     painel_notificacoes = ft.Container(
         width=320,
+        height=500,
         visible=False,
 
         # Posição dentro do Page.overlay
@@ -115,7 +117,7 @@ def criar_topbar_content(
             ft.Icons.NOTIFICATIONS_NONE
         )
 
-        painel_notificacoes.update()
+        page.update()
 
     # ======================================================
     # ABRIR / FECHAR PAINEL
@@ -133,7 +135,7 @@ def criar_topbar_content(
             else ft.Icons.NOTIFICATIONS_NONE
         )
 
-        painel_notificacoes.update()
+        page.update()
 
     botao_notificacoes.on_click = (
         alternar_painel
@@ -207,6 +209,8 @@ def criar_topbar_content(
                                     notificacao["descricao"],
                                     size=11,
                                     color=ft.Colors.GREY,
+                                    max_lines=2,
+                                    overflow=ft.TextOverflow.ELLIPSIS,
                                 ),
 
                                 ft.Text(
@@ -226,6 +230,7 @@ def criar_topbar_content(
     # ======================================================
 
     painel_notificacoes.content = ft.Column(
+        expand=True,
         spacing=0,
         controls=[
             # ------------------------------------------------
@@ -266,9 +271,11 @@ def criar_topbar_content(
             # Lista
             # ------------------------------------------------
 
-            ft.Column(
+            ft.ListView(
+                expand=True,
                 spacing=0,
                 controls=itens_notificacoes,
+                scroll=ft.ScrollMode.AUTO,
             ),
 
             ft.Divider(

@@ -32,7 +32,7 @@ class Navigator:
 
     # Navega para a rota informada, substituindo a view (tela) atual
     def go(self, rota: str) -> None:
-        
+
         rotas_publicas = {
             "/",
             "/login",
@@ -44,24 +44,14 @@ class Navigator:
                 rota,
             )
             rota = "/login"
-        
-        self.page.views.clear() # Limpa o histórico de telas (views) atual da página para garantir que a nova tela vai substituir a anterior por completo.
-        
-        '''
-        Chama a função 'obter_view' passando a string da rota (ex: "/login" ou "/dashboard").
-            Ela retorna a função construtora (ViewBuilder) responsável por desenhar aquela tela específica.
-        '''
-        view_builder: ViewBuilder = obter_view(rota) 
 
-        '''
-            1. view_builder(self.page, self.go) executa a função construtora da tela.
-            2. Ela passa o objeto 'page' e o PRÓPRIO método 'go' para a tela. (Injeção de dependência).
-            3. O Flet exige que as telas fiquem dentro de uma lista chamada 'views', por isso o .append().
-        '''
-        self.page.views.append(view_builder(self.page, self.go))
+        self.page.views.clear()
+        self.page.overlay.clear()
 
-        '''
-        Avisa ao Flet que a estrutura da interface mudou e ele precisa renderizar a nova tela.
-            Sem o .update(), a tela ficaria travada visualmente na view antiga.
-        '''
+        view_builder: ViewBuilder = obter_view(rota)
+
+        self.page.views.append(
+            view_builder(self.page, self.go)
+        )
+
         self.page.update()

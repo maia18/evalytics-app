@@ -1,7 +1,9 @@
+import flet as ft
 from typing import Callable
 from components.layout.topbar.topbar import TopBar
 
 def criar_topbar(
+    page: ft.Page,
     titulo: str,
     subtitulo: str,
     dark_mode: bool,
@@ -14,6 +16,7 @@ def criar_topbar(
     
     # Retorna uma nova instância da classe TopBar preenchida com as variáveis passadas[cite: 28]. Ao encapsular essa chamada, se no futuro o construtor da TopBar mudar, você precisará alterar apenas este arquivo, e não todas as telas que a utilizam.
     return TopBar(
+        page=page,
         titulo_pagina=titulo,
         subtitulo=subtitulo,
         dark_mode=dark_mode,

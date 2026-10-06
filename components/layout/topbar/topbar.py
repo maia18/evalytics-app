@@ -16,6 +16,7 @@ class TopBar(ft.Container):
 
     def __init__(
         self,
+        page: ft.Page,
         titulo_pagina: str,
         subtitulo: str,
         dark_mode: bool,
@@ -74,12 +75,13 @@ class TopBar(ft.Container):
         # ======================================================
 
         self.content = criar_topbar_content(
-            titulo=self.titulo_pagina,
-            subtitulo=self.subtitulo,
-            dark_mode=self.dark_mode,
+            page=page,
+            titulo=titulo_pagina,
+            subtitulo=subtitulo,
+            dark_mode=dark_mode,
             cores=self.cores,
             menu_button=self.menu_button,
-            atualizar_tema=self._atualizar_tema,
+            atualizar_tema=atualizar_tema,
             notificacoes_pendentes=self.notificacoes_pendentes,
         )
 
