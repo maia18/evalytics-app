@@ -15,6 +15,11 @@ from utils.services.location_service import (
     obter_localizacao,
 )
 
+from components.layout.topbar.core.notifications import (
+    listar_notificacoes,
+    contar_nao_lidas,
+    marcar_todas_como_lidas,
+)
 
 # ==========================================================
 # CONSTRÓI O CONTEÚDO DA TOPBAR
@@ -35,6 +40,13 @@ def criar_topbar_content(
     icone_tema = obter_icone_tema(
         dark_mode
     )
+    
+    # ======================================================
+    # NOTIFICAÇÕES
+    # ======================================================
+
+    notificacoes = listar_notificacoes()
+    quantidade_nao_lidas = contar_nao_lidas()
 
     # ======================================================
     # BADGE DE NOTIFICAÇÕES
@@ -48,9 +60,9 @@ def criar_topbar_content(
         bgcolor="#EF4444",
         border_radius=8,
         alignment=ft.Alignment.CENTER,
-        visible=notificacoes_pendentes > 0,
+        visible=quantidade_nao_lidas > 0,
         content=ft.Text(
-            str(notificacoes_pendentes),
+            str(quantidade_nao_lidas),
             size=9,
             weight=ft.FontWeight.BOLD,
             color=ft.Colors.WHITE,
@@ -133,6 +145,8 @@ def criar_topbar_content(
 
     def marcar_como_lidas(e=None):
 
+        marcar_todas_como_lidas()
+
         badge_notificacoes.visible = False
 
         badge_notificacoes.content = ft.Text(
@@ -147,34 +161,6 @@ def criar_topbar_content(
         botao_notificacoes.icon = (
             ft.Icons.NOTIFICATIONS_NONE
         )
-
-        painel_notificacoes.update()
-        badge_notificacoes.update()
-
-    # ======================================================
-    # NOTIFICAÇÕES DE TESTE
-    # ======================================================
-
-    notificacoes = [
-        {
-            "icone": ft.Icons.RATE_REVIEW_OUTLINED,
-            "titulo": "Nova avaliação registrada",
-            "descricao": "Uma nova avaliação foi concluída.",
-            "tempo": "há 5 minutos",
-        },
-        {
-            "icone": ft.Icons.TUNE_OUTLINED,
-            "titulo": "Novo indicador cadastrado",
-            "descricao": "Um novo indicador está disponível.",
-            "tempo": "há 2 horas",
-        },
-        {
-            "icone": ft.Icons.SCHOOL_OUTLINED,
-            "titulo": "Curso atualizado",
-            "descricao": "Informações de um curso foram alteradas.",
-            "tempo": "ontem",
-        },
-    ]
 
     itens_notificacoes = []
 

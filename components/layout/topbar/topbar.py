@@ -36,7 +36,7 @@ class TopBar(ft.Container):
         # ESTADO DAS NOTIFICAÇÕES
         # ======================================================
 
-        self.notificacoes_pendentes = 0
+        self.notificacoes_pendentes = 3
 
         # ======================================================
         # CORES
