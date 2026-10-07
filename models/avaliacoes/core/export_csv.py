@@ -8,19 +8,12 @@ from models.avaliacoes.core.feedback import mostrar_feedback
 from models.avaliacoes.core.filename_generator import gerar_nome_arquivo
 
 
-NOMES_EIXOS = {
-    1: "Organização Didático-Pedagógica",
-    2: "Corpo Docente e Tutorial",
-    3: "Infraestrutura",
-}
-
-
 def preparar_dados_csv(
     resultados: list[dict],
 ) -> list[list[str]]:
     """
-    Converte os resultados consolidados para o formato
-    utilizado pelo arquivo CSV.
+    Converte as respostas individuais exibidas na tabela
+    para o formato utilizado pelo arquivo CSV.
     """
 
     dados = [
@@ -28,29 +21,44 @@ def preparar_dados_csv(
             "ID_Avaliacao",
             "Data",
             "Curso",
-            "Eixo 1",
-            "Eixo 2",
-            "Eixo 3",
-            "Media Geral",
+            "Eixo",
+            "Indicador",
+            "Nota",
+            "Comentario",
         ]
     ]
 
     for resultado in resultados:
-
         dados.append(
             [
                 str(resultado.get("id", "")),
-                str(resultado.get("data_avaliacao", "")),
+                str(resultado.get("data", "")),
                 str(
                     resultado.get(
-                        "curso_nome",
+                        "curso",
                         "Curso não informado",
                     )
                 ),
-                f'{resultado.get("eixo_1", 0.0):.2f}',
-                f'{resultado.get("eixo_2", 0.0):.2f}',
-                f'{resultado.get("eixo_3", 0.0):.2f}',
-                f'{resultado.get("media_geral", 0.0):.2f}',
+                str(
+                    resultado.get(
+                        "eixo",
+                        "Não informado",
+                    )
+                ),
+                str(
+                    resultado.get(
+                        "indicador",
+                        "Não informado",
+                    )
+                ),
+                str(resultado.get("nota", "")),
+                str(
+                    resultado.get(
+                        "comentario",
+                        "",
+                    )
+                    or ""
+                ),
             ]
         )
 
@@ -62,10 +70,8 @@ def exportar_csv(
     resultados: Optional[list[dict]] = None,
 ) -> None:
     """
-    Exporta os resultados reais para CSV.
-
-    O arquivo recebe exatamente os resultados que estão
-    sendo exibidos após a aplicação dos filtros.
+    Exporta as respostas reais atualmente carregadas
+    na tabela de acompanhamento.
     """
 
     if resultados is None:
@@ -82,7 +88,6 @@ def exportar_csv(
     nome_arquivo = gerar_nome_arquivo()
 
     try:
-
         dados_exportacao = preparar_dados_csv(
             resultados
         )
@@ -110,7 +115,6 @@ def exportar_csv(
         )
 
     except Exception as erro:
-
         mostrar_feedback(
             page,
             f"Erro ao exportar: {erro}",

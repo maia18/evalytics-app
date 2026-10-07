@@ -1,207 +1,250 @@
-import logging as lg
-from typing import Optional
+import logging
 
 from database.services.firebase_config import db
-from utils.services.indicadores.indicadores_repository import listar_indicadores
+from utils.services.indicadores.indicadores_repository import (
+    listar_indicadores,
+)
 
-
-logger = lg.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 COLECAO_AVALIACOES = "avaliacoes"
 
+EIXOS_PADRAO = (1, 2, 3)
 
-def obter_dados_dashboard() -> dict:
+
+# ==========================================================
+# MAPA DOS INDICADORES
+# ==========================================================
+
+def _obter_mapa_eixos() -> dict[str, int]:
     """
-    Obtém os principais indicadores utilizados pelo Dashboard.
+    Cria um mapa relacionando o ID do indicador ao seu eixo.
 
-    Os dados são calculados diretamente a partir das avaliações
-    armazenadas atualmente no Firestore.
+    Exemplo:
 
-    Retorna:
         {
-            "avaliacoes": int,
-            "respostas": int,
-            "cursos": int,
-            "media_geral": float,
-            "medias_eixos": {
-                1: float,
-                2: float,
-                3: float,
-            }
+            "abc123": 1,
+            "def456": 1,
+            "ghi789": 3,
         }
     """
 
     try:
-        # ==========================================================
-        # INDICADORES ATIVOS
-        # ==========================================================
-
         indicadores = listar_indicadores()
 
-        indicadores_por_id = {
-            indicador.get("id"): indicador
+        return {
+            indicador["id"]: int(indicador.get("eixo", 1))
             for indicador in indicadores
             if indicador.get("id")
         }
 
-        # ==========================================================
-        # AVALIAÇÕES
-        # ==========================================================
+    except Exception:
+        logger.exception(
+            "Erro ao montar mapa de eixos."
+        )
+        return {}
 
-        documentos = list(
-            db.collection(COLECAO_AVALIACOES).stream()
+
+# ==========================================================
+# NORMALIZAÇÃO DAS NOTAS
+# ==========================================================
+
+def _normalizar_nota(valor) -> float | None:
+    """
+    Converte uma resposta armazenada no Firestore
+    para float.
+
+    Retorna None quando a resposta não representa
+    uma nota válida.
+    """
+
+    try:
+        nota = float(valor)
+    except (TypeError, ValueError):
+        return None
+
+    if not 1.0 <= nota <= 5.0:
+        return None
+
+    return nota
+
+
+# ==========================================================
+# DADOS PRINCIPAIS DO DASHBOARD
+# ==========================================================
+
+def obter_dados_dashboard() -> dict:
+    """
+    Calcula as métricas principais do Dashboard
+    utilizando o formato atual das avaliações.
+
+    Métricas:
+
+        avaliações
+            Quantidade de documentos da coleção.
+
+        respostas
+            Quantidade total de respostas registradas
+            dentro dos documentos.
+
+        cursos
+            Quantidade de cursos distintos avaliados.
+
+        media_geral
+            Média de todas as respostas válidas.
+
+        medias_eixos
+            Média das respostas agrupadas pelos
+            respectivos eixos dos indicadores.
+    """
+
+    resultado_vazio = {
+        "avaliacoes": 0,
+        "respostas": 0,
+        "cursos": 0,
+        "media_geral": 0.0,
+        "medias_eixos": {},
+    }
+
+    try:
+        # --------------------------------------------------
+        # BUSCA AS AVALIAÇÕES
+        # --------------------------------------------------
+
+        documentos = (
+            db.collection(COLECAO_AVALIACOES)
+            .stream()
         )
 
-        quantidade_avaliacoes = len(documentos)
+        mapa_eixos = _obter_mapa_eixos()
 
-        if not documentos:
-            return {
-                "avaliacoes": 0,
-                "respostas": 0,
-                "cursos": 0,
-                "media_geral": 0.0,
-                "medias_eixos": {},
-            }
-
-        # ==========================================================
-        # ACUMULADORES
-        # ==========================================================
-
-        cursos_avaliados = set()
-
+        quantidade_avaliacoes = 0
         quantidade_respostas = 0
 
-        soma_geral = 0.0
-        total_notas_geral = 0
+        cursos_avaliados: set[str] = set()
 
-        soma_por_eixo: dict[int, float] = {}
-        quantidade_por_eixo: dict[int, int] = {}
+        todas_notas: list[float] = []
 
-        # ==========================================================
-        # PROCESSAMENTO DAS AVALIAÇÕES
-        # ==========================================================
+        notas_por_eixo: dict[int, list[float]] = {
+            eixo: []
+            for eixo in EIXOS_PADRAO
+        }
+
+        # --------------------------------------------------
+        # PROCESSAMENTO
+        # --------------------------------------------------
 
         for documento in documentos:
+
             dados = documento.to_dict() or {}
+
+            quantidade_avaliacoes += 1
+
+            # --------------------------------------------------
+            # CURSO
+            # --------------------------------------------------
 
             curso_id = dados.get("curso_id")
 
             if curso_id:
-                cursos_avaliados.add(curso_id)
+                cursos_avaliados.add(str(curso_id))
 
-            respostas = dados.get("respostas", {})
+            else:
+                # Fallback para documentos antigos
+                # que eventualmente possuam somente curso_nome.
+                curso_nome = dados.get("curso_nome")
+
+                if curso_nome:
+                    cursos_avaliados.add(
+                        f"nome:{curso_nome}"
+                    )
+
+            # --------------------------------------------------
+            # RESPOSTAS
+            # --------------------------------------------------
+
+            respostas = dados.get(
+                "respostas",
+                {},
+            )
 
             if not isinstance(respostas, dict):
                 continue
 
-            for indicador_id, resposta in respostas.items():
+            # Cada item dentro de "respostas"
+            # representa uma resposta a um indicador.
+            quantidade_respostas += len(respostas)
 
-                # Ignora respostas inválidas
-                try:
-                    nota = float(resposta)
-                except (TypeError, ValueError):
+            # --------------------------------------------------
+            # DISTRIBUIÇÃO DAS NOTAS
+            # --------------------------------------------------
+
+            for indicador_id, valor in respostas.items():
+
+                nota = _normalizar_nota(valor)
+
+                if nota is None:
                     continue
 
-                # Garante que a nota esteja dentro da escala
-                # utilizada pelo formulário.
-                if nota < 1 or nota > 5:
-                    continue
+                # Média geral
+                todas_notas.append(nota)
 
-                quantidade_respostas += 1
-
-                soma_geral += nota
-                total_notas_geral += 1
-
-                # --------------------------------------------------
-                # Identificação do eixo do indicador
-                # --------------------------------------------------
-
-                indicador = indicadores_por_id.get(indicador_id)
-
-                if not indicador:
-                    continue
-
-                eixo = indicador.get("eixo")
-
-                if eixo is None:
-                    continue
-
-                try:
-                    eixo = int(eixo)
-                except (TypeError, ValueError):
-                    continue
-
-                soma_por_eixo[eixo] = (
-                    soma_por_eixo.get(eixo, 0.0) + nota
+                # Descobre o eixo do indicador
+                eixo_id = mapa_eixos.get(
+                    str(indicador_id)
                 )
 
-                quantidade_por_eixo[eixo] = (
-                    quantidade_por_eixo.get(eixo, 0) + 1
+                if eixo_id not in notas_por_eixo:
+                    continue
+
+                notas_por_eixo[eixo_id].append(
+                    nota
                 )
 
-        # ==========================================================
+        # --------------------------------------------------
         # MÉDIA GERAL
-        # ==========================================================
+        # --------------------------------------------------
 
         media_geral = (
-            soma_geral / total_notas_geral
-            if total_notas_geral
+            sum(todas_notas) / len(todas_notas)
+            if todas_notas
             else 0.0
         )
 
-        # ==========================================================
+        # --------------------------------------------------
         # MÉDIAS POR EIXO
-        # ==========================================================
+        # --------------------------------------------------
 
-        medias_eixos = {}
+        medias_eixos: dict[int, float] = {}
 
-        for eixo in sorted(soma_por_eixo):
-            quantidade = quantidade_por_eixo.get(eixo, 0)
+        for eixo_id, notas in notas_por_eixo.items():
 
-            if quantidade:
-                medias_eixos[eixo] = round(
-                    soma_por_eixo[eixo] / quantidade,
-                    1,
+            # Só adiciona o eixo se realmente houver
+            # respostas para ele.
+            if notas:
+                medias_eixos[eixo_id] = round(
+                    sum(notas) / len(notas),
+                    2,
                 )
 
-        # ==========================================================
-        # RESULTADO
-        # ==========================================================
+        # --------------------------------------------------
+        # RESULTADO FINAL
+        # --------------------------------------------------
 
         return {
             "avaliacoes": quantidade_avaliacoes,
             "respostas": quantidade_respostas,
             "cursos": len(cursos_avaliados),
-            "media_geral": round(media_geral, 1),
+            "media_geral": round(
+                media_geral,
+                2,
+            ),
             "medias_eixos": medias_eixos,
         }
 
     except Exception:
         logger.exception(
-            "Erro ao obter dados do Dashboard."
+            "Erro ao calcular dados do Dashboard."
         )
 
-        return {
-            "avaliacoes": 0,
-            "respostas": 0,
-            "cursos": 0,
-            "media_geral": 0.0,
-            "medias_eixos": {},
-        }
-
-
-def obter_medias_dashboard() -> Optional[dict[int, float]]:
-    """
-    Compatibilidade com componentes antigos.
-
-    Retorna somente as médias por eixo.
-    """
-
-    dados = obter_dados_dashboard()
-
-    medias = dados.get("medias_eixos", {})
-
-    if not medias:
-        return None
-
-    return medias
+        return resultado_vazio
