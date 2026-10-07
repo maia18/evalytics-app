@@ -1,45 +1,40 @@
 import flet as ft
 from typing import Callable
 
-from components.core.constants.constants import COR_PRIMARIA
+from components.core.constants.constants import (
+    COR_PRIMARIA,
+)
 
-def criar_cta(mudar_tela: Callable[[str], None]) -> ft.Container:
+
+def criar_cta(
+    mudar_tela: Callable[[str], None],
+) -> ft.Container:
     """
-    Cria a seção CTA (Call To Action) da Landing Page.
-        Tem o objetivo de incentivar o usuário a acessar a plataforma através de uma chamada visual destacada e um botão de ação.
+    Cria a seção final de chamada para ação da Landing Page.
     """
 
     return ft.Container(
-        # Espaçamento externo da seção em relação aos demais blocos da página.
         margin=ft.Margin.symmetric(
-            horizontal=20,
-            vertical=30,
+            horizontal=40,
+            vertical=45,
         ),
-        padding=35, # Espaçamento interno.
-        bgcolor=COR_PRIMARIA, # Cor de fundo principal da marca.
-        border_radius=16, # Bordas arredondadas para um visual moderno.
-        
-        # =====================================================
-        # LAYOUT RESPONSIVO
-        # =====================================================
+        padding=ft.Padding.symmetric(
+            horizontal=45,
+            vertical=38,
+        ),
+        bgcolor=COR_PRIMARIA,
+        border_radius=18,
         content=ft.ResponsiveRow(
             columns=12,
-            alignment=ft.MainAxisAlignment.CENTER, # Centraliza horizontalmente os elementos.
-            vertical_alignment=ft.CrossAxisAlignment.CENTER, # Centraliza verticalmente os elementos.
-            run_spacing=20, # Espaçamento entre linhas quando houver quebra.
+            alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            run_spacing=24,
             controls=[
-                
-                # =================================================
-                # BLOCO DE TEXTO
-                # =================================================
+                # =====================================================
+                # TEXTO
+                # =====================================================
+
                 ft.Container(
-                    
-                    # Configuração de responsividade.
-                    #   xs e sm:
-                    #      ocupa toda a largura.
-                    #   md+:
-                    #       ocupa 8 das 12 colunas.
-                    
                     col={
                         "xs": 12,
                         "sm": 12,
@@ -48,22 +43,15 @@ def criar_cta(mudar_tela: Callable[[str], None]) -> ft.Container:
                         "xl": 8,
                     },
                     content=ft.Column(
-                        spacing=10,
+                        spacing=8,
                         controls=[
-                            
-                            # -------------------------------------
-                            # Título principal da CTA
-                            # -------------------------------------
                             ft.Text(
                                 "Pronto para começar?",
-                                size=25,
+                                size=26,
                                 weight=ft.FontWeight.BOLD,
                                 color=ft.Colors.WHITE,
                             ),
-                            
-                            # -------------------------------------
-                            # Texto complementar
-                            # -------------------------------------
+
                             ft.Text(
                                 "Acesse o Evalytics e acompanhe "
                                 "as avaliações da sua instituição.",
@@ -73,17 +61,11 @@ def criar_cta(mudar_tela: Callable[[str], None]) -> ft.Container:
                         ],
                     ),
                 ),
-                
-                # =================================================
-                # BLOCO DO BOTÃO
-                # =================================================
-                
-                # Responsividade:
-                #    Mobile:
-                #        ocupa linha inteira.
-                #    Desktop:
-                #        ocupa 4 colunas.
-                
+
+                # =====================================================
+                # BOTÃO
+                # =====================================================
+
                 ft.Container(
                     col={
                         "xs": 12,
@@ -92,13 +74,13 @@ def criar_cta(mudar_tela: Callable[[str], None]) -> ft.Container:
                         "lg": 4,
                         "xl": 4,
                     },
-                    alignment=ft.Alignment.CENTER, # Centraliza o botão dentro da área disponível.
+                    alignment=ft.Alignment.CENTER_RIGHT,
                     content=ft.ElevatedButton(
-                        "Entrar na plataforma", # Texto exibido ao usuário.
+                        "Entrar na plataforma",
+                        height=46,
                         bgcolor=ft.Colors.WHITE,
                         color=COR_PRIMARIA,
-                        height=45,
-                        on_click=lambda e: mudar_tela("/login"), # Redireciona para a tela de login.
+                        on_click=lambda e: mudar_tela("/login"),
                         style=ft.ButtonStyle(
                             shape=ft.RoundedRectangleBorder(
                                 radius=8,

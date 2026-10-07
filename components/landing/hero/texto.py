@@ -1,4 +1,5 @@
 import flet as ft
+
 from typing import Callable
 
 from components.core.constants.constants import (
@@ -7,15 +8,22 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
 )
 
-def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callable) -> ft.Column:
-    """Cria a estrutura de texto e botões da seção Hero (Copywriting da página)."""
+
+def criar_hero_texto(
+    mudar_tela: Callable[[str], None],
+    ir_para_recursos: Callable,
+) -> ft.Column:
+    """Cria a estrutura de texto e botões da seção Hero."""
 
     return ft.Column(
         spacing=18,
-        horizontal_alignment=ft.CrossAxisAlignment.START, # Garante que todo o texto alinhe à esquerda
+        horizontal_alignment=ft.CrossAxisAlignment.START,
         controls=[
-            
-            # 1. Label/Tag inicial (Prepara o contexto do usuário)
+
+            # =========================================================
+            # IDENTIFICAÇÃO
+            # =========================================================
+
             ft.Text(
                 "AVALIAÇÃO INSTITUCIONAL",
                 size=13,
@@ -23,16 +31,23 @@ def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callab
                 color=COR_PRIMARIA,
             ),
 
-            # 2. Título Principal (O texto mais forte da página)
+            # =========================================================
+            # TÍTULO
+            # =========================================================
+
             ft.Text(
                 "Transforme avaliações\nem melhorias.",
-                size=42, # Tamanho grande para criar impacto no primeiro segundo
+                size=42,
                 weight=ft.FontWeight.BOLD,
                 color=COR_TEXTO_TITULO,
             ),
 
-            # 3. Descrição (Subtítulo explicativo)
+            # =========================================================
+            # DESCRIÇÃO
+            # =========================================================
+
             ft.Container(
+                width=650,
                 content=ft.Text(
                     "Uma plataforma para coletar, organizar e "
                     "analisar avaliações institucionais, "
@@ -43,21 +58,26 @@ def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callab
                 ),
             ),
 
-            # Espaçador invisível para separar mais o texto dos botões
-            ft.Container(height=5),
+            ft.Container(height=3),
 
-            # 4. Botões de Ação (CTAs) em uma ResponsiveRow
+            # =========================================================
+            # CTAs
+            # =========================================================
+
             ft.ResponsiveRow(
                 columns=12,
-                run_spacing=10, # Espaço vertical entre os botões quando eles quebram de linha no mobile
+                run_spacing=10,
                 controls=[
-                    
-                    # Botão Primário (Forte, sólido, foco principal)
+
+                    # -------------------------------------------------
+                    # CTA PRINCIPAL
+                    # -------------------------------------------------
+
                     ft.Container(
                         col={
-                            "xs": 12, # No celular ocupa a linha toda (100% da largura)
+                            "xs": 12,
                             "sm": 12,
-                            "md": 6,  # No PC ocupa metade do espaço reservado
+                            "md": 6,
                             "lg": 6,
                             "xl": 6,
                         },
@@ -67,15 +87,22 @@ def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callab
                             color=ft.Colors.WHITE,
                             height=48,
                             width=190,
-                            on_click=lambda e: mudar_tela("/login"), # Redireciona para login
+                            on_click=lambda e: mudar_tela("/login"),
                             style=ft.ButtonStyle(
-                                shape=ft.RoundedRectangleBorder(radius=8),
-                                padding=ft.Padding.symmetric(horizontal=25),
+                                shape=ft.RoundedRectangleBorder(
+                                    radius=8,
+                                ),
+                                padding=ft.Padding.symmetric(
+                                    horizontal=25,
+                                ),
                             ),
                         ),
                     ),
 
-                    # Botão Secundário (Fantasma / Outlined, ação secundária)
+                    # -------------------------------------------------
+                    # CTA SECUNDÁRIO
+                    # -------------------------------------------------
+
                     ft.Container(
                         col={
                             "xs": 12,
@@ -88,15 +115,19 @@ def criar_hero_texto(mudar_tela: Callable[[str], None], ir_para_recursos: Callab
                             "Conhecer a plataforma",
                             height=48,
                             width=210,
-                            on_click=ir_para_recursos, # Rola a página para baixo
+                            on_click=ir_para_recursos,
                             style=ft.ButtonStyle(
                                 color=COR_PRIMARIA,
                                 side=ft.BorderSide(
                                     1,
-                                    COR_PRIMARIA, # Borda com a cor principal
+                                    COR_PRIMARIA,
                                 ),
-                                shape=ft.RoundedRectangleBorder(radius=8),
-                                padding=ft.Padding.symmetric(horizontal=25),
+                                shape=ft.RoundedRectangleBorder(
+                                    radius=8,
+                                ),
+                                padding=ft.Padding.symmetric(
+                                    horizontal=25,
+                                ),
                             ),
                         ),
                     ),

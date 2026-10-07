@@ -22,7 +22,7 @@ def criar_menu_desktop(
     """
 
     return ft.Row(
-        spacing=20, # Espaçamento horizontal entre os itens do menu.
+        spacing=16, # Espaçamento horizontal entre os itens do menu.
         vertical_alignment=ft.CrossAxisAlignment.CENTER, # Mantém todos os botões alinhados verticalmente.
 
         controls=[

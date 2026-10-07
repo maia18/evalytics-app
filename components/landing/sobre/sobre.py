@@ -1,59 +1,84 @@
 import flet as ft
 
+from components.core.constants.constants import (
+    COR_CARD,
+)
+
+from components.landing.helpers import criar_etapa
 from components.landing.sobre.conteudo import criar_sobre_conteudo
-from components.landing.sobre.visual import criar_sobre_visual
+
 
 def criar_secao_sobre() -> ft.Container:
-    """
-    Constrói a seção "Sobre" completa, orquestrando o layout responsivo.
-        Posiciona o conteúdo em texto de um lado e o elemento visual do outro em telas grandes.
-    """
 
-    # Instancia as duas metades da seção
     sobre_conteudo = criar_sobre_conteudo()
-    sobre_visual = criar_sobre_visual()
+
+    etapas = ft.Column(
+        spacing=22,
+        controls=[
+            criar_etapa(
+                "01",
+                "Avaliar",
+                "Colete informações por meio das avaliações institucionais.",
+            ),
+            criar_etapa(
+                "02",
+                "Analisar",
+                "Organize os resultados e acompanhe os indicadores.",
+            ),
+            criar_etapa(
+                "03",
+                "Melhorar",
+                "Use as informações para apoiar decisões e melhorias.",
+            ),
+        ],
+    )
 
     return ft.Container(
-        key=ft.ScrollKey("sobre"), # Cria uma âncora para permitir navegação direta via scroll (ex: link no menu superior)
+        key=ft.ScrollKey("sobre"),
         padding=ft.Padding.symmetric(
-            horizontal=20,
-            vertical=75, # Mantém a consistência de respiro vertical com as outras seções
+            horizontal=60,
+            vertical=75,
         ),
-        
-        # O ResponsiveRow divide a tela em 12 colunas imaginárias
+        bgcolor=COR_CARD,
         content=ft.ResponsiveRow(
             columns=12,
-            alignment=ft.MainAxisAlignment.CENTER, # Centraliza o bloco todo horizontalmente
-            vertical_alignment=ft.CrossAxisAlignment.CENTER, # Centraliza os itens pelo eixo vertical (meio a meio)
-            run_spacing=35, # Espaçamento gerado quando a tela é pequena e o visual "cai" para debaixo do texto
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            run_spacing=35,
             controls=[
-                
-                # METADE ESQUERDA: Textos
+                # =====================================================
+                # TEXTO
+                # =====================================================
+
                 ft.Container(
                     col={
-                        "xs": 12, # Celular: Ocupa toda a largura (100%)
+                        "xs": 12,
                         "sm": 12,
-                        "md": 12, # Tablet: Ocupa toda a largura
-                        "lg": 7,  # Desktop: Ocupa 7 das 12 colunas (~58% do espaço)
-                        "xl": 7,
+                        "md": 6,
+                        "lg": 6,
+                        "xl": 6,
                     },
                     padding=ft.Padding.only(
-                        right=20, # Cria uma margem para o texto não encostar no card visual em telas grandes
+                        right=40,
                     ),
                     content=sobre_conteudo,
                 ),
 
-                # METADE DIREITA: Card Visual
+                # =====================================================
+                # ETAPAS
+                # =====================================================
+
                 ft.Container(
                     col={
-                        "xs": 12, 
+                        "xs": 12,
                         "sm": 12,
-                        "md": 12,
-                        "lg": 5,  # Desktop: Ocupa as 5 colunas restantes (7 + 5 = 12)
-                        "xl": 5,
+                        "md": 6,
+                        "lg": 6,
+                        "xl": 6,
                     },
-                    alignment=ft.Alignment.CENTER, # Garante que o card fique centralizado na sua própria coluna
-                    content=sobre_visual,
+                    padding=ft.Padding.only(
+                        top=10,
+                    ),
+                    content=etapas,
                 ),
             ],
         ),
