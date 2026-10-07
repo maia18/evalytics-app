@@ -2,7 +2,6 @@ import flet as ft
 from typing import Optional
 from components.core.constants.constants import TEXTO_PRINCIPAL
 from components.widgets.card.card_base import criar_card_base
-from models.avaliacoes.core.export_csv import exportar_csv
 from models.avaliacoes.layout.cards.card_tabela_linha import criar_linha
 from database.services.firestore_avaliacoes import obter_respostas_tabela # Chama o serviço que encapsula a lógica de conexão com o banco de dados
 
@@ -37,17 +36,13 @@ def criar_card_tabela_dados(layout, page: ft.Page, expand: bool = True, height: 
         controls=[
             # Primeira linha interna: Título alinhado à esquerda, Botão à direita (SPACE_BETWEEN)
             ft.Row(
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                alignment=ft.MainAxisAlignment.CENTER,
                 controls=[
-                    ft.Text("Respostas Recentes (Raw Data)", size=18, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),           
-                    
-                    # Botão de exportação
-                    ft.ElevatedButton(
-                        "Exportar CSV",
-                        icon=ft.Icons.DOWNLOAD,
-                        bgcolor=ft.Colors.BLUE_700,
-                        color=ft.Colors.WHITE,
-                        on_click=lambda e: exportar_csv(page, dados_tabela),
+                    ft.Text(
+                        "Respostas Recentes (Raw Data)",
+                        size=18,
+                        weight="bold",
+                        color=layout.cores[TEXTO_PRINCIPAL],
                     ),
                 ],
             ),

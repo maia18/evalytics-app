@@ -164,6 +164,8 @@ def ViewDashboard(
         NOMES_EIXOS,
         CORES_BARRAS_GRAFICO_EIXOS,
     )
+    
+    indice_aba_atual = getattr(page, "_dashboard_aba_atual", 0)
 
     # ==========================================================
     # CONTEÚDO DA PRIMEIRA ABA
@@ -224,6 +226,12 @@ def ViewDashboard(
 
     abas = ft.Tabs(
         length=2,
+        selected_index=indice_aba_atual,
+        on_change=lambda e: setattr(
+            page,
+            "_dashboard_aba_atual",
+            e.control.selected_index,
+        ),
         expand=True,
         content=ft.Column(
             expand=True,

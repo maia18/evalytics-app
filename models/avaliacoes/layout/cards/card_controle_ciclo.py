@@ -5,6 +5,7 @@ from datetime import datetime
 from components.core.constants.constants import COR_PRIMARIA
 from components.widgets.card.card_base import criar_card_base
 from database.services.firestore_avaliacoes import obter_respostas_tabela
+from models.avaliacoes.core.export_csv import exportar_csv
 
 
 def criar_card_controle_ciclo(
@@ -14,7 +15,6 @@ def criar_card_controle_ciclo(
 ) -> ft.Container:
     """Cartão que exibe o status do ciclo de avaliação."""
 
-    # Cria uma etiqueta de status (Tag / Pill) estilizada
     status_ciclo = ft.Container(
         content=ft.Text(
             "EM ANDAMENTO",
@@ -73,11 +73,14 @@ def criar_card_controle_ciclo(
                     ),
 
                     ft.ElevatedButton(
-                        "Nova Avaliação",
-                        icon=ft.Icons.OPEN_IN_NEW,
+                        "Exportar CSV",
+                        icon=ft.Icons.DOWNLOAD,
                         bgcolor=ft.Colors.BLUE_700,
                         color=ft.Colors.WHITE,
-                        on_click=lambda _: mudar_tela("/formulario"),
+                        on_click=lambda e: exportar_csv(
+                            page,
+                            dados_tabela,
+                        ),
                     ),
                 ],
             ),
