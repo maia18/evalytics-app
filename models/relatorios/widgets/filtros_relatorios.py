@@ -19,14 +19,17 @@ def criar_secao_filtros(
     borda_container: ft.Border,
     page: ft.Page,
     ao_filtrar,
-    ao_exportar_csv,
-    ao_exportar_pdf,
+    ao_exportar_csv=None,
+    ao_exportar_pdf=None,
 ) -> ft.Container:
     """
     Cria a seção de filtros dos relatórios.
 
     Os semestres são carregados diretamente das avaliações
     existentes no Firestore.
+
+    Os botões de exportação não ficam mais nesta seção.
+    A exportação é apresentada junto aos resultados consolidados.
     """
 
     # ======================================================
@@ -126,22 +129,6 @@ def criar_secao_filtros(
         page.update()
 
     # ======================================================
-    # EXPORTAÇÃO CSV
-    # ======================================================
-
-    def clicar_exportar_csv(e):
-        ao_exportar_csv(e)
-
-    # ======================================================
-    # EXPORTAÇÃO PDF
-    # ======================================================
-
-    def clicar_exportar_pdf(e):
-        print("DEBUG: botão Exportar PDF clicado.")
-
-        ao_exportar_pdf(e)
-
-    # ======================================================
     # BOTÕES
     # ======================================================
 
@@ -157,22 +144,6 @@ def criar_secao_filtros(
         "Limpar",
         icon=ft.Icons.CLEAR,
         on_click=limpar_filtros,
-    )
-
-    botao_csv = ft.ElevatedButton(
-        "Exportar CSV",
-        icon=ft.Icons.TABLE_VIEW,
-        bgcolor=ft.Colors.GREEN_700,
-        color=ft.Colors.WHITE,
-        on_click=clicar_exportar_csv,
-    )
-
-    botao_pdf = ft.ElevatedButton(
-        "Exportar PDF",
-        icon=ft.Icons.PICTURE_AS_PDF,
-        bgcolor=ft.Colors.RED_700,
-        color=ft.Colors.WHITE,
-        on_click=clicar_exportar_pdf,
     )
 
     # ======================================================
@@ -196,8 +167,6 @@ def criar_secao_filtros(
                         dropdown_eixo,
                         botao_filtrar,
                         botao_limpar,
-                        botao_csv,
-                        botao_pdf,
                     ],
                 ),
             ],

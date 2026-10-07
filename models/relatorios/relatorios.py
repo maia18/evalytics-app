@@ -16,7 +16,7 @@ from utils.services.relatorio_service import (
 )
 
 from models.avaliacoes.core.export_csv import exportar_csv
-from models.relatorios.core.export_pdf import gerar_pdf_completo
+from models.relatorios.core.export_pdf import normalizar_nome_curso, gerar_pdf_completo
 
 
 NOMES_EIXOS = {
@@ -30,6 +30,10 @@ def ViewRelatorios(
     page: ft.Page,
     mudar_tela: Callable[[str], None],
 ) -> ft.View:
+
+    # ==================================================
+    # LAYOUT
+    # ==================================================
 
     layout = ResponsiveLayout(
         page,
@@ -45,61 +49,44 @@ def ViewRelatorios(
         layout.cores[BORDA]
     )
 
-    # ======================================================
-    # RESULTADOS REAIS
-    # ======================================================
+    # ==================================================
+    # DADOS
+    # ==================================================
 
     resultados_originais = listar_resultados_avaliacoes()
 
-    # Mantém os resultados atualmente exibidos.
-    resultados_filtrados = list(resultados_originais)
+    resultados_filtrados = list(
+        resultados_originais
+    )
 
-    # Guarda os filtros atualmente aplicados.
     semestre_atual = None
     eixo_atual = None
 
-    # ======================================================
+    # ==================================================
     # DASHBOARD
-    # ======================================================
+    # ==================================================
 
-    dashboard_visual = TelaResultados(page)
-
-    # ======================================================
-    # TABELA
-    # ======================================================
-
-    tabela_resultados = criar_tabela_resultados(
-        page,
-        layout,
-        borda_container,
+    dashboard_visual = TelaResultados(
+        page
     )
 
-    # ======================================================
-    # EXPORTAÇÃO CSV
-    # ======================================================
+    # ==================================================
+    # EXPORTAR CSV
+    # ==================================================
 
     def exportar_csv_atual(e=None) -> None:
-        """
-        Exporta exatamente os resultados atualmente
-        exibidos pelos filtros.
-        """
-
         exportar_csv(
             page,
-            resultados=list(resultados_filtrados),
+            resultados=list(
+                resultados_filtrados
+            ),
         )
 
-    # ======================================================
-    # CÁLCULO DAS MÉDIAS PARA O PDF
-    # ======================================================
+    # ==================================================
+    # CALCULAR MÉDIAS PARA PDF
+    # ==================================================
 
     def calcular_medias_pdf() -> dict[int, float | None]:
-        """
-        Calcula as médias dos eixos utilizando somente
-        os resultados atualmente filtrados.
-
-        Eixos sem respostas não entram no cálculo.
-        """
 
         acumuladores = {
             1: [],
@@ -109,61 +96,90 @@ def ViewRelatorios(
 
         for resultado in resultados_filtrados:
 
-            eixos = resultado.get("eixos", {})
+            eixos = resultado.get(
+                "eixos",
+                {},
+            )
 
-            if not isinstance(eixos, dict):
+            if not isinstance(
+                eixos,
+                dict,
+            ):
                 continue
 
-            for eixo_id in (1, 2, 3):
+            for eixo_id in (
+                1,
+                2,
+                3,
+            ):
 
-                valor = eixos.get(eixo_id)
+                valor = eixos.get(
+                    eixo_id
+                )
 
                 if valor is None:
                     continue
 
                 try:
                     valor = float(valor)
-                except (TypeError, ValueError):
+
+                except (
+                    TypeError,
+                    ValueError,
+                ):
                     continue
 
-                # Ausência de resposta.
-                # Não transforma ausência em nota.
                 if valor <= 0:
                     continue
 
-                acumuladores[eixo_id].append(valor)
+                acumuladores[
+                    eixo_id
+                ].append(valor)
 
         medias = {}
 
         for eixo_id, notas in acumuladores.items():
 
             if notas:
-                medias[eixo_id] = sum(notas) / len(notas)
+                medias[eixo_id] = (
+                    sum(notas)
+                    / len(notas)
+                )
+
             else:
                 medias[eixo_id] = None
 
         return medias
 
-    # ======================================================
-    # EXPORTAÇÃO PDF
-    # ======================================================
+    # ==================================================
+    # EXPORTAR PDF
+    # ==================================================
 
     def exportar_pdf_atual(e=None) -> None:
-        print("DEBUG: exportar_pdf_atual foi chamada.")
+
+        # --------------------------------------------------
+        # VALIDAÇÃO
+        # --------------------------------------------------
 
         if not resultados_filtrados:
-            from models.avaliacoes.core.feedback import mostrar_feedback
+
+            from models.avaliacoes.core.feedback import (
+                mostrar_feedback,
+            )
 
             mostrar_feedback(
                 page,
                 "Não existem dados para gerar o PDF.",
                 sucesso=False,
             )
+
             return
 
-        medias = calcular_medias_pdf()
+        # --------------------------------------------------
+        # MÉDIAS
+        # --------------------------------------------------
 
-        print("DEBUG: médias calculadas:", medias)
+        medias = calcular_medias_pdf()
 
         medias_validas = {
             eixo_id: media
@@ -171,17 +187,23 @@ def ViewRelatorios(
             if media is not None
         }
 
-        print("DEBUG: médias válidas:", medias_validas)
-
         if not medias_validas:
-            from models.avaliacoes.core.feedback import mostrar_feedback
+
+            from models.avaliacoes.core.feedback import (
+                mostrar_feedback,
+            )
 
             mostrar_feedback(
                 page,
                 "Não existem médias disponíveis para gerar o PDF.",
                 sucesso=False,
             )
+
             return
+
+        # --------------------------------------------------
+        # SEMESTRE
+        # --------------------------------------------------
 
         semestre_pdf = (
             semestre_atual
@@ -189,20 +211,59 @@ def ViewRelatorios(
             else "Todos"
         )
 
-        print("DEBUG: chamando gerar_pdf_completo...")
+        # --------------------------------------------------
+        # QUANTIDADE DE AVALIAÇÕES
+        # --------------------------------------------------
+
+        quantidade_avaliacoes = len(
+            resultados_filtrados
+        )
+
+        # --------------------------------------------------
+        # CURSOS
+        # --------------------------------------------------
+
+        cursos = sorted(
+            {
+                normalizar_nome_curso(
+                    resultado.get(
+                        "curso_nome",
+                        resultado.get("curso", "")
+                    )
+                )
+                for resultado in resultados_filtrados
+                if resultado.get("curso_nome")
+                or resultado.get("curso")
+            }
+        )
+        # --------------------------------------------------
+        # GERAR PDF
+        # --------------------------------------------------
 
         gerar_pdf_completo(
             page,
             medias=medias_validas,
             nomes_eixos=NOMES_EIXOS,
             semestre=semestre_pdf,
+            quantidade_avaliacoes=quantidade_avaliacoes,
+            cursos=cursos,
         )
+        
+    # ==================================================
+    # TABELA
+    # ==================================================
+    
+    tabela_resultados = criar_tabela_resultados(
+        page,
+        layout,
+        borda_container,
+        exportar_csv_atual,
+        exportar_pdf_atual,
+    )
 
-        print("DEBUG: gerar_pdf_completo terminou.")
-
-    # ======================================================
-    # APLICA FILTROS
-    # ======================================================
+    # ==================================================
+    # APLICAR FILTROS
+    # ==================================================
 
     def aplicar_filtros(
         semestre: str | None,
@@ -213,16 +274,8 @@ def ViewRelatorios(
         nonlocal semestre_atual
         nonlocal eixo_atual
 
-        # --------------------------------------------------
-        # Guarda filtros atuais
-        # --------------------------------------------------
-
         semestre_atual = semestre
         eixo_atual = eixo
-
-        # --------------------------------------------------
-        # Filtra os dados reais
-        # --------------------------------------------------
 
         resultados_filtrados = filtrar_resultados(
             resultados_originais,
@@ -231,40 +284,38 @@ def ViewRelatorios(
         )
 
         # --------------------------------------------------
-        # Dashboard
+        # ATUALIZAR DASHBOARD
         # --------------------------------------------------
 
         if hasattr(
             dashboard_visual,
             "atualizar",
         ):
+
             dashboard_visual.atualizar(
                 semestre,
                 eixo,
             )
 
         # --------------------------------------------------
-        # Tabela
+        # ATUALIZAR TABELA
         # --------------------------------------------------
 
         if hasattr(
             tabela_resultados.content.controls[2],
             "atualizar",
         ):
+
             tabela_resultados.content.controls[2].atualizar(
                 semestre,
                 eixo,
             )
 
-        # --------------------------------------------------
-        # Atualiza interface
-        # --------------------------------------------------
-
         page.update()
 
-    # ======================================================
+    # ==================================================
     # FILTROS
-    # ======================================================
+    # ==================================================
 
     secao_filtros = criar_secao_filtros(
         layout,
@@ -275,24 +326,26 @@ def ViewRelatorios(
         exportar_pdf_atual,
     )
 
-    # ======================================================
+    # ==================================================
     # ABA DE DADOS
-    # ======================================================
+    # ==================================================
 
     conteudo_aba_dados = ft.Container(
         expand=True,
-        padding=ft.Padding.only(top=20),
+        padding=ft.Padding.only(
+            top=20
+        ),
         content=ft.Column(
             expand=True,
             controls=[
-                tabela_resultados,
+                tabela_resultados
             ],
         ),
     )
 
-    # ======================================================
-    # BARRA DE ABAS
-    # ======================================================
+    # ==================================================
+    # ABAS
+    # ==================================================
 
     barra_abas = ft.TabBar(
         tabs=[
@@ -311,10 +364,6 @@ def ViewRelatorios(
         divider_color=layout.cores[BORDA],
     )
 
-    # ======================================================
-    # CONTEÚDO DAS ABAS
-    # ======================================================
-
     conteudo_abas = ft.TabBarView(
         expand=True,
         controls=[
@@ -322,12 +371,22 @@ def ViewRelatorios(
             conteudo_aba_dados,
         ],
     )
+    
+    indice_aba_relatorios = getattr(
+        page,
+        "indice_aba_relatorios",
+        0,
+    )
+    
+    def alterar_aba(e):
+        page.indice_aba_relatorios = e.control.selected_index
 
     abas = ft.Tabs(
         length=2,
-        selected_index=0,
+        selected_index=indice_aba_relatorios,
         animation_duration=300,
         expand=True,
+        on_change=alterar_aba,
         content=ft.Column(
             expand=True,
             controls=[
@@ -337,9 +396,9 @@ def ViewRelatorios(
         ),
     )
 
-    # ======================================================
-    # CONTEÚDO FINAL
-    # ======================================================
+    # ==================================================
+    # CONTEÚDO PRINCIPAL
+    # ==================================================
 
     conteudo = ft.Column(
         expand=True,
@@ -350,6 +409,14 @@ def ViewRelatorios(
         ],
     )
 
-    layout.add_content(conteudo)
+    # ==================================================
+    # FINALIZAÇÃO
+    # ==================================================
 
-    return layout.criar_view("/relatorios")
+    layout.add_content(
+        conteudo
+    )
+
+    return layout.criar_view(
+        "/relatorios"
+    )

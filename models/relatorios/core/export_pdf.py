@@ -15,42 +15,76 @@ logger = logging.getLogger(__name__)
 CAMINHO_IMAGEM_TEMP = "radar_temp.png"
 
 
+def normalizar_nome_curso(nome: str) -> str:
+    if not nome:
+        return "Curso não informado"
+
+    nome_limpo = str(nome).strip().lower()
+
+    mapeamento = {
+        "eng telecom": "Engenharia de Telecomunicações",
+        "engenharia de telecomunicações": "Engenharia de Telecomunicações",
+    }
+
+    return mapeamento.get(
+        nome_limpo,
+        str(nome).strip(),
+    )
+
+
 def gerar_pdf_completo(
     page: ft.Page,
     medias: dict[int, float | None],
     nomes_eixos: dict[int, str],
     semestre: str = "Todos",
+    quantidade_avaliacoes: int = 0,
+    cursos: list[str] | None = None,
 ) -> Optional[str]:
-    """
-    Gera o relatório PDF utilizando as médias fornecidas.
-
-    As médias devem vir da mesma camada de relatórios utilizada
-    pelo Dashboard, respeitando os filtros selecionados.
-    """
 
     try:
         # ==================================================
         # VALIDAÇÃO DAS MÉDIAS
         # ==================================================
 
-        medias_validas = {}
+        medias_validas: dict[int, float] = {}
 
         for eixo_id, nota in medias.items():
+
             if nota is None:
                 continue
 
             try:
                 medias_validas[eixo_id] = float(nota)
+
             except (TypeError, ValueError):
                 continue
 
         if not medias_validas:
+
             mostrar_feedback(
                 page,
                 "Não existem dados para gerar o relatório PDF.",
                 sucesso=False,
             )
+
             return None
+
+        # ==================================================
+        # NORMALIZAÇÃO DOS CURSOS
+        # ==================================================
+
+        cursos_normalizados = {
+            normalizar_nome_curso(curso)
+            for curso in (cursos or [])
+            if curso and str(curso).strip()
+        }
+
+        cursos_validos = sorted(cursos_normalizados)
+
+        if cursos_validos:
+            texto_cursos = ", ".join(cursos_validos)
+        else:
+            texto_cursos = "Todos os cursos"
 
         # ==================================================
         # GRÁFICO RADAR
@@ -84,7 +118,7 @@ def gerar_pdf_completo(
         pdf.set_font(
             "helvetica",
             "I",
-            10,
+            8,
         )
 
         pdf.set_text_color(
@@ -99,13 +133,59 @@ def gerar_pdf_completo(
 
         pdf.cell(
             0,
-            5,
+            4,
             f"Documento gerado em: {data_geracao}",
             ln=True,
             align="R",
         )
 
-        pdf.ln(5)
+        pdf.ln(2)
+
+        # ==================================================
+        # TÍTULO
+        # ==================================================
+
+        pdf.set_font(
+            "helvetica",
+            "B",
+            18,
+        )
+
+        pdf.set_text_color(
+            17,
+            24,
+            39,
+        )
+
+        pdf.cell(
+            0,
+            8,
+            "Relatório de Avaliação Institucional",
+            ln=True,
+            align="C",
+        )
+
+        pdf.set_font(
+            "helvetica",
+            "",
+            10,
+        )
+
+        pdf.set_text_color(
+            95,
+            99,
+            104,
+        )
+
+        pdf.cell(
+            0,
+            5,
+            "Evalytics",
+            ln=True,
+            align="C",
+        )
+
+        pdf.ln(4)
 
         # ==================================================
         # INTRODUÇÃO
@@ -114,7 +194,7 @@ def gerar_pdf_completo(
         pdf.set_font(
             "helvetica",
             "",
-            12,
+            9,
         )
 
         pdf.set_text_color(
@@ -133,53 +213,223 @@ def gerar_pdf_completo(
 
         pdf.multi_cell(
             0,
-            7,
+            4.5,
             txt=texto_intro,
             align="J",
-        )
-
-        pdf.ln(5)
-
-        # ==================================================
-        # FILTRO DE SEMESTRE
-        # ==================================================
-
-        pdf.set_font(
-            "helvetica",
-            "B",
-            11,
-        )
-
-        pdf.cell(
-            0,
-            7,
-            f"Semestre: {semestre}",
-            ln=True,
         )
 
         pdf.ln(3)
 
         # ==================================================
-        # GRÁFICO
-        # ==================================================
-
-        if os.path.exists(CAMINHO_IMAGEM_TEMP):
-            pdf.image(
-                CAMINHO_IMAGEM_TEMP,
-                x=55,
-                w=100,
-            )
-
-            pdf.ln(10)
-
-        # ==================================================
-        # TABELA
+        # INFORMAÇÕES DO RELATÓRIO
         # ==================================================
 
         pdf.set_font(
             "helvetica",
             "B",
             11,
+        )
+
+        pdf.set_text_color(
+            17,
+            24,
+            39,
+        )
+
+        pdf.cell(
+            0,
+            6,
+            "Informações do relatório",
+            ln=True,
+        )
+
+        pdf.ln(1)
+
+        largura_rotulo = 40
+        largura_valor = 130
+        altura_linha = 6
+
+        pdf.set_fill_color(
+            245,
+            245,
+            245,
+        )
+
+        # --------------------------------------------------
+        # SEMESTRE
+        # --------------------------------------------------
+
+        pdf.set_font(
+            "helvetica",
+            "B",
+            9,
+        )
+
+        pdf.cell(
+            largura_rotulo,
+            altura_linha,
+            "Semestre",
+            border=1,
+            fill=True,
+            align="L",
+        )
+
+        pdf.set_font(
+            "helvetica",
+            "",
+            9,
+        )
+
+        pdf.cell(
+            largura_valor,
+            altura_linha,
+            str(semestre),
+            border=1,
+            align="L",
+        )
+
+        pdf.ln()
+
+        # --------------------------------------------------
+        # CURSO
+        # --------------------------------------------------
+
+        pdf.set_font(
+            "helvetica",
+            "B",
+            9,
+        )
+
+        pdf.cell(
+            largura_rotulo,
+            altura_linha,
+            "Curso(s)",
+            border=1,
+            fill=True,
+            align="L",
+        )
+
+        pdf.set_font(
+            "helvetica",
+            "",
+            9,
+        )
+
+        pdf.cell(
+            largura_valor,
+            altura_linha,
+            texto_cursos,
+            border=1,
+            align="L",
+        )
+
+        pdf.ln()
+
+        # --------------------------------------------------
+        # AVALIAÇÕES
+        # --------------------------------------------------
+
+        pdf.set_font(
+            "helvetica",
+            "B",
+            9,
+        )
+
+        pdf.cell(
+            largura_rotulo,
+            altura_linha,
+            "Avaliações",
+            border=1,
+            fill=True,
+            align="L",
+        )
+
+        pdf.set_font(
+            "helvetica",
+            "",
+            9,
+        )
+
+        pdf.cell(
+            largura_valor,
+            altura_linha,
+            str(quantidade_avaliacoes),
+            border=1,
+            align="L",
+        )
+
+        pdf.ln(5)
+
+        # ==================================================
+        # GRÁFICO RADAR
+        # ==================================================
+
+        if os.path.exists(CAMINHO_IMAGEM_TEMP):
+
+            pdf.set_font(
+                "helvetica",
+                "B",
+                11,
+            )
+
+            pdf.set_text_color(
+                17,
+                24,
+                39,
+            )
+
+            pdf.cell(
+                0,
+                6,
+                "Desempenho por eixo avaliativo",
+                ln=True,
+                align="C",
+            )
+
+            pdf.ln(1)
+
+            # Radar menor para preservar espaço vertical.
+            pdf.image(
+                CAMINHO_IMAGEM_TEMP,
+                x=67,
+                w=76,
+            )
+
+            pdf.ln(3)
+
+        # ==================================================
+        # TABELA DE MÉDIAS
+        # ==================================================
+
+        pdf.set_font(
+            "helvetica",
+            "B",
+            11,
+        )
+
+        pdf.set_text_color(
+            17,
+            24,
+            39,
+        )
+
+        pdf.cell(
+            0,
+            6,
+            "Médias por eixo avaliativo",
+            ln=True,
+        )
+
+        pdf.ln(1)
+
+        largura_eixo = 140
+        largura_nota = 30
+        altura_tabela = 7
+
+        pdf.set_font(
+            "helvetica",
+            "B",
+            9,
         )
 
         pdf.set_fill_color(
@@ -188,45 +438,27 @@ def gerar_pdf_completo(
             240,
         )
 
-        largura_semestre = 30
-
-        qtde_eixos = len(
-            medias_validas
-        )
-
-        largura_coluna_eixo = (
-            140 / qtde_eixos
-        )
-
         # --------------------------------------------------
         # CABEÇALHO
         # --------------------------------------------------
 
         pdf.cell(
-            largura_semestre,
-            10,
-            "Semestre",
+            largura_eixo,
+            altura_tabela,
+            "Eixo avaliativo",
             border=1,
             fill=True,
             align="C",
         )
 
-        for eixo_id in sorted(
-            medias_validas.keys()
-        ):
-            nome_eixo = nomes_eixos.get(
-                eixo_id,
-                f"Eixo {eixo_id}",
-            )
-
-            pdf.cell(
-                largura_coluna_eixo,
-                10,
-                nome_eixo.upper(),
-                border=1,
-                fill=True,
-                align="C",
-            )
+        pdf.cell(
+            largura_nota,
+            altura_tabela,
+            "Média",
+            border=1,
+            fill=True,
+            align="C",
+        )
 
         pdf.ln()
 
@@ -237,60 +469,92 @@ def gerar_pdf_completo(
         pdf.set_font(
             "helvetica",
             "",
-            11,
-        )
-
-        pdf.cell(
-            largura_semestre,
-            10,
-            semestre,
-            border=1,
-            align="C",
+            9,
         )
 
         for eixo_id in sorted(
             medias_validas.keys()
         ):
+
+            nome_eixo = nomes_eixos.get(
+                eixo_id,
+                f"Eixo {eixo_id}",
+            )
+
+            nota = medias_validas[eixo_id]
+
             pdf.cell(
-                largura_coluna_eixo,
-                10,
-                f"{medias_validas[eixo_id]:.2f}",
+                largura_eixo,
+                altura_tabela,
+                nome_eixo,
+                border=1,
+                align="L",
+            )
+
+            pdf.cell(
+                largura_nota,
+                altura_tabela,
+                f"{nota:.2f}",
                 border=1,
                 align="C",
             )
 
-        pdf.ln()
+            pdf.ln()
 
         # ==================================================
         # RESUMO
         # ==================================================
-
-        pdf.ln(8)
 
         media_geral = (
             sum(medias_validas.values())
             / len(medias_validas)
         )
 
+        pdf.ln(4)
+
         pdf.set_font(
             "helvetica",
             "B",
-            12,
+            11,
+        )
+
+        pdf.set_text_color(
+            17,
+            24,
+            39,
         )
 
         pdf.cell(
             0,
-            8,
-            f"Média geral dos eixos respondidos: "
-            f"{media_geral:.2f}",
+            6,
+            "Resumo dos resultados",
+            ln=True,
+        )
+
+        pdf.set_font(
+            "helvetica",
+            "",
+            9,
+        )
+
+        pdf.cell(
+            0,
+            5,
+            f"Média geral dos eixos respondidos: {media_geral:.2f}",
             ln=True,
         )
 
         pdf.cell(
             0,
-            8,
-            f"Eixos considerados: "
-            f"{len(medias_validas)}",
+            5,
+            f"Eixos considerados: {len(medias_validas)}",
+            ln=True,
+        )
+
+        pdf.cell(
+            0,
+            5,
+            f"Avaliações analisadas: {quantidade_avaliacoes}",
             ln=True,
         )
 
@@ -334,6 +598,7 @@ def gerar_pdf_completo(
         return nome_arquivo
 
     except Exception:
+
         if os.path.exists(
             CAMINHO_IMAGEM_TEMP
         ):

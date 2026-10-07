@@ -195,11 +195,15 @@ def criar_tabela_resultados(
     page: ft.Page,
     layout,
     borda_container: ft.Border,
+    ao_exportar_csv,
+    ao_exportar_pdf,
 ) -> ft.Container:
     """
-    Cria a tabela de resultados.
+    Cria a tabela de resultados consolidados.
 
-    O conteúdo inicial é carregado diretamente do Firestore.
+    Os botões de exportação ficam junto ao título
+    dos resultados, mantendo a exportação associada
+    diretamente aos dados exibidos.
     """
 
     resultados = listar_resultados_consolidados()
@@ -216,23 +220,74 @@ def criar_tabela_resultados(
         eixo: int | None = None,
     ) -> None:
 
-        resultados_filtrados = (
-            listar_resultados_consolidados(
-                semestre=semestre,
-                eixo=eixo,
-            )
+        resultados_filtrados = listar_resultados_consolidados(
+            semestre=semestre,
+            eixo=eixo,
         )
 
-        conteudo_tabela.content = (
-            _criar_conteudo_tabela(
-                page,
-                resultados_filtrados,
-            )
+        conteudo_tabela.content = _criar_conteudo_tabela(
+            page,
+            resultados_filtrados,
         )
 
         page.update()
 
     conteudo_tabela.atualizar = atualizar_tabela
+
+    # ======================================================
+    # BOTÃO EXPORTAR CSV
+    # ======================================================
+
+    botao_csv = ft.ElevatedButton(
+        "Exportar CSV",
+        icon=ft.Icons.TABLE_VIEW,
+        bgcolor=ft.Colors.GREEN_700,
+        color=ft.Colors.WHITE,
+        on_click=ao_exportar_csv,
+    )
+
+    # ======================================================
+    # BOTÃO EXPORTAR PDF
+    # ======================================================
+
+    botao_pdf = ft.ElevatedButton(
+        "Exportar PDF",
+        icon=ft.Icons.PICTURE_AS_PDF,
+        bgcolor=ft.Colors.RED_700,
+        color=ft.Colors.WHITE,
+        on_click=ao_exportar_pdf,
+    )
+
+    # ======================================================
+    # CABEÇALHO DOS RESULTADOS
+    # ======================================================
+
+    cabecalho = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        wrap=True,
+        spacing=10,
+        run_spacing=10,
+        controls=[
+            ft.Text(
+                "Resultados Consolidados",
+                size=18,
+                weight="bold",
+                color=layout.cores[TEXTO_PRINCIPAL],
+            ),
+            ft.Row(
+                spacing=10,
+                controls=[
+                    botao_pdf,
+                    botao_csv,
+                ],
+            ),
+        ],
+    )
+
+    # ======================================================
+    # CONTAINER FINAL
+    # ======================================================
 
     return ft.Container(
         expand=True,
@@ -243,12 +298,7 @@ def criar_tabela_resultados(
         content=ft.Column(
             scroll=ft.ScrollMode.AUTO,
             controls=[
-                ft.Text(
-                    "Resultados Consolidados",
-                    size=18,
-                    weight="bold",
-                    color=layout.cores[TEXTO_PRINCIPAL],
-                ),
+                cabecalho,
                 ft.Container(height=15),
                 conteudo_tabela,
             ],
