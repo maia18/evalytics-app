@@ -1,23 +1,64 @@
 import flet as ft
-from components.core.constants.constants import BORDA, CARD, TEXTO_PRINCIPAL
+
+from components.core.constants.constants import (
+    BORDA,
+    CARD,
+    TEXTO_PRINCIPAL,
+    TEXTO_SECUNDARIO,
+)
 from components.core.theme.border_utils import criar_borda_uniforme
 
-def criar_kpi_card(layout, titulo: str, valor: str, icone: str, cor_icone: str) -> ft.Container:
-    """Constrói um cartão numérico (KPI) contendo título descritivo, valor em destaque e um ícone representativo."""
+
+def criar_kpi_card(
+    layout,
+    titulo: str,
+    valor: str,
+    icone: str,
+    cor_icone: str,
+) -> ft.Container:
+    """
+    Constrói um cartão numérico de KPI.
+    """
+
     return ft.Container(
-        width=240,  # Trava a largura para os cartões ficarem uniformes independentemente do conteúdo
-        bgcolor=layout.cores[CARD], padding=16, border_radius=8, border=criar_borda_uniforme(layout.cores[BORDA]),
+        width=240,
+        bgcolor=layout.cores[CARD],
+        padding=16,
+        border_radius=8,
+        border=criar_borda_uniforme(
+            layout.cores[BORDA]
+        ),
         content=ft.Column(
             spacing=10,
             controls=[
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    alignment=(
+                        ft.MainAxisAlignment.SPACE_BETWEEN
+                    ),
                     controls=[
-                        ft.Text(titulo, size=14, color=ft.Colors.GREY_600, weight="w500"),
-                        ft.Icon(icone, color=cor_icone, size=18),
+                        ft.Text(
+                            titulo,
+                            size=14,
+                            color=layout.cores[
+                                TEXTO_SECUNDARIO
+                            ],
+                            weight="w500",
+                        ),
+                        ft.Icon(
+                            icone,
+                            color=cor_icone,
+                            size=18,
+                        ),
                     ],
                 ),
-                ft.Text(valor, size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
+                ft.Text(
+                    valor,
+                    size=28,
+                    weight="bold",
+                    color=layout.cores[
+                        TEXTO_PRINCIPAL
+                    ],
+                ),
             ],
         ),
     )

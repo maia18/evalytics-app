@@ -1,66 +1,147 @@
-import flet as ft
 import logging as lg
-from database.services.firebase_config import db # Importa a instância ativa do banco de dados
+
+import flet as ft
+
+from database.services.firebase_config import db
+from utils.services.indicadores.indicadores_repository import listar_indicadores
+
 
 logger = lg.getLogger(__name__)
-COLECAO_AVALIACOES = "avaliacoes_institucionais"
 
-def _definir_cor_nota(nota_str: str) -> str:
-    """Função utilitária (privada) que define a cor da nota baseada no seu valor numérico."""
-    
+COLECAO_AVALIACOES = "avaliacoes"
+
+
+NOMES_EIXOS = {
+    1: "Organização Didático-Pedagógica",
+    2: "Corpo Docente e Tutorial",
+    3: "Infraestrutura",
+}
+
+
+def _definir_cor_nota(nota: float) -> str:
+    """Define a cor visual da nota conforme a escala de avaliação."""
+
+    if nota >= 4.0:
+        return ft.Colors.GREEN_700
+
+    if nota >= 3.0:
+        return ft.Colors.ORANGE_700
+
+    return ft.Colors.RED_700
+
+
+def _formatar_data(data) -> str:
+    """Converte a data armazenada no Firestore para o formato da tabela."""
+
+    if not data:
+        return "Data desconhecida"
+
     try:
-        nota = float(nota_str)
-        if nota >= 4.0:
-            return ft.Colors.GREEN_700
-        elif nota >= 3.0:
-            return ft.Colors.ORANGE_700
-        else:
-            return ft.Colors.RED_700
-    except ValueError:
-        return ft.Colors.GREY_700
+        return data.strftime("%d/%m/%Y, %H:%M")
+    except AttributeError:
+        return str(data)
+
 
 def obter_respostas_tabela() -> list[dict]:
-    """Busca os dados brutos das avaliações no Firestore e os formata exatamente como a tabela de interface espera."""
-    
+    """
+    Busca as avaliações reais do Firestore e transforma cada resposta
+    de indicador em uma linha da tabela.
+
+    Uma avaliação pode gerar várias linhas, pois cada indicador
+    respondido representa uma resposta individual.
+    """
+
     try:
-        '''
-        Busca os documentos. 
-            Se quiser ordenar do mais recente para o mais antigo: 
-                Troque .stream() por .order_by("timestamp", direction="DESCENDING").stream() (Isso exigirá a criação de um índice no console do Firebase).
-        '''
-        docs = db.collection(COLECAO_AVALIACOES).stream()
+        documentos = (
+            db.collection(COLECAO_AVALIACOES)
+            .stream()
+        )
+
+        indicadores = listar_indicadores()
+
+        mapa_indicadores = {
+            indicador.get("id"): indicador
+            for indicador in indicadores
+            if indicador.get("id")
+        }
+
         linhas = []
 
-        for doc in docs:
-            dados = doc.to_dict()
-            
-            '''1. Tratamento da Data'''
-            timestamp = dados.get("timestamp") # O Firestore geralmente retorna um objeto datetime (com fuso horário) ou um Timestamp.
-            if timestamp:
-                data_formatada = timestamp.strftime("%d/%m/%Y, %H:%M") # Converte para uma string amigável: Ex: "10/07/2026, 14:30"
-            else:
-                data_formatada = "Data desconhecida"
+        for documento in documentos:
+            dados = documento.to_dict() or {}
 
-            '''2. Tratamento da Nota'''
-            nota_bruta = dados.get("nota_geral", 0.0)
-            nota_formatada = f"{nota_bruta:.1f}" # Supondo que a nota venha como float no banco. Formata para ter sempre 1 casa decimal (ex: 4.0).
+            avaliacao_id = documento.id
 
-            '''3. Montagem do Dicionário (Mapeamento do Banco -> Interface)'''
-            linha = {
-                "id": doc.id[:7].upper(), # Pega os primeiros 7 caracteres do ID real do Firestore para criar um ID legível na tabela
-                "data": data_formatada,
-                # Usa .get() com valor padrão (fallback) caso o campo não exista no documento
-                "curso": dados.get("curso", "Não informado"),
-                "eixo": dados.get("eixo_avaliado", "Geral"),
-                "nota": nota_formatada,
-                "cor_nota": _definir_cor_nota(nota_formatada),
-                "comentario": dados.get("comentario", None),
-            }
-            
-            linhas.append(linha)
+            curso_nome = dados.get(
+                "curso_nome",
+                "Curso não informado",
+            )
+
+            data_avaliacao = dados.get(
+                "data_avaliacao"
+            )
+
+            data_formatada = _formatar_data(
+                data_avaliacao
+            )
+
+            respostas = dados.get(
+                "respostas",
+                {},
+            )
+
+            if not isinstance(respostas, dict):
+                continue
+
+            for indicador_id, resposta in respostas.items():
+
+                indicador = mapa_indicadores.get(
+                    indicador_id,
+                    {},
+                )
+
+                titulo_indicador = indicador.get(
+                    "titulo",
+                    "Indicador não encontrado",
+                )
+
+                eixo = indicador.get(
+                    "eixo"
+                )
+
+                nome_eixo = NOMES_EIXOS.get(
+                    eixo,
+                    f"Eixo {eixo}" if eixo else "Geral",
+                )
+
+                try:
+                    nota = float(resposta)
+                except (TypeError, ValueError):
+                    continue
+
+                linhas.append(
+                    {
+                        "id": avaliacao_id[:7].upper(),
+                        "data": data_formatada,
+                        "curso": curso_nome,
+                        "eixo": nome_eixo,
+                        "indicador": titulo_indicador,
+                        "nota": f"{nota:.1f}",
+                        "cor_nota": _definir_cor_nota(nota),
+                        "comentario": None,
+                    }
+                )
+
+        # Mais recentes primeiro.
+        linhas.sort(
+            key=lambda item: item["data"],
+            reverse=True,
+        )
 
         return linhas
 
     except Exception:
-        logger.exception("Erro ao buscar dados das avaliações para a tabela.")
-        return [] # Retorna uma lista vazia em caso de erro, garantindo que o Flet não crashe ao tentar renderizar a tabela.
+        logger.exception(
+            "Erro ao buscar respostas das avaliações."
+        )
+        return []
