@@ -70,7 +70,11 @@ class FormularioRenderMixin:
             eixo_atual,
             self.pular_para_eixo,
             self.cores,
-            self.page.is_dark_mode,
+            getattr(
+                self.page,
+                "is_dark_mode",
+                False,
+            ),
         )
 
         # ==========================================================
@@ -87,7 +91,7 @@ class FormularioRenderMixin:
         # ==========================================================
 
         cabecalho = ft.Column(
-            spacing=15,
+            spacing=8,
             controls=[
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -135,7 +139,7 @@ class FormularioRenderMixin:
                 ),
 
                 ft.Divider(
-                    height=10,
+                    height=5,
                     color=self.cores[TEXTO_SECUNDARIO],
                 ),
             ],

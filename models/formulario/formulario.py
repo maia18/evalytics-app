@@ -66,7 +66,7 @@ def ViewFormulario(
 
     area_dinamica_conteudo = ft.Column(
         expand=True,
-        spacing=25,
+        spacing=10,
         animate_opacity=ft.Animation(
             300,
             ft.AnimationCurve.EASE_IN_OUT,
@@ -76,8 +76,8 @@ def ViewFormulario(
     area_central = ft.Container(
         expand=True,
         padding=ft.Padding.only(
-            top=10,
-            bottom=30,
+            top=5,
+            bottom=10,
             right=20,
         ),
         content=area_dinamica_conteudo,

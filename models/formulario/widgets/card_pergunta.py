@@ -1,10 +1,12 @@
 import flet as ft
+
 from components.core.constants.constants import (
     COR_PRIMARIA,
     TEXTO_PRINCIPAL,
     BORDA,
     CARD,
 )
+
 
 def criar_card_pergunta(
     page: ft.Page,
@@ -13,10 +15,15 @@ def criar_card_pergunta(
     rodape: ft.Container,
     cores: dict[str, str],
 ) -> ft.Container:
-    """Constrói o cartão central com opções, rolagem e campo de justificativa."""
+    """
+    Constrói o cartão da pergunta.
+
+    Os critérios possuem rolagem própria e ocupam todo o espaço
+    vertical disponível. A justificativa e o rodapé permanecem fixos.
+    """
 
     # ==========================================================
-    # DADOS DO INDICADOR
+    # DADOS
     # ==========================================================
 
     indicador_id = indicador.get("id")
@@ -26,22 +33,24 @@ def criar_card_pergunta(
     valor_inicial = str(
         estado["respostas"].get(
             indicador_id,
-            ""
+            "",
         )
     )
 
     # ==========================================================
-    # RESPOSTA
+    # ALTERAÇÃO DA RESPOSTA
     # ==========================================================
 
-    def ao_mudar_opcao(e: ft.ControlEvent) -> None:
+    def ao_mudar_opcao(
+        e: ft.ControlEvent,
+    ) -> None:
         if indicador_id:
             estado["respostas"][indicador_id] = int(
                 e.control.value
             )
 
     # ==========================================================
-    # OPÇÕES DE RESPOSTA
+    # CRITÉRIOS
     # ==========================================================
 
     opcoes_radio = []
@@ -51,22 +60,30 @@ def criar_card_pergunta(
         key=lambda x: str(x[0]),
     ):
         linha_opcao = ft.Container(
-            padding=ft.Padding.symmetric(vertical=4),
+            padding=ft.Padding.symmetric(
+                vertical=0,
+            ),
             content=ft.Row(
                 alignment=ft.MainAxisAlignment.START,
-                vertical_alignment=ft.CrossAxisAlignment.START,
+                vertical_alignment=(
+                    ft.CrossAxisAlignment.START
+                ),
                 controls=[
                     ft.Radio(
                         value=str(chave),
                         active_color=cores[COR_PRIMARIA],
                     ),
+
                     ft.Container(
                         expand=True,
-                        padding=ft.Padding.only(top=12),
+                        padding=ft.Padding.only(
+                            top=3,
+                            right=4,
+                        ),
                         content=ft.Text(
                             f"Nível {chave}: {texto_criterio}",
                             color=cores[TEXTO_PRINCIPAL],
-                            size=14,
+                            size=13,
                         ),
                     ),
                 ],
@@ -85,6 +102,21 @@ def criar_card_pergunta(
     )
 
     # ==========================================================
+    # ÁREA DOS CRITÉRIOS
+    #
+    # É a única área rolável do card.
+    # ==========================================================
+
+    area_criterios = ft.Column(
+        expand=True,
+        scroll=ft.ScrollMode.AUTO,
+        spacing=0,
+        controls=[
+            grupo_radio,
+        ],
+    )
+
+    # ==========================================================
     # JUSTIFICATIVA
     # ==========================================================
 
@@ -92,36 +124,35 @@ def criar_card_pergunta(
         label="Justificativa (Opcional)",
         multiline=True,
         min_lines=1,
-        max_lines=3,
+        max_lines=2,
         border_color=cores[BORDA],
-        text_size=14,
-        content_padding=15,
+        text_size=13,
+        content_padding=10,
     )
 
     # ==========================================================
-    # DESCRIÇÃO
-    # ==========================================================
-
-    descricao_texto = indicador.get("descricao", "")
-
-    # ==========================================================
-    # CABEÇALHO FIXO
+    # CABEÇALHO
     # ==========================================================
 
     cabecalho_card = [
         ft.Text(
             titulo_ind,
-            size=20,
+            size=19,
             weight="bold",
             color=cores[TEXTO_PRINCIPAL],
         ),
     ]
 
+    descricao_texto = indicador.get(
+        "descricao",
+        "",
+    )
+
     if descricao_texto:
         cabecalho_card.append(
             ft.Text(
                 descricao_texto,
-                size=14,
+                size=13,
                 color="onSurfaceVariant",
                 italic=True,
             )
@@ -135,50 +166,57 @@ def criar_card_pergunta(
     )
 
     # ==========================================================
-    # ÁREA CENTRAL ROLÁVEL
-    # ==========================================================
-
-    area_rolavel = ft.Column(
-        expand=True,
-        scroll=ft.ScrollMode.AUTO,
-        spacing=10,
-        controls=[
-            grupo_radio,
-            ft.Container(height=10),
-            campo_justificativa,
-        ],
-    )
-
-    # ==========================================================
     # CARD
     # ==========================================================
 
     return ft.Container(
         bgcolor=cores[CARD],
-        padding=30,
+        padding=14,
         border_radius=12,
+
         border=ft.Border.all(
             1,
             cores[BORDA],
         ),
+
         shadow=ft.BoxShadow(
             spread_radius=1,
             blur_radius=15,
             color=ft.Colors.BLACK12,
             offset=ft.Offset(0, 4),
         ),
+
         expand=True,
+
         content=ft.Column(
-            spacing=15,
-            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+            spacing=4,
+            horizontal_alignment=(
+                ft.CrossAxisAlignment.STRETCH
+            ),
+
             controls=[
+                # Cabeçalho
                 *cabecalho_card,
-                area_rolavel,
+
+                # Critérios — área dominante
+                area_criterios,
+
+                # Separador
                 ft.Divider(
                     height=1,
                     color=cores[BORDA],
                 ),
-                rodape,
+
+                # Justificativa — fixa
+                campo_justificativa,
+
+                # Rodapé — fixo
+                ft.Container(
+                    padding=ft.Padding.only(
+                        top=3,
+                    ),
+                    content=rodape,
+                ),
             ],
         ),
     )
