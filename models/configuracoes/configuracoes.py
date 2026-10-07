@@ -99,10 +99,10 @@ def ViewConfiguracoes(
         )
     
     # Inicializa as outras telas de configurações
-    painel_seguranca = criar_painel_seguranca()
-    painel_banco = criar_painel_banco()
+    painel_seguranca = criar_painel_seguranca(layout.cores)
+    painel_banco = criar_painel_banco(layout.cores)
 
-    # Agrupa os painéis sob o controle de Abas e salva a área de conteúdo no estado
+        # Agrupa os painéis sob o controle de Abas
     menu_abas, area_conteudo_aba = criar_abas(
         page,
         area_dinamica_indicadores,
@@ -110,41 +110,16 @@ def ViewConfiguracoes(
         painel_banco,
         layout.cores,
     )
+
     estado.area_conteudo_aba = area_conteudo_aba
 
-    '''Montagem da hierarquia visual final da página'''
-    conteudo = ft.Column(
-        expand=True,
-        controls=[
-            ft.Text("Configurações do Sistema", size=28, weight="bold", color=layout.cores[TEXTO_PRINCIPAL]),
-            ft.Text(
-                "Gerencie indicadores, acessos e manutenção de dados.",
-                size=16,
-                color=layout.cores[TEXTO_SECUNDARIO],
-            ),
-            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-            
-            # Card master que abriga o conteúdo das abas
-            ft.Container(
-                expand=True, bgcolor=layout.cores[CARD], border_radius=10, padding=20,
-                shadow=None,
-                content=ft.Column(
-                    expand=True,
-                    controls=[
-                        menu_abas,
-                        ft.Divider(
-                            height=20,
-                            color=layout.cores[BORDA],
-                        ),
-                        ft.Container(expand=True, padding=10, content=area_conteudo_aba),
-                    ],
-                ),
-            ),
-        ],
+    # Montagem da hierarquia visual final da página
+    conteudo = criar_layout_principal(
+        layout.cores,
+        menu_abas,
+        area_conteudo_aba,
     )
 
-    # Montagem e renderização
-    conteudo = criar_layout_principal(layout.cores, menu_abas, area_conteudo_aba)
     layout.add_content(conteudo)
-    
+
     return layout.criar_view("/configuracoes")

@@ -34,19 +34,11 @@ def criar_layout_pastas(
     callback_abrir: Callable[[str], None],
     cores: dict[str, str],
 ) -> ft.Column:
-    """
-    Monta a listagem inicial das pastas/eixos.
-
-    Cada pasta representa um eixo da avaliação institucional
-    e exibe a quantidade atual de indicadores cadastrados.
-    """
 
     return ft.Column(
         expand=True,
-        scroll=ft.ScrollMode.AUTO,
-        spacing=25,
+        spacing=10,
         controls=[
-            # Título
             ft.Text(
                 "Gerenciar Indicadores",
                 size=22,
@@ -54,16 +46,9 @@ def criar_layout_pastas(
                 color=cores[TEXTO_PRINCIPAL],
             ),
 
-            # Descrição
-            ft.Text(
-                "Organize os indicadores por eixo de avaliação.",
-                size=14,
-                color=cores[TEXTO_SECUNDARIO],
-            ),
-
-            # Lista de Eixos
             ft.Column(
-                spacing=15,
+                expand=True,
+                spacing=12,
                 controls=[
                     criar_pasta_indicador(
                         titulo,
