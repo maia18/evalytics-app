@@ -17,7 +17,6 @@ def montar_view(
     
     page.on_resize = ajustar_responsividade  # Vincula o resize nativo à função de ajuste
     ajustar_responsividade()  # Aplica a formatação inicial
-
     return ft.View(
         route=route,
         padding=0,  # Remove espaçamento padrão ao redor da janela

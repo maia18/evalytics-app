@@ -1,15 +1,11 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_TEXTO_SECUNDARIO,
 )
 
-
 def criar_rodape() -> ft.Container:
-    """
-    Cria o rodapé da Landing Page.
-    """
+    """Cria o rodapé da Landing Page."""
 
     return ft.Container(
         padding=ft.Padding.symmetric(
@@ -27,6 +23,7 @@ def criar_rodape() -> ft.Container:
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             run_spacing=12,
             controls=[
+                
                 # =====================================================
                 # MARCA
                 # =====================================================

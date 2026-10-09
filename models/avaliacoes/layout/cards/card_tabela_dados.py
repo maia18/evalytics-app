@@ -3,7 +3,7 @@ from typing import Optional
 from components.core.constants.constants import TEXTO_PRINCIPAL
 from components.widgets.card.card_base import criar_card_base
 from models.avaliacoes.layout.cards.card_tabela_linha import criar_linha
-from database.services.firestore_avaliacoes import obter_respostas_tabela # Chama o serviço que encapsula a lógica de conexão com o banco de dados
+from database.services.avaliacoes.firestore_avaliacoes import obter_respostas_tabela
 
 def criar_card_tabela_dados(layout, page: ft.Page, expand: bool = True, height: Optional[int] = None) -> ft.Container:
     """Cartão com uma tabela de respostas recentes e função de exportação."""

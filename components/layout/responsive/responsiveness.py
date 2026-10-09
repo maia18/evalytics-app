@@ -1,20 +1,11 @@
 import flet as ft
 from typing import Callable, Optional
+from layout.layout_breakpoints import obter_categoria_layout
 from components.layout.sidebar.sidebar_factory import criar_sidebar_desktop
 from components.core.constants.constants import (
-    LARGURA_BREAKPOINT_MOBILE,
-    LARGURA_BREAKPOINT_DESKTOP,
     LARGURA_SIDEBAR_EXPANDIDA,
     LARGURA_SIDEBAR_COLAPSADA,
 )
-
-# Classifica a largura da janela em uma categoria de layout
-def _categoria_layout(largura: float) -> str:
-    if largura < LARGURA_BREAKPOINT_MOBILE:
-        return "mobile"
-    if largura < LARGURA_BREAKPOINT_DESKTOP:
-        return "compacta"
-    return "desktop"
 
 def ajustar_responsividade(
     page: ft.Page,
@@ -25,7 +16,9 @@ def ajustar_responsividade(
     mudar_tela: Optional[Callable[[str], None]],
 ) -> None:
     """Ajusta o layout da interface conforme a largura da janela."""
-    categoria = _categoria_layout(page.width)
+    
+    # Consulta a categoria atual usando a função isolada
+    categoria = obter_categoria_layout(page.width)
 
     if sidebar_desktop.data == categoria:
         return  # Nenhuma mudança de categoria: evita reconstrução desnecessária

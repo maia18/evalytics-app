@@ -1,10 +1,7 @@
 import flet as ft
-
 from typing import Callable
-
 from components.landing.hero.texto import criar_hero_texto
 from components.landing.hero.painel import criar_painel_hero
-
 
 def criar_hero(
     mudar_tela: Callable[[str], None],
@@ -12,16 +9,13 @@ def criar_hero(
 ) -> ft.Container:
     """
     Cria a seção principal (Hero) da Landing Page.
-
-    Organiza os textos à esquerda e o painel ilustrativo
-    à direita de forma responsiva.
+        Organiza os textos à esquerda e o painel ilustrativo à direita de forma responsiva.
     """
 
     hero_texto = criar_hero_texto(
         mudar_tela,
         ir_para_recursos,
     )
-
     painel = criar_painel_hero()
 
     return ft.Container(
@@ -34,6 +28,7 @@ def criar_hero(
             alignment=ft.MainAxisAlignment.CENTER,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
+                
                 # =========================================================
                 # TEXTO
                 # =========================================================

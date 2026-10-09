@@ -1,18 +1,11 @@
 import flet as ft
 from typing import Optional
-
 from models.formulario.widgets.tela_sucesso import criar_tela_sucesso
 from utils.services.avaliacoes.avaliacoes_service import salvar_avaliacao
 
-
 class FormularioStepsMixin:
-    """
-    Mixin que concentra a lógica de transição entre
-    as etapas do formulário.
-
-    Durante a fase de desenvolvimento/testes, as perguntas podem ser
-    puladas sem resposta.
-    """
+    """Mixin que concentra a lógica de transição entre
+    as etapas do formulário."""
 
     # ==========================================================
     # NAVEGAÇÃO ENTRE EIXOS
@@ -22,9 +15,7 @@ class FormularioStepsMixin:
         self,
         eixo_alvo: int,
     ) -> None:
-        """
-        Vai para a primeira pergunta pertencente ao eixo selecionado.
-        """
+        """Vai para a primeira pergunta pertencente ao eixo selecionado."""
 
         for i, indicador in enumerate(
             self.indicadores_ativos
@@ -43,21 +34,7 @@ class FormularioStepsMixin:
         self,
         e: Optional[ft.ControlEvent] = None,
     ) -> None:
-        """
-        Avança para a próxima pergunta.
-
-        Durante os testes:
-
-        - permite avançar sem responder;
-        - permite pular perguntas;
-        - permite finalizar mesmo com respostas incompletas.
-
-        Ao finalizar:
-
-        - valida apenas o curso selecionado;
-        - salva as respostas existentes no Firestore;
-        - exibe a tela de sucesso após o salvamento.
-        """
+        """Avança para a próxima pergunta."""
 
         # ======================================================
         # NÃO HÁ INDICADORES
@@ -133,9 +110,7 @@ class FormularioStepsMixin:
         # SUCESSO
         # ======================================================
 
-        # A avaliação terminou.
-        # Remove o controller para que uma nova avaliação
-        # comece com estado limpo.
+        # A avaliação terminou. Remove-se o controller para que uma nova avaliação comece com estado limpo.
         self.page._formulario_controller = None
 
         self.area_central.content = criar_tela_sucesso(
@@ -152,9 +127,7 @@ class FormularioStepsMixin:
         self,
         e: Optional[ft.ControlEvent] = None,
     ) -> None:
-        """
-        Retorna para a pergunta anterior.
-        """
+        """Retorna para a pergunta anterior."""
 
         if self.estado["indice_atual"] > 0:
             self.estado["indice_atual"] -= 1
@@ -168,13 +141,7 @@ class FormularioStepsMixin:
         self,
         e: Optional[ft.ControlEvent] = None,
     ) -> None:
-        """
-        Cancela a avaliação atual e retorna para a tela inicial.
-
-        O controller é removido para que, ao iniciar uma nova
-        avaliação posteriormente, o formulário seja criado
-        novamente com estado limpo.
-        """
+        """Cancela a avaliação atual e retorna para a tela inicial."""
 
         self.page._formulario_controller = None
 

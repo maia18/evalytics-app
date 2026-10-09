@@ -1,7 +1,5 @@
 import flet as ft
-
 from typing import Callable
-
 from components.core.constants.constants import (
     CARD_SECUNDARIO,
     BORDA,
@@ -16,9 +14,7 @@ def criar_pasta_indicador(
     abrir_pasta: Callable[[str], None],
     cores: dict[str, str],
 ) -> ft.Container:
-    """
-    Cria um card clicável representando um eixo de avaliação.
-    """
+    """Cria um card clicável representando um eixo de avaliação."""
 
     return ft.Container(
         bgcolor=cores[CARD_SECUNDARIO],

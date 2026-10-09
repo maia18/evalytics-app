@@ -1,9 +1,7 @@
 """
 Pacote de componentes auxiliares da Landing Page.
 
-Este módulo centraliza a exportação dos helpers visuais
-utilizados nas seções da página, permitindo importações
-mais simples e desacopladas da estrutura interna do projeto.
+    Este módulo centraliza a exportação dos helpers visuais utilizados nas seções da página, permitindo importações mais simples e desacopladas da estrutura interna do projeto.
 """
 
 # =========================================================

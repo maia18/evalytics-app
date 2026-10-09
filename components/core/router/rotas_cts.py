@@ -1,0 +1,11 @@
+"""Constantes que definem os caminhos (paths) da aplicação."""
+
+ROTA_INICIAL = "/"
+ROTA_LOGIN = "/login"
+ROTA_INICIO = "/inicio"
+ROTA_DASHBOARD = "/dashboard"
+ROTA_AVALIACOES = "/avaliacoes"
+ROTA_RELATORIOS = "/relatorios"
+ROTA_CURSOS = "/cursos"
+ROTA_FORMULARIO = "/formulario"
+ROTA_CONFIGURACOES = "/configuracoes"

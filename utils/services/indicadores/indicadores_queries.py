@@ -1,13 +1,9 @@
 import logging
 from typing import Optional
-
 from database.services.firebase_config import db
 
-
 logger = logging.getLogger(__name__)
-
 COLECAO_INDICADORES = "indicadores"
-
 
 def buscar_indicador(
     titulo: str,

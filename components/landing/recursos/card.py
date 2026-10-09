@@ -1,16 +1,12 @@
 import flet as ft
-
 from components.landing.helpers.recursos import criar_card_recurso
-
 
 def criar_card_responsivo(
     icone,
     titulo: str,
     descricao: str,
 ) -> ft.Container:
-    """
-    Wrapper responsivo para os cards de recursos.
-    """
+    """Wrapper responsivo para os cards de recursos."""
 
     return ft.Container(
         col={

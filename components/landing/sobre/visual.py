@@ -1,11 +1,9 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_CARD,
     COR_PRIMARIA,
 )
-
 from components.landing.helpers import criar_etapa # Importação de um helper que cria as linhas de passo-a-passo (01, 02, 03)
 
 def criar_sobre_visual() -> ft.Container:

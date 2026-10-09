@@ -1,6 +1,5 @@
 import flet as ft
 from typing import Callable, Optional
-
 from components.core.constants.constants import (
     HOVER,
     ALTURA_BOTAO_MENU,
@@ -8,7 +7,6 @@ from components.core.constants.constants import (
     PADDING_BOTAO_MENU,
     HOVER_CLARO_BOTAO_MENU,
 )
-
 
 def criar_botao_menu_base(
     content: ft.Control,
@@ -21,11 +19,8 @@ def criar_botao_menu_base(
 ) -> ft.Container:
     """
     Casca compartilhada de um botão de navegação do menu (sidebar).
-
-    É utilizada tanto pelo botão somente com ícone
-    quanto pelo botão com ícone + texto.
-
-    A diferença visual entre eles fica no parâmetro `content`.
+        É utilizada tanto pelo botão somente com ícone quanto pelo botão com ícone + texto.
+            A diferença visual entre eles fica no parâmetro `content`.
     """
 
     def executar_click(e: ft.ControlEvent) -> None:

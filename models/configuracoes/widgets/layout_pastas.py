@@ -1,24 +1,17 @@
 import flet as ft
-
 from typing import Callable
-
 from components.core.constants.constants import (
     TEXTO_PRINCIPAL,
-    TEXTO_SECUNDARIO,
 )
-
 from models.configuracoes.widgets.indicadores_ui import (
     criar_pasta_indicador,
 )
-
 from models.configuracoes.widgets.estado_indicadores import (
     EstadoIndicadores,
 )
-
 from utils.services.indicadores.indicadores_repository import (
     contar_indicadores_por_eixo,
 )
-
 
 # Relaciona o título da interface ao ID inteiro do Eixo
 MAPA_EIXOS: dict[str, int] = {
@@ -26,7 +19,6 @@ MAPA_EIXOS: dict[str, int] = {
     "Corpo Docente e Tutorial": 2,
     "Infraestrutura": 3,
 }
-
 
 def criar_layout_pastas(
     page: ft.Page,

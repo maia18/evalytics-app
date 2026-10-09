@@ -3,9 +3,9 @@ import flet as ft
 def _criar_campo_texto(
     label: str, hint_text: str, cor_titulo: str, cor_secundario: str, cor_borda: str, **kwargs,
 ) -> ft.Column:
-    """Casca compartilhada dos campos de texto (Factory).
-    
-    `**kwargs` permite que particularidades de cada campo (como password=True) sejam injetadas sem repetir código.
+    """
+    Casca compartilhada dos campos de texto (Factory).
+        `**kwargs` permite que particularidades de cada campo (como password=True) sejam injetadas sem repetir código.
     """
     return ft.Column(
         spacing=5,
@@ -21,16 +21,19 @@ def _criar_campo_texto(
 
 def criar_campo_nome(cor_texto_titulo: str, cor_texto_secundario: str, cor_borda: str) -> ft.Column:
     """Campo de 'Nome', exclusivo da etapa de cadastro (Sign Up). Inicia oculto."""
+    
     campo = _criar_campo_texto("Nome", "John Doe", cor_texto_titulo, cor_texto_secundario, cor_borda)
     campo.visible = False  # A tela abre por padrão em modo "Sign In" logo não solicita nome.
     return campo
 
 def criar_campo_email(cor_texto_titulo: str, cor_texto_secundario: str, cor_borda: str) -> ft.Column:
     """Campo de 'Email', usado tanto no Login quanto no Cadastro."""
+    
     return _criar_campo_texto("Email", "voce@instituicao.com", cor_texto_titulo, cor_texto_secundario, cor_borda)
 
 def criar_campo_senha(cor_texto_titulo: str, cor_texto_secundario: str, cor_borda: str) -> ft.Column:
     """Campo de 'Senha', com mascaramento e ícone de exibir/ocultar."""
+    
     return _criar_campo_texto(
         "Senha", "Digite sua senha", cor_texto_titulo, cor_texto_secundario, cor_borda,
         password=True, can_reveal_password=True,

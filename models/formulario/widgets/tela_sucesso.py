@@ -1,10 +1,9 @@
-from typing import Callable
 import flet as ft
+from typing import Callable
 
 def criar_tela_sucesso(mudar_tela: Callable[[str], None]) -> ft.Column:
     """Renderiza a tela final de agradecimento exibida após o formulário ser concluído."""
     
-    # Retorna uma coluna centralizada com a mensagem de sucesso e botão de retorno.
     return ft.Column(
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         spacing=20,
@@ -24,6 +23,6 @@ def criar_tela_sucesso(mudar_tela: Callable[[str], None]) -> ft.Column:
             ft.Container(height=20),
             
             # Botão que utiliza o callback de roteamento para devolver o usuário ao painel inicial.
-            ft.ElevatedButton("Voltar para o Painel", on_click=lambda _: mudar_tela("/inicio")),
+            ft.ElevatedButton("Voltar para o Painel", on_click=lambda _: mudar_tela("/inicio")), 
         ],
     )

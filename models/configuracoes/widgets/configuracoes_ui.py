@@ -1,7 +1,5 @@
 import flet as ft
-
 from components.core.constants.constants import CARD
-
 
 def criar_layout_principal(
     cores_layout: dict,
@@ -10,9 +8,7 @@ def criar_layout_principal(
 ) -> ft.Column:
     """
     Constrói a área principal da página de configurações.
-
-    O cabeçalho da página é fornecido pelo ResponsiveLayout.
-    Este componente organiza apenas as abas e seu conteúdo.
+        O cabeçalho da página é fornecido pelo ResponsiveLayout.
     """
 
     return ft.Column(

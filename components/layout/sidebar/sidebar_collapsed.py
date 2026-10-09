@@ -1,6 +1,5 @@
 import flet as ft
 from typing import Callable
-
 from components.core.constants.constants import TEXTO_PRINCIPAL
 from components.layout.sidebar.sidebar_logout import criar_botao_logout
 from components.layout.sidebar.sidebar_logo import criar_logo
@@ -8,8 +7,6 @@ from components.layout.sidebar.sidebar_items import montar_botoes_menu
 from components.widgets.menu.menu import MENU_ITEMS_COLLAPSED
 from components.widgets.menu.botao_icon import criar_botao_icon
 
-
-# Constrói os elementos do menu lateral focado apenas em ícones
 def criar_sidebar_colapsada(
     page: ft.Page,
     dark_mode: bool,
@@ -18,9 +15,7 @@ def criar_sidebar_colapsada(
 ) -> ft.Column:
     """
     Constrói a versão retraída (colapsada/mini) da barra lateral.
-
-    Neste estado, a sidebar exibe apenas os ícones para
-    economizar espaço horizontal na tela.
+        Neste estado, a sidebar exibe apenas os ícones para economizar espaço horizontal na tela.
     """
 
     # 1. Elementos iniciais da Sidebar

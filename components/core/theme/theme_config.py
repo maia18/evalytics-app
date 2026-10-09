@@ -1,22 +1,14 @@
 import flet as ft
-
-from components.core.theme.theme import (
-    AppColors,
-    get_app_theme,
-)
-
+from components.core.theme.app_colors import AppColors
+from components.core.theme.theme import get_app_theme
 
 def configurar_tema(
     page: ft.Page,
     dark_mode: bool,
 ) -> dict[str, str]:
-    """
-    Configura o tema visual da aplicação e retorna
-    a paleta de cores correspondente ao modo atual.
-    """
+    """Configura o tema visual da aplicação e retorna a paleta de cores correspondente ao modo atual."""
 
     page.theme = get_app_theme(dark_mode)
-
     page.theme_mode = (
         ft.ThemeMode.DARK
         if dark_mode

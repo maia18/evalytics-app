@@ -1,8 +1,11 @@
 """
 Arquivo de Constantes de Texto (Text/Labels Constants)
-Centraliza todos os textos estáticos, títulos e rótulos usados na interface do usuário.
+    Centraliza todos os textos estáticos, títulos e rótulos usados na interface do usuário.
 """
-from typing import Final, NamedTuple
+from typing import (
+    Final, 
+    NamedTuple,
+)
 
 # Textos da tela inicial (Home). Continua acessível por índice (compatibilidade).
 class TextoPaginaInicio(NamedTuple):

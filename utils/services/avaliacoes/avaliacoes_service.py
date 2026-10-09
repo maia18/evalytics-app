@@ -1,16 +1,11 @@
 import logging
-
 from datetime import datetime
-
 from database.services.firebase_config import db
-from components.core.auth import auth_state
-from utils.services.notificacoes_service import adicionar_notificacao
-
+from components.core.auth.auth_state import auth_state
+from utils.services.notifications.notificacoes_service import adicionar_notificacao
 
 logger = logging.getLogger(__name__)
-
 COLECAO_AVALIACOES = "avaliacoes"
-
 
 def salvar_avaliacao(
     curso_id: str,
@@ -36,7 +31,6 @@ def salvar_avaliacao(
         # ---------------------------------------------------------
 
         usuario = auth_state.usuario
-
         usuario_id = None
 
         if usuario:
@@ -101,7 +95,6 @@ def salvar_avaliacao(
             curso_nome,
         )
         return False
-
 
 def listar_avaliacoes() -> list[dict]:
     """Busca todas as avaliações concluídas armazenadas no Firestore."""

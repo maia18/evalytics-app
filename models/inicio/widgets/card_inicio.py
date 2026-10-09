@@ -1,6 +1,5 @@
-from typing import Callable
 import flet as ft
-
+from typing import Callable
 from components.core.constants.constants import (
     CARD, 
     BORDA, 
@@ -9,8 +8,7 @@ from components.core.constants.constants import (
     COR_TEXTO_SECUNDARIO,
 )
 from components.core.theme.border_utils import criar_borda_uniforme
-
-from models.inicio.core.card_hover import obter_funcao_hover # Importa a nova fábrica de funções separada para a lógica de hover (Closure)
+from models.inicio.core.card_hover import obter_funcao_hover
 
 def criar_card(
     layout, titulo: str,

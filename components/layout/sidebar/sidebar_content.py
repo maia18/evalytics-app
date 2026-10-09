@@ -1,6 +1,5 @@
 import flet as ft
 from typing import Callable
-
 from components.core.constants.constants import TEXTO_PRINCIPAL
 from components.layout.sidebar.sidebar_logout import criar_botao_logout
 from components.layout.sidebar.sidebar_logo import criar_logo
@@ -8,18 +7,13 @@ from components.layout.sidebar.sidebar_items import montar_botoes_menu
 from components.widgets.menu.menu import MENU_ITEMS
 from components.widgets.menu.menu_item import criar_item_menu
 
-
-# Constrói a visualização padrão do menu,
-# com logotipo completo e botões descritivos
 def criar_sidebar_content(
     page: ft.Page,
     dark_mode: bool,
     mudar_tela: Callable[[str], None],
     cores: dict[str, str],
 ) -> ft.Column:
-    """
-    Constrói a visualização padrão (expandida) da barra lateral do sistema.
-    """
+    """Constrói a visualização padrão (expandida) da barra lateral do sistema."""
 
     # 1. Estrutura base da Sidebar
     controles: list[ft.Control] = [

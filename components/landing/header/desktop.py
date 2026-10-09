@@ -1,6 +1,5 @@
 import flet as ft
 from typing import Callable
-
 from components.core.constants.constants import (
     COR_TEXTO_SECUNDARIO,
     COR_PRIMARIA,
@@ -14,11 +13,11 @@ def criar_menu_desktop(
     """
     Cria o menu de navegação para dispositivos desktop.
 
-    O componente exibe os principais atalhos da Landing Page, permitindo que o usuário:
+        O componente exibe os principais atalhos da Landing Page, permitindo que o usuário:
 
-        - Navegue até a seção de recursos;
-        - Navegue até a seção sobre;
-        - Acesse a tela de login.
+            - Navegue até a seção de recursos;
+            - Navegue até a seção sobre;
+            - Acesse a tela de login.
     """
 
     return ft.Row(

@@ -1,5 +1,4 @@
 import flet as ft
-
 from components.core.constants.constants import (
     CARD,
     BORDA,
@@ -7,15 +6,14 @@ from components.core.constants.constants import (
     TEXTO_SECUNDARIO,
 )
 
-
 def criar_stats_card(
     titulo: str,
     valor: str,
     cores: dict[str, str],
 ) -> ft.Container:
     """
-    Renderiza um cartão de métrica utilizando os tokens
-    do Design System para funcionar em Light e Dark Mode.
+    Renderiza um cartão de métrica: 
+        Utiliza os tokens do Design System para funcionar em Light e Dark Mode.
     """
 
     return ft.Container(

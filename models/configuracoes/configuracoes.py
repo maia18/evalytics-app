@@ -1,12 +1,6 @@
 import flet as ft
 from typing import Callable
 from components.layout.responsive.responsive import ResponsiveLayout
-from components.core.constants.constants import (
-    TEXTO_PRINCIPAL, 
-    CARD,
-    TEXTO_SECUNDARIO,
-    BORDA,
-)
 from models.configuracoes.widgets.configuracoes_ui import criar_layout_principal
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from models.configuracoes.modals.modal_criterios import criar_modal_criterios
@@ -43,10 +37,6 @@ def ViewConfiguracoes(
     def ir_para_pasta(titulo: str) -> None:
         """Injetada nos modais para forçar a atualização visual da pasta atual após salvar/deletar dados."""
         abrir_pasta(page, titulo, estado)
-        
-    def voltar_para_pastas_config() -> None:
-        from models.configuracoes.core.pastas import voltar_para_pastas
-        voltar_para_pastas(page, estado)
         
     ''' === Inicialização dos Modais === '''
     modal_edicao, campo_titulo, campo_descricao, estado.abrir_modal_edicao = criar_modal_edicao(

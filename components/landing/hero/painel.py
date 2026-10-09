@@ -1,20 +1,14 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_TEXTO_SECUNDARIO,
     COR_PRIMARIA,
     COR_CARD,
 )
-
 from components.landing.helpers import criar_indicador
 
-
 def criar_painel_hero() -> ft.Container:
-    """
-    Cria um card ilustrativo simulando o painel de controle
-    do sistema.
-    """
+    """Cria um card ilustrativo simulando o painel de controledo sistema."""
 
     return ft.Container(
         width=410,

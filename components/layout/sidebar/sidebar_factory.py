@@ -1,8 +1,6 @@
 import flet as ft
 from typing import Callable, Optional
-
 from components.layout.sidebar.sidebar import Sidebar
-
 from components.core.constants.constants import (
     LARGURA_SIDEBAR_MOBILE,
     POSICAO_SIDEBAR_MOBILE_FECHADA,
@@ -10,9 +8,6 @@ from components.core.constants.constants import (
     SOMBRA_SIDEBAR_MOBILE,
 )
 
-
-# Instancia a Sidebar diretamente no modo Desktop
-# (fica fixa na estrutura da página)
 def criar_sidebar_desktop(
     page: ft.Page,
     dark_mode: bool,
@@ -21,9 +16,7 @@ def criar_sidebar_desktop(
 ) -> Sidebar:
     """
     Instancia a Sidebar para a interface Desktop.
-
-    Neste modo, o menu lateral permanece fixo na estrutura
-    principal da página.
+        Neste modo, o menu lateral permanece fixo na estrutura principal da página.
     """
 
     return Sidebar(
@@ -33,7 +26,6 @@ def criar_sidebar_desktop(
         collapsed=collapsed,
     )
 
-
 def criar_sidebar_mobile(
     page: ft.Page,
     dark_mode: bool,
@@ -41,13 +33,12 @@ def criar_sidebar_mobile(
 ) -> ft.Container:
     """
     Cria a Sidebar para telas reduzidas (Mobile e Tablets).
-
-    Neste cenário, a Sidebar funciona como um Drawer:
-    uma gaveta flutuante que desliza para dentro e para fora
-    da tela sobre o conteúdo principal.
+        Neste cenário, a Sidebar funciona como um Drawer:
+            Uma gaveta flutuante que desliza para dentro e para fora da tela sobre o conteúdo principal.
     """
 
     return ft.Container(
+        
         # Posicionamento absoluto
         top=0,
         bottom=0,

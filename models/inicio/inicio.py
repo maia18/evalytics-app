@@ -1,6 +1,5 @@
-from typing import Callable
 import flet as ft
-
+from typing import Callable
 from components.layout.responsive.responsive import ResponsiveLayout
 from models.inicio.widgets.card_inicio import criar_card
 from components.core.constants.constants import (
@@ -75,8 +74,12 @@ def ViewInicio(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
             ft.Container(col={"xs": 12, "sm": 6, "md": 4, "lg": 3}, content=criar_card(layout, TXTS_CONFIGS[0], TXTS_CONFIGS[1], ft.Icons.VIEW_COMFY, "/configuracoes", mudar_tela)),
         ],
     )
-
-    conteudo = ft.Column(expand=True, controls=[hero, ft.Container(height=24), grade_cards]) # Montagem final da página: Hero no topo + espaçamento de 24px + grade de cartões
+    
+    # Montagem final da página: Hero no topo + espaçamento de 24px + grade de cartões
+    conteudo = ft.Column(
+        expand=True, 
+        controls=[hero, ft.Container(height=24), grade_cards]
+    ) 
 
     layout.add_content(conteudo)
     return layout.criar_view("/inicio")

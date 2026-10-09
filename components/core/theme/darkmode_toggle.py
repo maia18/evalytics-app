@@ -1,8 +1,6 @@
 import flet as ft
 from typing import Callable, Optional
-
 from components.core.theme.theme_config import configurar_tema
-
 
 def toggle_dark_mode(
     page: ft.Page,
@@ -12,13 +10,9 @@ def toggle_dark_mode(
 ) -> bool:
     """
     Alterna entre os temas claro e escuro.
-
-    A tela atual é reconstruída após a troca do tema para que
-    os componentes recebam novamente as cores correspondentes
-    ao novo tema.
-
-    O estado de uma avaliação em andamento é preservado pelo
-    FormularioController, que é reutilizado pela tela /formulario.
+    
+        A tela atual é reconstruída após a troca do tema para que os componentes recebam novamente as cores correspondentes ao novo tema.
+            O estado de uma avaliação em andamento é preservado pelo FormularioController, que é reutilizado pela tela /formulario.
     """
 
     # ==========================================================
@@ -26,7 +20,6 @@ def toggle_dark_mode(
     # ==========================================================
 
     dark_mode = not dark_mode
-
     page.is_dark_mode = dark_mode
 
     # ==========================================================
@@ -46,7 +39,6 @@ def toggle_dark_mode(
         mudar_tela(rota_atual)
 
     else:
-        # Fallback caso não exista uma rota para reconstruir.
-        page.update()
+        page.update() # Fallback caso não exista uma rota para reconstruir.
 
     return dark_mode

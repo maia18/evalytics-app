@@ -1,7 +1,5 @@
 import flet as ft
-
 from components.core.constants.constants import (
-    CARD,
     CARD_SECUNDARIO,
     BORDA,
     TEXTO_PRINCIPAL,
@@ -9,15 +7,12 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
 )
 
-
 def criar_painel_banco(
     cores: dict[str, str],
 ) -> ft.Container:
     """
     Constrói o painel de gerenciamento e manutenção dos dados.
-
-    O painel utiliza o sistema centralizado de cores do Evalytics,
-    mantendo compatibilidade com os temas claro e escuro.
+        O painel utiliza o sistema centralizado de cores do Evalytics, mantendo compatibilidade com os temas claro e escuro.
     """
 
     return ft.Container(
@@ -100,7 +95,6 @@ def criar_painel_banco(
                                 "Excluir avaliações com mais de 5 anos.",
                                 color=cores[TEXTO_PRINCIPAL],
                             ),
-
                             ft.ElevatedButton(
                                 "Limpar Dados Antigos",
                                 icon=ft.Icons.DELETE_FOREVER,

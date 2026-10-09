@@ -1,5 +1,4 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_PRIMARIA,
     SUCESSO,
@@ -10,15 +9,10 @@ from components.core.constants.texts import NOMES_EIXOS
 from models.formulario.widgets.card_pergunta import criar_card_pergunta
 from models.formulario.widgets.stepper_eixos import criar_stepper_eixos
 
-
 class FormularioRenderMixin:
-    """
-    Mixin responsável por ler o estado atual do Controller
-    e refleti-lo graficamente na tela.
-    """
+    """Mixin responsável por ler o estado atual do Controller e refleti-lo graficamente na tela."""
 
-    # Reconstrói cabeçalho, pergunta atual e rodapé
-    # com base no índice atual do formulário.
+    # Reconstrói cabeçalho, pergunta atual e rodapé com base no índice atual do formulário.
     def atualizar_renderizacao(self) -> None:
 
         # ==========================================================
@@ -125,7 +119,6 @@ class FormularioRenderMixin:
                             weight="bold",
                             color=self.cores[COR_PRIMARIA],
                         ),
-
                         ft.Text(
                             (
                                 f"Pergunta "
@@ -195,13 +188,11 @@ class FormularioRenderMixin:
                 if eh_ultima_pergunta
                 else ft.Icons.ARROW_FORWARD
             ),
-
             bgcolor=(
                 self.cores[SUCESSO]
                 if eh_ultima_pergunta
                 else self.cores[COR_PRIMARIA]
             ),
-
             color=self.cores[TEXTO_PRINCIPAL],
 
             on_click=self.avancar,
@@ -251,5 +242,4 @@ class FormularioRenderMixin:
             cabecalho,
             card_unificado,
         ]
-
         self.page.update()

@@ -1,13 +1,10 @@
 import flet as ft
-
 from typing import Callable
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_TEXTO_SECUNDARIO,
     COR_PRIMARIA,
 )
-
 
 def criar_hero_texto(
     mudar_tela: Callable[[str], None],

@@ -8,7 +8,8 @@ from components.core.constants.constants import (
     TEXTO_PRINCIPAL,
     TEXTO_SECUNDARIO,
 )
-from models.cursos.core.cursos_controller import atualizar_estatisticas, carregar_cursos_iniciais
+from models.cursos.core.cursos_controller import carregar_cursos_iniciais
+from models.cursos.core.cursos_estatisticas import atualizar_estatisticas
 from models.cursos.widgets.campos_curso import criar_campos_formulario_curso
 from models.cursos.widgets.tabela_cursos import ContextoTabelaCursos
 from models.cursos.widgets.stats_cards import criar_stats_card

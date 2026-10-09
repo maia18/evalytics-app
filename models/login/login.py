@@ -1,8 +1,7 @@
-from typing import Callable
 import requests
 import flet as ft
-
-from components.core.auth import auth_state
+from typing import Callable
+from components.core.auth.auth_state import auth_state
 from models.login.core.logica_abas import obter_funcao_alternar
 from models.login.core.cabecalho_login import criar_cabecalho
 from models.login.core.tab_style import criar_estilo_aba
@@ -15,7 +14,6 @@ from models.login.widgets.campos_login import (
 from models.login.widgets.card_login import criar_card_login
 from models.login.widgets.social_login import criar_login_social
 from models.login.widgets.extras_login import criar_opcoes_extras
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO, 
     COR_TEXTO_SECUNDARIO, 
@@ -107,7 +105,6 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
                 elif "WEAK_PASSWORD" in erro_msg:
                     erro_msg = "A senha deve ter pelo menos 6 caracteres."
 
-                #page.open(ft.SnackBar(ft.Text(f"Erro: {erro_msg}"), bgcolor=ft.Colors.RED_400))
                 snack = ft.SnackBar(ft.Text(f"Erro: {erro_msg}"), bgcolor=ft.Colors.RED_400)
                 page.overlay.append(snack)
                 snack.open = True

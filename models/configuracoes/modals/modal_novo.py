@@ -1,7 +1,5 @@
 import flet as ft
-
 from typing import Callable
-
 from components.core.constants.constants import (
     BORDA,
     COR_PRIMARIA,
@@ -9,10 +7,8 @@ from components.core.constants.constants import (
     SUCESSO,
     PERIGO,
 )
-
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from utils.services.indicadores.indicadores_repository import adicionar_indicador
-
 
 def criar_modal_novo(
     page: ft.Page,

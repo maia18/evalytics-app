@@ -1,17 +1,13 @@
 import flet as ft
 from typing import Callable
-
 from components.core.constants.constants import (
     COR_PRIMARIA,
 )
 
-
 def criar_cta(
     mudar_tela: Callable[[str], None],
 ) -> ft.Container:
-    """
-    Cria a seção final de chamada para ação da Landing Page.
-    """
+    """Cria a seção final de chamada para ação da Landing Page."""
 
     return ft.Container(
         margin=ft.Margin.symmetric(

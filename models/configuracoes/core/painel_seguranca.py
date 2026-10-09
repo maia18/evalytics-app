@@ -1,22 +1,17 @@
 import flet as ft
-
 from components.core.constants.constants import (
-    CARD,
     BORDA,
     TEXTO_PRINCIPAL,
     TEXTO_SECUNDARIO,
     COR_PRIMARIA,
 )
 
-
 def criar_painel_seguranca(
     cores: dict[str, str],
 ) -> ft.Container:
     """
     Constrói o painel de políticas de segurança do sistema.
-
-    O painel utiliza o sistema centralizado de cores do Evalytics
-    para permanecer compatível com os temas claro e escuro.
+        O painel utiliza o sistema centralizado de cores do Evalytics para permanecer compatível com os temas claro e escuro.
     """
 
     return ft.Container(

@@ -1,7 +1,5 @@
 import flet as ft
-
-from components.core.auth import auth_state
-
+from components.core.auth.auth_state import auth_state
 
 def criar_botao_logout(
     page: ft.Page,

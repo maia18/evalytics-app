@@ -10,9 +10,9 @@ def criar_botao_icon(
     cor_texto: str,
     mudar_tela: Optional[Callable[[str], None]],
 ) -> ft.Container:
-    """Cria um botão compacto que exibe apenas um ícone.
-
-    Ideal para a sidebar quando o menu está recolhido.
+    """
+    Cria um botão compacto que exibe apenas um ícone.
+        Ideal para a sidebar quando o menu está recolhido.
     """
     
     # Prepara o controle visual central isoladamente
@@ -20,7 +20,7 @@ def criar_botao_icon(
         icone,
         color=cor_texto,
         size=24,
-        tooltip=tooltip_text,  # A tooltip é crucial para acessibilidade aqui: como o menu não tem texto, o balão indica para onde a rota vai quando o usuário repousa o mouse sobre o botão
+        tooltip=tooltip_text,  # tooltip crucial: menu sem tem texto, balão indica para onde a rota vai quando o usuário repousa o mouse sobre o botão
     )
     
     # Chama o componente "casca" e injeta o ícone dentro dele

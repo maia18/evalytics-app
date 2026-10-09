@@ -5,7 +5,7 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
     ESTILO_BOTAO_CANCELAR,
 )
-from database.services.firestore_courses import atualizar_curso_db
+from database.services.cursos.firestore_courses import atualizar_curso_db
 from models.cursos.modals.modal_utils import fechar_modal
 
 def criar_modal_edit(

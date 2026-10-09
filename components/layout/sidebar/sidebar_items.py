@@ -2,7 +2,7 @@ import flet as ft
 from typing import Callable, Iterable
 
 '''
-Define um formato padrão esperado para os itens (Ícone, Texto, Rota)[cite: 18].
+Define um formato padrão esperado para os itens (Ícone, Texto, Rota).
     Ex: (ft.Icons.HOME, "Início", "/inicio").
 '''
 MenuItem = tuple[str, str, str]

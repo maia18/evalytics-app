@@ -1,22 +1,19 @@
-from typing import Callable, Optional
-
 import flet as ft
-
+from typing import Callable, Optional
 from models.formulario.core.steps import FormularioStepsMixin
 from models.formulario.core.render import FormularioRenderMixin
 from utils.services.indicadores.indicadores_repository import listar_indicadores
-
 
 class FormularioController(FormularioStepsMixin, FormularioRenderMixin):
     """
     Controller central do formulário.
 
-    Responsável por:
-    - carregar os indicadores ativos do Firestore;
-    - armazenar o curso selecionado;
-    - controlar o estado das respostas;
-    - controlar as justificativas;
-    - orquestrar as transições do formulário.
+        Responsável por:
+            - carregar os indicadores ativos do Firestore;
+            - armazenar o curso selecionado;
+            - controlar o estado das respostas;
+            - controlar as justificativas;
+            - orquestrar as transições do formulário.
     """
 
     def __init__(
@@ -39,8 +36,7 @@ class FormularioController(FormularioStepsMixin, FormularioRenderMixin):
 
         indicadores = listar_indicadores()
 
-        # Carrega somente indicadores ativos.
-        # Caso o campo "status" não exista, considera ATIVO.
+        # Carrega somente indicadores ativos. Caso o campo "status" não exista, considera ATIVO.
         self.indicadores_ativos = sorted(
             [
                 ind
@@ -75,9 +71,7 @@ class FormularioController(FormularioStepsMixin, FormularioRenderMixin):
         curso_id: str,
         curso_nome: str,
     ) -> None:
-        """
-        Define o curso que será associado à avaliação atual.
-        """
+        """Define o curso que será associado à avaliação atual."""
 
         self.curso_id = curso_id
         self.curso_nome = curso_nome

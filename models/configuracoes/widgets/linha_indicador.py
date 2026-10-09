@@ -1,16 +1,12 @@
-from typing import Callable
-
 import flet as ft
-
+from typing import Callable
 from components.core.constants.constants import (
     CARD,
     BORDA,
-    TEXTO_PRINCIPAL,
     COR_PRIMARIA,
     SUCESSO,
     AVISO,
 )
-
 
 def criar_linha_indicador(
     item: dict,

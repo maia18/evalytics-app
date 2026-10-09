@@ -1,15 +1,11 @@
 import flet as ft
-
 from typing import Callable
-
 from components.core.constants.constants import (
     TEXTO_PRINCIPAL,
     PERIGO,
 )
-
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
 from utils.services.indicadores.indicadores_repository import excluir_indicador
-
 
 def criar_modal_exclusao(
     page: ft.Page,

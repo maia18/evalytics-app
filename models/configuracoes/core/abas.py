@@ -80,4 +80,5 @@ def criar_abas(
     )
 
     menu_abas = ft.Row([btn_indicadores, btn_seguranca, btn_banco], spacing=10)
+    
     return menu_abas, area_conteudo_aba

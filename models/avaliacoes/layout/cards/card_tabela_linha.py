@@ -1,6 +1,5 @@
 import flet as ft
 
-
 def criar_linha(item: dict) -> ft.DataRow:
     """Constrói uma linha da tabela a partir de uma resposta real."""
 

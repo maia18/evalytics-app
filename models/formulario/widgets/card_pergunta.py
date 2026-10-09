@@ -1,12 +1,10 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_PRIMARIA,
     TEXTO_PRINCIPAL,
     BORDA,
     CARD,
 )
-
 
 def criar_card_pergunta(
     page: ft.Page,
@@ -17,9 +15,7 @@ def criar_card_pergunta(
 ) -> ft.Container:
     """
     Constrói o cartão da pergunta.
-
-    Os critérios possuem rolagem própria e ocupam todo o espaço
-    vertical disponível. A justificativa e o rodapé permanecem fixos.
+        Os critérios possuem rolagem própria e ocupam todo o espaço vertical disponível. A justificativa e o rodapé permanecem fixos.
     """
 
     # ==========================================================
@@ -103,8 +99,6 @@ def criar_card_pergunta(
 
     # ==========================================================
     # ÁREA DOS CRITÉRIOS
-    #
-    # É a única área rolável do card.
     # ==========================================================
 
     area_criterios = ft.Column(
@@ -193,7 +187,6 @@ def criar_card_pergunta(
             horizontal_alignment=(
                 ft.CrossAxisAlignment.STRETCH
             ),
-
             controls=[
                 # Cabeçalho
                 *cabecalho_card,

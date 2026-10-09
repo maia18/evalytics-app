@@ -1,17 +1,13 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_CARD,
 )
-
 from components.landing.helpers import criar_etapa
 from components.landing.sobre.conteudo import criar_sobre_conteudo
-
 
 def criar_secao_sobre() -> ft.Container:
 
     sobre_conteudo = criar_sobre_conteudo()
-
     etapas = ft.Column(
         spacing=22,
         controls=[
@@ -45,6 +41,7 @@ def criar_secao_sobre() -> ft.Container:
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             run_spacing=35,
             controls=[
+                
                 # =====================================================
                 # TEXTO
                 # =====================================================

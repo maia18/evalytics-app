@@ -1,18 +1,15 @@
 """
 Módulo de exportação do componente Header.
 
-Este arquivo expõe publicamente a função `criar_header`,
-permitindo que outros módulos realizem importações mais
-simples sem precisar conhecer a estrutura interna de
-diretórios do projeto.
+Este arquivo expõe publicamente a função `criar_header`, permitindo que outros módulos realizem importações mais simples sem precisar conhecer a estrutura interna de diretórios do projeto.
 
-Exemplo:
+    Exemplo:
 
-    from components.landing.header import criar_header
+        from components.landing.header import criar_header
 
-Em vez de:
+        Em vez de:
 
-    from components.landing.header.header import criar_header
+            from components.landing.header.header import criar_header
 """
 
 # Importa a implementação principal do Header.

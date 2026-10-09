@@ -1,6 +1,4 @@
 import flet as ft
-
-# Constantes visuais utilizadas pelo componente.
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_TEXTO_SECUNDARIO,
@@ -11,11 +9,11 @@ def criar_etapa(numero: str, titulo: str, descricao: str) -> ft.Row:
     """
     Cria um item visual de etapa utilizado para apresentar fluxos, processos ou instruções na Landing Page.
 
-    Cada etapa é composta por:
+        Cada etapa é composta por:
 
-        - Indicador numérico;
-        - Título da etapa;
-        - Descrição resumida.
+            - Indicador numérico;
+            - Título da etapa;
+            - Descrição resumida.
     """
 
     return ft.Row(

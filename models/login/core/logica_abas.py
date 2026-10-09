@@ -1,6 +1,5 @@
-from typing import Callable
 import flet as ft
-
+from typing import Callable
 from models.login.core.tab_style import criar_estilo_aba
 
 def obter_funcao_alternar(
@@ -15,8 +14,8 @@ def obter_funcao_alternar(
         btn_aba_signin.style = criar_estilo_aba(not is_signup, cor_primaria, cor_texto_titulo)
         btn_aba_signup.style = criar_estilo_aba(is_signup, cor_primaria, cor_texto_titulo)
 
-        campo_nome.visible = is_signup  # Só faz sentido solicitar o nome ao criar uma conta
-        opcoes_extras.visible = not is_signup  # "Esqueci a senha" só faz sentido no login
+        campo_nome.visible = is_signup
+        opcoes_extras.visible = not is_signup
 
         btn_login.text = "Create account" if is_signup else "Sign In"
 

@@ -1,20 +1,15 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_TEXTO_SECUNDARIO,
     COR_CARD,
 )
-
 from components.landing.recursos.card import criar_card_responsivo
-
 
 def criar_secao_recursos() -> ft.Container:
     """
     Constrói a seção de recursos da Landing Page.
-
-    Apresenta os principais módulos do Evalytics
-    em uma grade responsiva.
+        Apresenta os principais módulos do Evalytics em uma grade responsiva.
     """
 
     # =========================================================

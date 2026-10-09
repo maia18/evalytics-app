@@ -1,12 +1,10 @@
 import flet as ft
-
 from models.configuracoes.widgets.layout_pastas import (
     criar_layout_pastas,
     MAPA_EIXOS,
 )
 from models.configuracoes.widgets.layout_lista import criar_layout_lista
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
-
 
 def abrir_pasta(
     page: ft.Page,
@@ -41,14 +39,12 @@ def abrir_pasta(
 
     page.update()
 
-
 def recarregar_lista(
     page: ft.Page,
     estado: EstadoIndicadores,
 ) -> None:
     """
-    Reconstrói a lista do eixo atualmente aberto,
-    consultando novamente os dados no Firestore.
+    Reconstrói a lista do eixo atualmente aberto, consultando novamente os dados no Firestore.
     """
 
     if not estado.pasta_titulo or not estado.pasta_eixo:
@@ -70,14 +66,12 @@ def recarregar_lista(
 
     page.update()
 
-
 def voltar_para_pastas(
     page: ft.Page,
     estado: EstadoIndicadores,
 ) -> None:
     """
-    Desfaz a visualização interna da lista
-    e reconstrói as pastas principais.
+    Desfaz a visualização interna da lista e reconstrói as pastas principais.
     """
 
     layout_inicial = criar_layout_pastas(

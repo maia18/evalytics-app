@@ -2,7 +2,7 @@ import flet as ft
 import logging as lg # módulo nativo do Python usado para registrar mensagens, avisos e erros no console ou em arquivos.
 from components.core.globals import configurar_aplicacao # configurações visuais da página (título, tema, tamanho da janela, etc).
 from components.core.navigator import Navigator # classe customizada criada para gerenciar o roteamento/troca de telas no app.
-from components.core.auth import auth_state
+from components.core.auth.auth_state import auth_state
 
 '''
 Cria uma instância de logger específica para este arquivo. 

@@ -1,5 +1,4 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_TEXTO_SECUNDARIO,
     COR_PRIMARIA,

@@ -1,14 +1,16 @@
 import flet as ft
 from dataclasses import dataclass
-from typing import Callable, Optional
-
+from typing import (
+    Callable, 
+    Optional,
+)
 from components.core.constants.constants import (
     COR_PRIMARIA,
     PERIGO,
     SUCESSO,
     TEXTO_PRINCIPAL,
 )
-from database.services.firestore_courses import excluir_curso_db
+from database.services.cursos.firestore_courses import excluir_curso_db
 
 @dataclass
 class ContextoTabelaCursos:

@@ -1,11 +1,8 @@
 import flet as ft
-
 from typing import Callable
-
 from components.landing.header.logo import criar_logo
 from components.landing.header.desktop import criar_menu_desktop
 from components.landing.header.mobile import criar_menu_mobile
-
 
 def criar_header(
     page: ft.Page,
@@ -13,9 +10,7 @@ def criar_header(
     ir_para_recursos: Callable,
     ir_para_sobre: Callable,
 ) -> ft.ResponsiveRow:
-    """
-    Cria o cabeçalho responsivo da Landing Page.
-    """
+    """Cria o cabeçalho responsivo da Landing Page. """
 
     logo = criar_logo()
 

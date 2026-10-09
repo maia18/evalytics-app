@@ -1,16 +1,16 @@
 import flet as ft
 from typing import Callable
-
-from components.core.constants.constants import COR_FUNDO
+from components.core.constants.constants import (
+    COR_FUNDO,
+)
 
 # Componentes da Landing Page
-from components.landing.header import criar_header
 from components.landing.hero import criar_hero
-from components.landing.recursos import criar_secao_recursos
-from components.landing.sobre import criar_secao_sobre
+from components.landing.header import criar_header
 from components.landing.widgets.cta import criar_cta
+from components.landing.sobre import criar_secao_sobre
 from components.landing.widgets.footer import criar_rodape
-
+from components.landing.recursos import criar_secao_recursos
 
 def ViewLanding(
     page: ft.Page,

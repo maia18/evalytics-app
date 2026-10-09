@@ -1,13 +1,10 @@
-from typing import Callable
 import flet as ft
-
+from typing import Callable
 from components.core.constants.constants import COR_PRIMARIA, BORDA
 from components.core.theme.border_utils import criar_borda_uniforme
 
 def obter_funcao_hover(layout, card: ft.Container, seta_indicadora: ft.Icon) -> Callable[[ft.ControlEvent], None]:
-    """
-    Fábrica que injeta as dependências visuais e retorna a função de evento de hover.
-    """
+    """Fábrica que injeta as dependências visuais e retorna a função de evento de hover."""
     
     # Aplica (ou remove) o destaque visual quando o mouse entra/sai do card.
     def ao_passar_mouse(e: ft.ControlEvent) -> None:

@@ -1,6 +1,6 @@
 """
 Arquivo de Constantes (Constants)
-Centraliza todas as dimensões, medidas e paletas de cores da aplicação.
+    Centraliza todas as dimensões, medidas e paletas de cores da aplicação.
 """
 import flet as ft
 from typing import Final

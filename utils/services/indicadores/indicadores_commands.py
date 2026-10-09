@@ -1,39 +1,23 @@
 import logging
 from database.services.firebase_config import db
-from components.core.auth import auth_state
 from utils.services.indicadores.indicadores_queries import buscar_indicador
-from utils.services.notificacoes_service import adicionar_notificacao
+from .indicador_notificacoes import criar_notificacao_indicador
 
 logger = logging.getLogger(__name__)
-
 COLECAO_INDICADORES = "indicadores"
 
-def adicionar_indicador(
-    titulo: str,
-    eixo: int,
-    descricao: str,
-) -> bool:
-    """
-    Cria um novo indicador no Firestore.
-    """
-
+def adicionar_indicador(titulo: str, eixo: int, descricao: str) -> bool:
+    """Cria um novo indicador no Firestore."""
     try:
         titulo = titulo.strip()
         descricao = descricao.strip()
 
-        if not titulo:
-            return False
-
-        if eixo is None:
+        if not titulo or eixo is None:
             return False
 
         # Evita duplicidade de título dentro do mesmo eixo.
         if buscar_indicador(titulo, eixo):
-            logger.warning(
-                "Indicador já existente: '%s' (eixo %s)",
-                titulo,
-                eixo,
-            )
+            logger.warning("Indicador já existente: '%s' (eixo %s)", titulo, eixo)
             return False
 
         novo_item = {
@@ -51,118 +35,46 @@ def adicionar_indicador(
         }
 
         db.collection(COLECAO_INDICADORES).add(novo_item)
+        logger.info("Indicador '%s' adicionado ao eixo %s.", titulo, eixo)
 
-        logger.info(
-            "Indicador '%s' adicionado ao eixo %s.",
-            titulo,
-            eixo,
-        )
-
-        # ---------------------------------------------------------
-        # Cria a notificação somente após salvar o indicador
-        # ---------------------------------------------------------
-
-        usuario = auth_state.usuario
-
-        usuario_id = None
-
-        if usuario:
-            usuario_id = (
-                usuario.get("user_id")
-                or usuario.get("localId")
-            )
-
-        if usuario_id:
-            notificacao_id = adicionar_notificacao(
-                tipo="indicador",
-                titulo="Novo indicador cadastrado",
-                descricao=(
-                    f"O indicador '{titulo}' "
-                    f"foi cadastrado no eixo {eixo}."
-                ),
-                usuario_id=usuario_id,
-            )
-
-            if not notificacao_id:
-                logger.warning(
-                    "O indicador foi salvo, mas não foi possível "
-                    "criar a notificação."
-                )
-
-        else:
-            logger.warning(
-                "O indicador foi salvo, mas não foi possível "
-                "identificar o usuário para criar a notificação."
-            )
+        # Delega a criação da notificação para o serviço especializado
+        criar_notificacao_indicador(titulo, eixo)
 
         return True
 
     except Exception:
-        logger.exception(
-            "Erro ao adicionar indicador ao Firestore."
-        )
+        logger.exception("Erro ao adicionar indicador ao Firestore.")
         return False
 
 
-def excluir_indicador(
-    indicador_id: str,
-) -> bool:
-    """
-    Exclui permanentemente um indicador do Firestore
-    utilizando diretamente o ID do documento.
-    """
-
+def excluir_indicador(indicador_id: str) -> bool:
+    """Exclui permanentemente um indicador do Firestore utilizando diretamente o ID do documento."""
     try:
         if not indicador_id:
-            logger.warning(
-                "Tentativa de exclusão sem ID de indicador."
-            )
+            logger.warning("Tentativa de exclusão sem ID de indicador.")
             return False
 
-        doc_ref = db.collection(
-            COLECAO_INDICADORES
-        ).document(indicador_id)
-
+        doc_ref = db.collection(COLECAO_INDICADORES).document(indicador_id)
         doc = doc_ref.get()
 
         if not doc.exists:
-            logger.warning(
-                "Indicador não encontrado para exclusão: %s",
-                indicador_id,
-            )
+            logger.warning("Indicador não encontrado para exclusão: %s", indicador_id)
             return False
 
         doc_ref.delete()
-
-        logger.info(
-            "Indicador '%s' excluído com sucesso.",
-            indicador_id,
-        )
-
+        logger.info("Indicador '%s' excluído com sucesso.", indicador_id)
         return True
 
     except Exception:
-        logger.exception(
-            "Erro ao excluir indicador do Firestore."
-        )
+        logger.exception("Erro ao excluir indicador do Firestore.")
         return False
 
 
-def atualizar_indicador(
-    indicador_id: str,
-    novo_titulo: str,
-    nova_descricao: str,
-) -> bool:
-    """
-    Atualiza título e descrição de um indicador
-    utilizando diretamente o ID do documento.
-    """
-
+def atualizar_indicador(indicador_id: str, novo_titulo: str, nova_descricao: str) -> bool:
+    """Atualiza título e descrição de um indicador utilizando diretamente o ID do documento."""
     try:
         if not indicador_id:
-            logger.warning(
-                "Tentativa de edição sem ID de indicador."
-            )
+            logger.warning("Tentativa de edição sem ID de indicador.")
             return False
 
         novo_titulo = novo_titulo.strip()
@@ -171,93 +83,56 @@ def atualizar_indicador(
         if not novo_titulo:
             return False
 
-        doc_ref = db.collection(
-            COLECAO_INDICADORES
-        ).document(indicador_id)
-
+        doc_ref = db.collection(COLECAO_INDICADORES).document(indicador_id)
         doc = doc_ref.get()
 
         if not doc.exists:
-            logger.warning(
-                "Indicador não encontrado para edição: %s",
-                indicador_id,
-            )
+            logger.warning("Indicador não encontrado para edição: %s", indicador_id)
             return False
 
         dados_atuais = doc.to_dict() or {}
-
         eixo = dados_atuais.get("eixo")
 
-        # Evita duplicidade de título dentro do mesmo eixo.
-        existente = buscar_indicador(
-            novo_titulo,
-            eixo,
-        )
+        existente = buscar_indicador(novo_titulo, eixo)
 
         if existente and existente["id"] != indicador_id:
             logger.warning(
-                "Já existe outro indicador com o título '%s' "
-                "no eixo %s.",
-                novo_titulo,
-                eixo,
+                "Já existe outro indicador com o título '%s' no eixo %s.",
+                novo_titulo, eixo
             )
             return False
 
-        doc_ref.update(
-            {
-                "titulo": novo_titulo,
-                "descricao": nova_descricao,
-            }
-        )
+        doc_ref.update({
+            "titulo": novo_titulo,
+            "descricao": nova_descricao,
+        })
 
-        logger.info(
-            "Indicador '%s' atualizado.",
-            indicador_id,
-        )
-
+        logger.info("Indicador '%s' atualizado.", indicador_id)
         return True
 
     except Exception:
-        logger.exception(
-            "Erro ao atualizar indicador no Firestore."
-        )
+        logger.exception("Erro ao atualizar indicador no Firestore.")
         return False
 
 
-def atualizar_criterios_indicador(
-    indicador_id: str,
-    novos_criterios: dict,
-) -> bool:
-    """
-    Atualiza os cinco critérios de avaliação do indicador
-    utilizando diretamente o ID do documento.
-    """
-
+def atualizar_criterios_indicador(indicador_id: str, novos_criterios: dict) -> bool:
+    """Atualiza os cinco critérios de avaliação do indicador utilizando diretamente o ID do documento."""
     try:
         if not indicador_id:
-            logger.warning(
-                "Tentativa de atualizar critérios sem ID de indicador."
-            )
+            logger.warning("Tentativa de atualizar critérios sem ID de indicador.")
             return False
 
         if not isinstance(novos_criterios, dict):
-            logger.warning(
-                "Critérios inválidos para o indicador '%s'.",
-                indicador_id,
-            )
+            logger.warning("Critérios inválidos para o indicador '%s'.", indicador_id)
             return False
 
-        doc_ref = db.collection(
-            COLECAO_INDICADORES
-        ).document(indicador_id)
-
+        doc_ref = db.collection(COLECAO_INDICADORES).document(indicador_id)
         doc = doc_ref.get()
 
         if not doc.exists:
             logger.warning(
-                "Indicador não encontrado para atualização "
-                "dos critérios: %s",
-                indicador_id,
+                "Indicador não encontrado para atualização dos critérios: %s", 
+                indicador_id
             )
             return False
 
@@ -269,21 +144,10 @@ def atualizar_criterios_indicador(
             "5": str(novos_criterios.get("5", "")).strip(),
         }
 
-        doc_ref.update(
-            {
-                "criterios": criterios,
-            }
-        )
-
-        logger.info(
-            "Critérios do indicador '%s' atualizados.",
-            indicador_id,
-        )
-
+        doc_ref.update({"criterios": criterios})
+        logger.info("Critérios do indicador '%s' atualizados.", indicador_id)
         return True
 
     except Exception:
-        logger.exception(
-            "Erro ao atualizar critérios no Firestore."
-        )
+        logger.exception("Erro ao atualizar critérios no Firestore.")
         return False

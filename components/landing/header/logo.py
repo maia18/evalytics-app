@@ -1,5 +1,4 @@
 import flet as ft
-
 from components.core.constants.constants import COR_TEXTO_TITULO
 
 def criar_logo() -> ft.Row:
@@ -9,6 +8,7 @@ def criar_logo() -> ft.Row:
         spacing=10,
         vertical_alignment=ft.CrossAxisAlignment.CENTER,
         controls=[
+            
             # Logo da plataforma
             ft.Image(
                 src="imgs/logo.png",

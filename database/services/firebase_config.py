@@ -1,10 +1,13 @@
-import logging as lg
-from pathlib import Path
+import logging
 import firebase_admin
-from firebase_admin import credentials, firestore
+from pathlib import Path
+from firebase_admin import (
+    credentials, 
+    firestore,
+)
 from google.cloud.firestore import Client
 
-logger = lg.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 '''
 Resolve o caminho de forma robusta, independentemente de onde o script principal for rodado
@@ -33,7 +36,6 @@ try:
 except Exception:
     logger.exception("Erro na conexão com o Firebase.")
     raise # O raise propaga o erro para impedir que a aplicação inicie se o banco estiver indisponível (Fail-fast).
-
 
 def load_firebase_config():
   return {

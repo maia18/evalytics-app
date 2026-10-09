@@ -1,20 +1,16 @@
 import flet as ft
-
-from components.layout.responsive.overlay import criar_overlay
 from components.layout.sidebar.sidebar_factory import (
-    criar_sidebar_desktop,
+    criar_sidebar_desktop, 
     criar_sidebar_mobile,
 )
-from components.layout.topbar.topbar_factory import criar_topbar
-from components.layout.sidebar.sidebar_toggle import toggle_sidebar
 from components.core.theme.theme_config import configurar_tema
-from components.core.theme.darkmode_toggle import toggle_dark_mode
-from components.layout.responsive.responsiveness import ajustar_responsividade
+from components.layout.responsive.overlay import criar_overlay
+from components.layout.topbar.topbar_factory import criar_topbar
 from components.layout.responsive.view_builder import montar_view
+from .layout.layout_controller import LayoutController
 
-
-# Gerenciador central do layout responsivo, unindo sidebar, topbar e conteúdo
 class ResponsiveLayout:
+    """Gerenciador central do layout responsivo, unindo sidebar, topbar e conteúdo."""
 
     def __init__(
         self,
@@ -27,159 +23,67 @@ class ResponsiveLayout:
         self.titulo_pagina = titulo_pagina
         self.subtitulo = subtitulo
         self.mudar_tela = mudar_tela
-
-        self.dark_mode = getattr(
-            self.page,
-            "is_dark_mode",
-            False,
-        )
-
-        self.sidebar_mobile_aberta = False
         self.conteudo_principal = ft.Column()
 
-        self.cores = configurar_tema(
-            self.page,
-            self.dark_mode,
-        )
+        # Instancia o controlador que cuidará de todas as lógicas e eventos
+        self.controller = LayoutController(page, mudar_tela)
+        
+        self.cores = configurar_tema(self.page, self.controller.dark_mode)
 
         self._criar_componentes()
 
-    # ==========================================================
-    # CRIAÇÃO DOS COMPONENTES
-    # ==========================================================
-
     def _criar_componentes(self):
-        self.overlay = criar_overlay(
-            self._fechar_sidebar
-        )
+        overlay = criar_overlay(self.controller.fechar_sidebar)
 
-        self.sidebar_desktop = criar_sidebar_desktop(
+        sidebar_desktop = criar_sidebar_desktop(
             page=self.page,
-            dark_mode=self.dark_mode,
+            dark_mode=self.controller.dark_mode,
             mudar_tela=self.mudar_tela,
             collapsed=False,
         )
 
-        self.sidebar_mobile = criar_sidebar_mobile(
+        sidebar_mobile = criar_sidebar_mobile(
             page=self.page,
-            dark_mode=self.dark_mode,
+            dark_mode=self.controller.dark_mode,
             mudar_tela=self.mudar_tela,
         )
 
-        self.topbar = criar_topbar(
+        topbar = criar_topbar(
             page=self.page,
             titulo=self.titulo_pagina,
             subtitulo=self.subtitulo,
-            dark_mode=self.dark_mode,
-            toggle_sidebar=self._toggle_sidebar,
-            atualizar_tema=self._toggle_dark_mode,
+            dark_mode=self.controller.dark_mode,
+            toggle_sidebar=self.controller.toggle_sidebar,
+            atualizar_tema=self.controller.toggle_dark_mode,
         )
 
-        # ======================================================
-        # PAINEL GLOBAL DE NOTIFICAÇÕES
-        # ======================================================
+        # Injeta as interfaces geradas no controlador
+        self.controller.registrar_componentes(sidebar_mobile, sidebar_desktop, topbar, overlay)
 
-        if hasattr(self.topbar, "painel_notificacoes"):
-            painel = self.topbar.painel_notificacoes
-
+        # Gerenciamento do Painel de notificações
+        if hasattr(topbar, "painel_notificacoes"):
+            painel = topbar.painel_notificacoes
             if painel not in self.page.overlay:
                 self.page.overlay.append(painel)
 
-    # ==========================================================
-    # SIDEBAR
-    # ==========================================================
-
-    def _toggle_sidebar(self):
-        self.sidebar_mobile_aberta = toggle_sidebar(
-            self.page,
-            self.sidebar_mobile_aberta,
-            self._abrir_sidebar,
-            self._fechar_sidebar,
-        )
-
-    def _abrir_sidebar(self):
-        self.sidebar_mobile_aberta = True
-
-        self.sidebar_mobile.left = 0
-        self.overlay.visible = True
-
-        self.page.update()
-
-    def _fechar_sidebar(self):
-        self.sidebar_mobile_aberta = False
-
-        self.sidebar_mobile.left = -270
-        self.overlay.visible = False
-
-        self.page.update()
-
-    # ==========================================================
-    # TEMA
-    # ==========================================================
-
-    def _toggle_dark_mode(self):
-        self.dark_mode = toggle_dark_mode(
-            self.page,
-            self.dark_mode,
-            self.mudar_tela,
-            getattr(self, "rota_atual", None),
-        )
-
-    # ==========================================================
-    # RESPONSIVIDADE
-    # ==========================================================
-
-    def _ajustar_responsividade(self, e=None):
-        ajustar_responsividade(
-            self.page,
-            self.sidebar_desktop,
-            self.topbar,
-            self._fechar_sidebar,
-            self.dark_mode,
-            self.mudar_tela,
-        )
-
-        # Mantém o painel de notificações acima do conteúdo.
-        if hasattr(self.topbar, "painel_notificacoes"):
-            painel = self.topbar.painel_notificacoes
-
-            painel.right = 66
-            painel.top = 66
-
-    # ==========================================================
-    # CONTEÚDO
-    # ==========================================================
-
-    def add_content(
-        self,
-        content: ft.Control,
-    ):
+    def add_content(self, content: ft.Control):
         self.conteudo_principal = content
 
-    # ==========================================================
-    # VIEW
-    # ==========================================================
-
-    def criar_view(
-        self,
-        route: str,
-    ):
-        self.rota_atual = route
-
-        self.page.on_resize = (
-            self._ajustar_responsividade
-        )
-
-        self._ajustar_responsividade()
+    def criar_view(self, route: str) -> ft.View:
+        self.controller.rota_atual = route
+        
+        # Delega o evento de redimensionamento ao controlador
+        self.page.on_resize = self.controller.ajustar_responsividade
+        self.controller.ajustar_responsividade()
 
         return montar_view(
             route,
             self.cores,
-            self.sidebar_desktop,
-            self.topbar,
+            self.controller.sidebar_desktop,
+            self.controller.topbar,
             self.conteudo_principal,
-            self.overlay,
-            self.sidebar_mobile,
-            self._ajustar_responsividade,
+            self.controller.overlay,
+            self.controller.sidebar_mobile,
+            self.controller.ajustar_responsividade,
             self.page,
         )

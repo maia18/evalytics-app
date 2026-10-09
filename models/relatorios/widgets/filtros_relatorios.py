@@ -1,18 +1,14 @@
 import flet as ft
-
 from components.core.constants.constants import CARD
-
-from utils.services.relatorio_service import (
+from utils.services.relatorio.relatorio_service import (
     listar_semestres_disponiveis,
 )
-
 
 NOMES_EIXOS = {
     1: "Organização Didático-Pedagógica",
     2: "Corpo Docente e Tutorial",
     3: "Infraestrutura",
 }
-
 
 def criar_secao_filtros(
     layout,
@@ -24,12 +20,7 @@ def criar_secao_filtros(
 ) -> ft.Container:
     """
     Cria a seção de filtros dos relatórios.
-
-    Os semestres são carregados diretamente das avaliações
-    existentes no Firestore.
-
-    Os botões de exportação não ficam mais nesta seção.
-    A exportação é apresentada junto aos resultados consolidados.
+        Os semestres são carregados diretamente das avaliações existentes no Firestore.
     """
 
     # ======================================================

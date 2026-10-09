@@ -5,11 +5,13 @@ from components.core.constants.constants import (
     COR_PRIMARIA,
     ESTILO_BOTAO_CANCELAR,
 )
-from database.services.firestore_courses import adicionar_curso_db
+from database.services.cursos.firestore_courses import adicionar_curso_db
 from models.cursos.widgets.tabela_cursos import ContextoTabelaCursos, criar_linha_curso
-from models.cursos.modals.modal_utils import abrir_modal, fechar_modal
+from models.cursos.modals.modal_utils import (
+    abrir_modal, 
+    fechar_modal,
+)
 
-'''Código provisório exibido na coluna "Código" até a próxima sincronização com o banco'''
 CODIGO_CURSO_PLACEHOLDER = "NOVO"
 
 def criar_modal_add(
@@ -31,7 +33,6 @@ def criar_modal_add(
         novo_id = adicionar_curso_db(CODIGO_CURSO_PLACEHOLDER, nome, depto, coord)
 
         if novo_id:
-            # Reaproveita o mesmo contexto compartilhado (modal de edição, campos e estado) usado na carga inicial, para que editar esta linha nova logo em seguida funcione corretamente
             nova_linha = criar_linha_curso(contexto, novo_id, CODIGO_CURSO_PLACEHOLDER, nome, depto, coord)
             contexto.tabela_cursos.rows.append(nova_linha)
 

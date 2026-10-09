@@ -1,54 +1,46 @@
-from typing import Callable
-
 import flet as ft
-
+from typing import Callable
 from components.core.constants.constants import (
-    COR_PRIMARIA,
     BORDA,
-    TEXTO_PRINCIPAL,
+    COR_PRIMARIA,
     TEXTO_SECUNDARIO,
 )
-
 from components.layout.responsive.responsive import ResponsiveLayout
 
 from models.avaliacoes.avaliacoes import (
     criar_conteudo_avaliacoes,
 )
-
 from models.dashboard.widgets.kpi_cards import (
     criar_kpi_card,
 )
-
-from models.dashboard.widgets.grafico_eixos import (
+from models.dashboard.widgets.graphics.grafico_eixos import (
     criar_grafico_eixos,
 )
-
-from database.services.firestore_dashboard import (
+from database.services.dashboard.firestore_dashboard import (
     obter_dados_dashboard,
 )
 
-
+"""
 # ==========================================================
 # CORES DAS BARRAS
 # ==========================================================
-
+"""
 CORES_BARRAS_GRAFICO_EIXOS = [
     COR_PRIMARIA,
     "#34D399",
     "#F87171",
 ]
 
-
+"""
 # ==========================================================
 # NOMES DOS EIXOS
 # ==========================================================
-
+"""
 NOMES_EIXOS = {
     1: "Organização Didático-Pedagógica",
     2: "Corpo Docente e Tutorial",
     3: "Infraestrutura",
 }
-
 
 def ViewDashboard(
     page: ft.Page,
@@ -57,11 +49,8 @@ def ViewDashboard(
     """
     Constrói a página principal do Dashboard.
 
-    A primeira aba apresenta uma visão consolidada
-    dos dados reais das avaliações.
-
-    A segunda aba apresenta o acompanhamento
-    das avaliações registradas.
+        A primeira aba apresenta uma visão consolidada dos dados reais das avaliações.
+        A segunda aba apresenta o acompanhamento das avaliações registradas.
     """
 
     # ==========================================================
@@ -254,5 +243,4 @@ def ViewDashboard(
     # ==========================================================
 
     layout.add_content(conteudo)
-
     return layout.criar_view("/dashboard")

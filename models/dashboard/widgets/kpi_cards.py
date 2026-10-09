@@ -1,5 +1,4 @@
 import flet as ft
-
 from components.core.constants.constants import (
     BORDA,
     CARD,
@@ -8,7 +7,6 @@ from components.core.constants.constants import (
 )
 from components.core.theme.border_utils import criar_borda_uniforme
 
-
 def criar_kpi_card(
     layout,
     titulo: str,
@@ -16,9 +14,7 @@ def criar_kpi_card(
     icone: str,
     cor_icone: str,
 ) -> ft.Container:
-    """
-    Constrói um cartão numérico de KPI.
-    """
+    """Constrói um cartão numérico de KPI."""
 
     return ft.Container(
         width=240,

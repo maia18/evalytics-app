@@ -1,11 +1,9 @@
 import flet as ft
-
 from components.core.constants.constants import (
     COR_TEXTO_TITULO,
     COR_TEXTO_SECUNDARIO,
     COR_PRIMARIA,
 )
-
 
 def criar_sobre_conteudo() -> ft.Column:
     """Gera o conteúdo institucional da seção Sobre o Evalytics."""
@@ -13,6 +11,7 @@ def criar_sobre_conteudo() -> ft.Column:
     return ft.Column(
         spacing=18,
         controls=[
+            
             # =========================================================
             # TÍTULO
             # =========================================================

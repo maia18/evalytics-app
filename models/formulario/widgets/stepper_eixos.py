@@ -1,14 +1,10 @@
+import flet as ft 
 from typing import Callable
-
-import flet as ft
-
 from components.core.constants.constants import (
-    COR_PRIMARIA,
     TEXTO_PRINCIPAL,
     TEXTO_SECUNDARIO,
     CARD_SECUNDARIO,
 )
-
 
 def criar_stepper_eixos(
     eixo_atual: int,
@@ -19,9 +15,6 @@ def criar_stepper_eixos(
     """Cria a barra de navegação dos 3 eixos da avaliação."""
 
     controles = []
-
-    # Cor do eixo selecionado de acordo com o tema
-    modo_escuro = ft.Colors.SURFACE in cores.values()
 
     cor_ativo = "#5E35B1" if dark_mode else "#EDE7F6"
     cor_texto_ativo = (

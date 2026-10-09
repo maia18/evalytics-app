@@ -2,7 +2,6 @@ import flet as ft
 from typing import Callable
 from components.core.constants.constants import (
     TEXTO_PRINCIPAL,
-    TEXTO_SECUNDARIO,
     COR_PRIMARIA,
 )
 from models.configuracoes.widgets.indicadores_ui import criar_linha_indicador

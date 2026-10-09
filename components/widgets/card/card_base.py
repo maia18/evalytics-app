@@ -7,13 +7,14 @@ from components.core.constants.constants import (
     SOMBRA_CARD_PADRAO
 )
 
-# Casca visual compartilhada dos cards da aplicação: fundo, padding, borda e sombra padrão.
 def criar_card_base(
     cores: dict[str, str],
     content: ft.Control,
     expand: bool = False,
     height: Optional[int] = None,
-) -> ft.Container:
+) -> ft.Container:    
+    """Casca visual compartilhada dos cards da aplicação: fundo, padding, borda e sombra padrão."""
+    
     return ft.Container(
         bgcolor=cores[CARD],
         padding=PADDING_CARD_PADRAO,
