@@ -11,3 +11,4 @@ relatorio_*.csv
 
 # Confidenciais
 firebase_credentials.json
+database/services/firebase_keys.py

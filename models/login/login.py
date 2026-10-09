@@ -1,6 +1,7 @@
 import requests
 import flet as ft
 from typing import Callable
+from database.services.firebase_keys import FIREBASE_API_KEY
 from components.core.auth.auth_state import auth_state
 from models.login.core.logica_abas import obter_funcao_alternar
 from models.login.core.cabecalho_login import criar_cabecalho
@@ -28,10 +29,6 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     Constrói a View (página inteira) de Login e Cadastro.
         Gerencia o estado da requisição HTTP para o Firebase e o redirecionamento.
     """
-    
-    # Chave pública da API do Firebase para autenticação REST
-    FIREBASE_API_KEY = "AIzaSyAqGHhj3-BihICWHvD70smkjcbP2D8Sxnk"
-
 
     """
     # =========================================================================

@@ -1,5 +1,6 @@
 import logging
 import flet as ft
+from database.services.firebase_keys import FIREBASE_API_KEY
 from components.core.globals import configurar_aplicacao
 from components.core.navigator import Navigator
 from components.core.auth.auth_state import auth_state
@@ -10,9 +11,6 @@ Cria uma instância de logger específica para este arquivo.
 '''
 logger = logging.getLogger(__name__)
 ROTA_INICIAL = "/" # Define uma constante para a rota inicial.
-
-# FIREBASE_API_KEY = "xxxxxxxxxxxxxxxxxxxx"
-FIREBASE_API_KEY = "AIzaSyAqGHhj3-BihICWHvD70smkjcbP2D8Sxnk"
 
 async def main(page: ft.Page) -> None:
     try:
