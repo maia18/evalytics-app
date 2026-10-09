@@ -1,6 +1,6 @@
 import flet as ft
 from typing import Callable, Optional
-from layout.layout_breakpoints import obter_categoria_layout
+from components.layout.responsive.layout.layout_breakpoints import obter_categoria_layout
 from components.layout.sidebar.sidebar_factory import criar_sidebar_desktop
 from components.core.constants.constants import (
     LARGURA_SIDEBAR_EXPANDIDA,

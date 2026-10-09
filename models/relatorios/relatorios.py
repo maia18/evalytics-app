@@ -9,12 +9,10 @@ from components.core.theme.border_utils import criar_borda_uniforme
 from models.relatorios.widgets.filtros_relatorios import criar_secao_filtros
 from models.relatorios.widgets.tables.tabela_resultados import criar_tabela_resultados
 from models.relatorios.views.resultados_view import TelaResultados
-from utils.services.relatorio.relatorio_service import (
-    listar_resultados_avaliacoes, 
-    filtrar_resultados,
-)
 from models.avaliacoes.core.csv.export_csv import exportar_csv
-from core.pdf.relatorios_pdf_utils import processar_exportacao_pdf
+from models.relatorios.core.pdf.relatorios_pdf_utils import processar_exportacao_pdf
+from utils.services.relatorio.relatorio_service import listar_resultados_avaliacoes 
+from utils.services.relatorio.relatorio_utils import filtrar_resultados
 
 def ViewRelatorios(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
 

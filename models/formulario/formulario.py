@@ -3,7 +3,7 @@ from typing import Callable
 from components.layout.responsive.responsive import ResponsiveLayout
 from database.services.cursos.firestore_courses import obter_cursos_db
 from models.formulario.core.form_controller import FormularioController
-from core.formulario_ui import (
+from models.formulario.core.formulario_ui import (
     criar_dropdown_cursos,
     criar_card_selecao_curso,
     criar_estado_sem_cursos,
@@ -89,7 +89,12 @@ def ViewFormulario(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     elif cursos:
         # Exibe card de seleção
         area_dinamica_conteudo.controls = [
-            criar_card_selecao_curso(dropdown_curso, layout.cores, layout.dark_mode, iniciar_avaliacao)
+            criar_card_selecao_curso(
+                dropdown_curso,
+                layout.cores,
+                getattr(page, "is_dark_mode", False),
+                iniciar_avaliacao,
+            )
         ]
         
     else:
