@@ -8,36 +8,31 @@ def criar_botao_logout(
     mudar_tela,
     compact: bool = False,
 ) -> ft.Control:
+    """Botão de saída da aplicação. Renderiza adaptando-se ao estado do menu."""
 
+    '''
+    Handler ASSÍNCRONO: O `encerrar_sessao` no auth_state manipula o SharedPreferences (I/O local), por isso exige async/await no callback de clique.
+    '''
     async def fazer_logout(e):
-        # Encerra a sessão atual e remove o refresh token persistido
         await auth_state.encerrar_sessao(page)
-
-        # Redireciona para o login
         mudar_tela("/login")
 
+    # Condicional de renderização da interface baseada na prop 'compact'
     if compact:
-        # Sidebar compacta: somente o ícone
         conteudo = ft.Icon(
             ft.Icons.LOGOUT,
             color=cor_texto,
         )
     else:
-        # Sidebar expandida: ícone + texto
         conteudo = ft.Row(
             controls=[
-                ft.Icon(
-                    ft.Icons.LOGOUT,
-                    color=cor_texto,
-                ),
-                ft.Text(
-                    "Sair",
-                    color=cor_texto,
-                ),
+                ft.Icon(ft.Icons.LOGOUT, color=cor_texto),
+                ft.Text("Sair", color=cor_texto),
             ],
             spacing=10,
         )
 
+    # Encapsula o TextButton para ter controle preciso de Padding e Alinhamento
     return ft.Container(
         content=ft.TextButton(
             content=conteudo,
@@ -49,4 +44,3 @@ def criar_botao_logout(
         ),
         alignment=ft.Alignment.CENTER,
     )
-    

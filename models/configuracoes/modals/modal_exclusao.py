@@ -52,7 +52,6 @@ def criar_modal_exclusao(
 
         # Reconsulta o Firestore ao reconstruir a pasta.
         abrir_pasta(estado.pasta_titulo)
-
         page.update()
 
     modal = ft.AlertDialog(

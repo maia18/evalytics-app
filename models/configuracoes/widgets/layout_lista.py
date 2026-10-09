@@ -6,9 +6,7 @@ from components.core.constants.constants import (
 )
 from models.configuracoes.widgets.indicadores_ui import criar_linha_indicador
 from models.configuracoes.widgets.estado_indicadores import EstadoIndicadores
-from utils.services.indicadores.indicadores_repository import (
-    listar_indicadores_por_eixo,
-)
+from utils.services.indicadores.indicadores_repository import listar_indicadores_por_eixo
 
 def criar_layout_lista(
     page: ft.Page,
@@ -18,13 +16,26 @@ def criar_layout_lista(
     callback_voltar: Callable[[], None],
     cores: dict[str, str],
 ) -> ft.Column:
+    """
+    Constrói a interface de listagem dos indicadores para um eixo específico.
+        Inclui um cabeçalho de navegação e a renderização dinâmica das linhas de dados.
+    """
 
+    # 1. Busca os dados no repositório com base no ID do eixo
     lista_da_pasta = listar_indicadores_por_eixo(eixo_id)
 
+    # 2. Constrói o cabeçalho da página (Navegação e Ação)
     controles_lista: list[ft.Control] = [
+        
+        # Row principal do cabeçalho
         ft.Row(
+            
+            # SPACE_BETWEEN empurra o grupo "Voltar+Título" para a esquerda
+            #   e o botão "Novo" para a extrema direita.
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             controls=[
+                
+                # Bloco Esquerdo: Botão Voltar e Título
                 ft.Row(
                     controls=[
                         ft.IconButton(
@@ -39,6 +50,8 @@ def criar_layout_lista(
                         ),
                     ],
                 ),
+                
+                # Bloco Direito: Botão de Ação (Criar Novo)
                 ft.ElevatedButton(
                     "Novo Indicador",
                     icon=ft.Icons.ADD,
@@ -48,26 +61,30 @@ def criar_layout_lista(
                 ),
             ],
         ),
-        ft.Divider(
-            height=20,
-            color=ft.Colors.TRANSPARENT,
-        ),
+        
+        # Divisor invisível para criar um respiro vertical (margin) de 20px
+        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
     ]
 
+    # 3. Popula a lista com os indicadores recebidos do banco
     for item in lista_da_pasta:
         controles_lista.append(
             criar_linha_indicador(
                 item,
+                
+                # ATENÇÃO DEV: O uso de `i=item` aqui é obrigatório.
+                #   Sem isso, devido ao "late binding" do Python em closures, todos os botões da tela abririam o modal do ÚLTIMO item do loop.
                 lambda e, i=item: estado.abrir_modal_criterios(e, i),
                 lambda e, i=item: estado.abrir_modal_edicao(e, i),
                 lambda i=item: estado.preparar_exclusao(i),
-                cores,
+                cores, # Repassa o tema para o componente filho
             )
         )
 
+    # 4. Retorna a estrutura principal com scroll automático
     return ft.Column(
-        expand=True,
-        scroll=ft.ScrollMode.AUTO,
-        spacing=15,
+        expand=True,               # Preenche o espaço vertical restante
+        scroll=ft.ScrollMode.AUTO, # Adiciona rolagem se a lista for muito longa
+        spacing=15,                # Espaço entre os cards de indicadores
         controls=controles_lista,
     )

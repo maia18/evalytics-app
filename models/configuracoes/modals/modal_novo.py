@@ -18,23 +18,24 @@ def criar_modal_novo(
 ) -> tuple[ft.AlertDialog, ft.TextField, ft.TextField, Callable]:
     """Cria o modal de cadastro de um novo indicador."""
 
+    # 1. DECLARAÇÃO DOS CAMPOS DE INTERFACE
     campo_titulo = ft.TextField(
         label="Título do Indicador",
         border_color=cores[BORDA],
     )
-
     campo_desc = ft.TextField(
         label="Descrição",
         multiline=True,
         border_color=cores[BORDA],
     )
-
+    
+    # 2. DEFINIÇÃO DA LÓGICA DE NEGÓCIO (SALVAMENTO)
     def salvar_novo(e: ft.ControlEvent) -> None:
         titulo = (campo_titulo.value or "").strip()
         descricao = (campo_desc.value or "").strip()
-        eixo = estado.pasta_eixo
+        eixo = estado.pasta_eixo # Resgata do Estado Global qual eixo estamos visualizando
 
-        # Validação básica
+        # 2.1 Validação de Front-end (Impede acesso indevido ao banco)
         if not titulo:
             page.snack_bar = ft.SnackBar(
                 ft.Text("Informe o título do indicador."),
@@ -53,12 +54,14 @@ def criar_modal_novo(
             page.update()
             return
 
+        # 2.2 Camada de Serviço (Comunicação com Firestore/Banco)
         sucesso = adicionar_indicador(
             titulo,
             eixo,
             descricao,
         )
 
+        # 2.3 Tratamento de Resposta
         if not sucesso:
             page.snack_bar = ft.SnackBar(
                 ft.Text(
@@ -81,13 +84,13 @@ def criar_modal_novo(
         )
         page.snack_bar.open = True
 
-        modal.open = False
+        modal.open = False # Fecha a janela do Modal
 
-        # Reconsulta o Firestore ao reconstruir a pasta.
+        # Recarrega visualmente a lista de indicadores na tela principal
         abrir_pasta(estado.pasta_titulo)
-
         page.update()
 
+    # 3. ESTRUTURAÇÃO DO MODAL (ALERT DIALOG)
     modal = ft.AlertDialog(
         title=ft.Text(
             "Novo Indicador",
@@ -119,11 +122,13 @@ def criar_modal_novo(
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
+    # 4. FUNÇÃO GATILHO PARA ABRIR O MODAL
     def abrir_modal_novo() -> None:
         if modal not in page.overlay:
             page.overlay.append(modal)
 
         modal.open = True
         page.update()
-
+        
+    # Retornam-se os campos para que o Layout Pai consiga limpá-los forçadamente se precisar
     return modal, campo_titulo, campo_desc, abrir_modal_novo
