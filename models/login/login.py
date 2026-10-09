@@ -115,18 +115,24 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
                     page=page,
                     lembrar_me=lembrar_me,
                 )
+                mudar_tela("/inicio") # Redireciona para a tela inicial.
 
-                sucesso = ft.SnackBar(ft.Text("Autenticação realizada com sucesso!"), bgcolor=ft.Colors.GREEN_400)
+                # Exibe a confirmação de login.
+                sucesso = ft.SnackBar(
+                    content=ft.Text(
+                        "Login realizado com sucesso!",
+                        color=ft.Colors.WHITE,
+                    ),
+                    bgcolor=ft.Colors.GREEN_700,
+                    duration=2500,
+                )
+
                 page.overlay.append(sucesso)
                 sucesso.open = True
                 page.update()
-
-                # Redireciona para o Dashboard
-                mudar_tela("/inicio")
                 
             else:
-                # TRATAMENTO DE ERROS DO FIREBASE
-                erro_msg = data.get("error", {}).get("message", "Erro desconhecido")
+                erro_msg = data.get("error", {}).get("message", "Erro desconhecido") # TRATAMENTO DE ERROS DO FIREBASE
                 
                 # Mapeamento para PT-BR amigável
                 if "INVALID_LOGIN_CREDENTIALS" in erro_msg or "INVALID_PASSWORD" in erro_msg:
@@ -143,8 +149,7 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
 
         except Exception as ex:
             
-            # Captura erros de rede (Sem internet, timeout)
-            erro_conexao = ft.SnackBar(ft.Text(f"Erro de conexão: {ex}"), bgcolor=ft.Colors.RED_400)
+            erro_conexao = ft.SnackBar(ft.Text(f"Erro de conexão: {ex}"), bgcolor=ft.Colors.RED_400) # Captura erros de rede (Sem internet, timeout)
             page.overlay.append(erro_conexao)
             erro_conexao.open = True
             page.update()
@@ -191,7 +196,5 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
         vertical_alignment=ft.MainAxisAlignment.CENTER,
         padding=20, 
-        
-        # A Column centraliza verticalmente o Header, o Card de Login e os Termos
         controls=[ft.Container(content=ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=30, controls=[cabecalho, card_login, rodape_termos]))],
     )
