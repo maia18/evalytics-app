@@ -2,8 +2,9 @@ import logging
 import flet as ft
 from components.core.navigator import Navigator
 from components.core.auth.auth_state import auth_state
-from components.core.globals import configurar_aplicacao
 from database.services.firebase_keys import FIREBASE_API_KEY
+from components.core.theme.theme_config import configurar_tema
+from components.core.globals import configurar_aplicacao
 
 '''
 Cria uma instância de logger específica para este arquivo.
@@ -14,6 +15,10 @@ ROTA_INICIAL = "/" # Define uma constante para a rota inicial.
 async def main(page: ft.Page) -> None:
     try:
         configurar_aplicacao(page)
+        
+        # Tema escuro como padrão.
+        page.is_dark_mode = True
+        configurar_tema(page, page.is_dark_mode)
 
         await auth_state.inicializar_storage(page)
 
@@ -26,7 +31,7 @@ async def main(page: ft.Page) -> None:
             logger.info(
                 "Sessão persistida restaurada com sucesso."
             )
-            
+        
             Navigator(page).go("/inicio")
 
         else:
