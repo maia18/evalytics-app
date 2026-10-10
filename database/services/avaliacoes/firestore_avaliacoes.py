@@ -1,7 +1,11 @@
 import logging
 from database.services.firebase_config import db
 from utils.services.indicadores.indicadores_repository import listar_indicadores
-from .avaliacoes_formatadores import NOMES_EIXOS, definir_cor_nota, formatar_data
+from .avaliacoes_formatadores import (
+    NOMES_EIXOS, 
+    definir_cor_nota, 
+    formatar_data
+)
 
 logger = logging.getLogger(__name__)
 COLECAO_AVALIACOES = "avaliacoes"
