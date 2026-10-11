@@ -1,30 +1,49 @@
 import flet as ft
 from typing import Optional
-from models.formulario.widgets.tela_sucesso import criar_tela_sucesso
-from utils.services.avaliacoes.avaliacoes_service import salvar_avaliacao
+
+from models.formulario.widgets.tela_sucesso import (
+    criar_tela_sucesso,
+)
+from utils.services.avaliacoes.avaliacoes_service import (
+    salvar_avaliacao,
+)
+
 
 class FormularioStepsMixin:
-    """Mixin que concentra a lógica de transição entre
-    as etapas do formulário."""
+    """Mixin que concentra a navegação e finalização do formulário."""
+
+    # ==========================================================
+    # NOTIFICAÇÕES
+    # ==========================================================
+
+    def _mostrar_mensagem(
+        self,
+        mensagem: str,
+        erro: bool = False,
+    ) -> None:
+        self.page.show_dialog(
+            ft.SnackBar(
+                content=ft.Text(mensagem),
+                bgcolor=(
+                    ft.Colors.RED_700
+                    if erro
+                    else ft.Colors.GREEN_700
+                ),
+            )
+        )
 
     # ==========================================================
     # NAVEGAÇÃO ENTRE EIXOS
     # ==========================================================
 
-    def pular_para_eixo(
-        self,
-        eixo_alvo: int,
-    ) -> None:
-        """Vai para a primeira pergunta pertencente ao eixo selecionado."""
+    def pular_para_eixo(self, eixo_alvo: int) -> None:
+        """Vai para a primeira pergunta do eixo selecionado."""
 
-        for i, indicador in enumerate(
-            self.indicadores_ativos
-        ):
+        for i, indicador in enumerate(self.indicadores_ativos):
             if indicador.get("eixo") == eixo_alvo:
                 self.estado["indice_atual"] = i
-                break
-
-        self.atualizar_renderizacao()
+                self.atualizar_renderizacao()
+                return
 
     # ==========================================================
     # AVANÇAR / FINALIZAR
@@ -34,83 +53,78 @@ class FormularioStepsMixin:
         self,
         e: Optional[ft.ControlEvent] = None,
     ) -> None:
-        """Avança para a próxima pergunta."""
-
-        # ======================================================
-        # NÃO HÁ INDICADORES
-        # ======================================================
+        """Avança ou envia a avaliação completa ao backend."""
 
         if not self.indicadores_ativos:
-            self.page.show_dialog(
-                ft.SnackBar(
-                    content=ft.Text(
-                        "Não existem indicadores ativos "
-                        "para esta avaliação."
-                    ),
-                    bgcolor=ft.Colors.RED_700,
-                )
+            self._mostrar_mensagem(
+                "Não existem indicadores ativos para esta avaliação.",
+                erro=True,
             )
             return
 
-        # ======================================================
-        # AINDA EXISTEM PERGUNTAS
-        # ======================================================
+        indice_atual = self.estado["indice_atual"]
 
-        if (
-            self.estado["indice_atual"]
-            < len(self.indicadores_ativos) - 1
-        ):
+        if indice_atual < len(self.indicadores_ativos) - 1:
             self.estado["indice_atual"] += 1
             self.atualizar_renderizacao()
             return
 
-        # ======================================================
-        # ÚLTIMA PERGUNTA → FINALIZAR
-        # ======================================================
+        # ------------------------------------------------------
+        # VALIDAR CURSO
+        # ------------------------------------------------------
 
         if not self.curso_id or not self.curso_nome:
-            self.page.show_dialog(
-                ft.SnackBar(
-                    content=ft.Text(
-                        "Selecione um curso antes de "
-                        "finalizar a avaliação."
-                    ),
-                    bgcolor=ft.Colors.RED_700,
-                )
+            self._mostrar_mensagem(
+                "Selecione um curso antes de finalizar a avaliação.",
+                erro=True,
             )
             return
 
-        # ======================================================
-        # SALVA A AVALIAÇÃO
-        # ======================================================
+        # ------------------------------------------------------
+        # REUNIR DADOS DO FORMULÁRIO
+        # ------------------------------------------------------
 
-        sucesso = salvar_avaliacao(
-            curso_id=self.curso_id,
-            curso_nome=self.curso_nome,
-            respostas=self.estado["respostas"],
+        respostas = dict(self.estado.get("respostas", {}))
+
+        justificativas = dict(
+            self.estado.get("justificativas", {})
         )
 
-        # ======================================================
-        # FALHA NO SALVAMENTO
-        # ======================================================
+        anexos_por_indicador = self.estado.get("anexos", {})
+
+        anexos = {
+            indicador_id: list(lista)
+            for indicador_id, lista in anexos_por_indicador.items()
+            if lista
+        }
+
+        # ------------------------------------------------------
+        # ENVIAR PARA O SERVIÇO
+        # ------------------------------------------------------
+
+        try:
+            sucesso = salvar_avaliacao(
+                curso_id=self.curso_id,
+                curso_nome=self.curso_nome,
+                respostas=respostas,
+                justificativas=justificativas,
+                anexos=anexos,
+            )
+        except Exception:
+            sucesso = False
 
         if not sucesso:
-            self.page.show_dialog(
-                ft.SnackBar(
-                    content=ft.Text(
-                        "Não foi possível salvar a avaliação. "
-                        "Tente novamente."
-                    ),
-                    bgcolor=ft.Colors.RED_700,
-                )
+            self._mostrar_mensagem(
+                "Não foi possível salvar a avaliação e suas evidências. "
+                "Verifique a conexão e tente novamente.",
+                erro=True,
             )
             return
 
-        # ======================================================
+        # ------------------------------------------------------
         # SUCESSO
-        # ======================================================
+        # ------------------------------------------------------
 
-        # A avaliação terminou. Remove-se o controller para que uma nova avaliação comece com estado limpo.
         self.page._formulario_controller = None
 
         self.area_central.content = criar_tela_sucesso(
@@ -127,22 +141,21 @@ class FormularioStepsMixin:
         self,
         e: Optional[ft.ControlEvent] = None,
     ) -> None:
-        """Retorna para a pergunta anterior."""
+        """Retorna à pergunta anterior."""
 
         if self.estado["indice_atual"] > 0:
             self.estado["indice_atual"] -= 1
             self.atualizar_renderizacao()
 
     # ==========================================================
-    # CANCELAR AVALIAÇÃO
+    # CANCELAR
     # ==========================================================
 
     def cancelar_avaliacao(
         self,
         e: Optional[ft.ControlEvent] = None,
     ) -> None:
-        """Cancela a avaliação atual e retorna para a tela inicial."""
+        """Cancela a avaliação atual e retorna à tela inicial."""
 
         self.page._formulario_controller = None
-
         self.mudar_tela("/inicio")

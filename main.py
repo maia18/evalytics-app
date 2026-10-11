@@ -6,19 +6,40 @@ from database.services.firebase_keys import FIREBASE_API_KEY
 from components.core.theme.theme_config import configurar_tema
 from components.core.globals import configurar_aplicacao
 
-'''
-Cria uma instância de logger específica para este arquivo.
-'''
 logger = logging.getLogger(__name__)
-ROTA_INICIAL = "/" # Define uma constante para a rota inicial.
+ROTA_INICIAL = "/"
 
 async def main(page: ft.Page) -> None:
     try:
+        # ======================================================
+        # CONFIGURAÇÃO DA APLICAÇÃO
+        # ======================================================
+
         configurar_aplicacao(page)
-        
-        # Tema escuro como padrão.
+
+        # ======================================================
+        # FILE PICKER COMPARTILHADO
+        # ======================================================
+
+        seletor_arquivos = ft.FilePicker()
+
+        page.file_picker_evidencias = seletor_arquivos
+        page.services.append(seletor_arquivos)
+
+        logger.info(
+            "FilePicker de evidências registrado."
+        )
+
+        # ======================================================
+        # TEMA
+        # ======================================================
+
         page.is_dark_mode = True
         configurar_tema(page, page.is_dark_mode)
+
+        # ======================================================
+        # AUTENTICAÇÃO E SESSÃO
+        # ======================================================
 
         await auth_state.inicializar_storage(page)
 
@@ -27,18 +48,22 @@ async def main(page: ft.Page) -> None:
             api_key=FIREBASE_API_KEY,
         )
 
+        # ======================================================
+        # NAVEGAÇÃO INICIAL
+        # ======================================================
+
         if sessao_restaurada:
             logger.info(
                 "Sessão persistida restaurada com sucesso."
             )
-        
+
             Navigator(page).go("/inicio")
 
         else:
             logger.info(
                 "Nenhuma sessão persistida encontrada."
             )
-            
+
             Navigator(page).go(ROTA_INICIAL)
 
     except Exception:
@@ -47,9 +72,11 @@ async def main(page: ft.Page) -> None:
         )
         raise
 
+
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO) # Configura o sistema de logs para exibir mensagens a partir do nível INFO (ignora mensagens de DEBUG, mas mostra avisos e erros).
+    logging.basicConfig(level=logging.INFO)
+
     ft.run(
-        main, 
-        assets_dir="assets", # Pasta onde ficam os arquivos estáticos (imagens, ícones, etc.)
+        main,
+        assets_dir="assets",
     )
