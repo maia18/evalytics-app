@@ -24,6 +24,8 @@ from components.core.constants.constants import (
     COR_FUNDO,
 )
 
+from utils.services.avaliacoes.avaliacoes_service import listar_avaliacoes
+
 def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     """
     Constrói a View (página inteira) de Login e Cadastro.
@@ -115,8 +117,16 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
                     page=page,
                     lembrar_me=lembrar_me,
                 )
-                mudar_tela("/inicio") # Redireciona para a tela inicial.
+                mudar_tela("/inicio") # Redireciona para a tela inicial
 
+                # Diagnóstico temporário da autenticação
+                print("Usuário autenticado:", auth_state.autenticado)
+                print("ID token disponível:", bool(auth_state.id_token))
+                print("Refresh token disponível:", bool(auth_state.refresh_token))
+                
+                resultado = listar_avaliacoes()
+                print("Avaliações retornadas pela API:", len(resultado))
+                
                 # Exibe a confirmação de login.
                 sucesso = ft.SnackBar(
                     content=ft.Text(

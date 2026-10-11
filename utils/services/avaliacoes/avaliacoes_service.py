@@ -11,8 +11,12 @@ import requests
 
 from components.core.auth.auth_state import auth_state
 
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
+
+
+load_dotenv()
 
 API_URL = os.getenv("EVALYTICS_API_URL", "").rstrip("/")
 
@@ -207,9 +211,17 @@ def salvar_avaliacao(
                 files=arquivos_multipart,
                 timeout=TIMEOUT_UPLOAD,
             )
-
+            
+        if not resposta.ok:
+            logger.error(
+                "Erro na API ao salvar avaliação. "
+                "Status: %s | Resposta: %s",
+                resposta.status_code,
+                resposta.text,
+            )
+                    
         resposta.raise_for_status()
-
+        
         logger.info(
             "Avaliação do curso '%s' enviada com sucesso. "
             "Arquivos enviados: %s.",
@@ -266,7 +278,15 @@ def listar_avaliacoes() -> list[dict]:
             headers=_obter_headers(),
             timeout=30,
         )
-
+        
+        if not resposta.ok:
+            logger.error(
+                "Erro na API ao salvar avaliação. "
+                "Status: %s | Resposta: %s",
+                resposta.status_code,
+                resposta.text,
+            )
+            
         resposta.raise_for_status()
         dados = resposta.json()
 

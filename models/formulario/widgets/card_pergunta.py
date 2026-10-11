@@ -1,17 +1,13 @@
-import logging
 import os
-
-from pathlib import Path
-
+import logging
 import flet as ft
-
+from pathlib import Path
 from components.core.constants.constants import (
     COR_PRIMARIA,
     TEXTO_PRINCIPAL,
     BORDA,
     CARD,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -270,107 +266,6 @@ def criar_card_pergunta(
         atualizar_lista_anexos()
 
     # ==========================================================
-    # CALLBACK DO FILE PICKER
-    # ==========================================================
-
-    def ao_selecionar_arquivos(e) -> None:
-        logger.info(
-            "FilePicker: evento de resultado recebido."
-        )
-
-        arquivos_recebidos = getattr(e, "files", None)
-
-        logger.info(
-            "FilePicker: quantidade recebida: %s",
-            len(arquivos_recebidos) if arquivos_recebidos else 0,
-        )
-
-        if not arquivos_recebidos:
-            mensagem_anexos.value = (
-                "Nenhum arquivo foi selecionado."
-            )
-            page.update()
-            return
-
-        caminhos_existentes = {
-            anexo["caminho"]
-            for anexo in anexos
-        }
-
-        for arquivo in arquivos_recebidos:
-            caminho = getattr(arquivo, "path", None)
-            nome_arquivo = getattr(arquivo, "name", "arquivo")
-
-            logger.info(
-                "FilePicker: arquivo=%s, caminho=%s",
-                nome_arquivo,
-                caminho,
-            )
-
-            if not caminho:
-                mensagem_anexos.value = (
-                    f"Não foi possível acessar: {nome_arquivo}"
-                )
-                continue
-
-            caminho = os.path.abspath(caminho)
-
-            if caminho in caminhos_existentes:
-                continue
-
-            if len(anexos) >= QUANTIDADE_MAXIMA_ARQUIVOS:
-                mensagem_anexos.value = (
-                    f"O limite é de {QUANTIDADE_MAXIMA_ARQUIVOS} arquivos."
-                )
-                break
-
-            extensao = (
-                Path(caminho).suffix.lower().lstrip(".")
-            )
-
-            if extensao not in EXTENSOES_PERMITIDAS:
-                mensagem_anexos.value = (
-                    f"Formato não permitido: {Path(caminho).name}"
-                )
-                continue
-
-            try:
-                tamanho = os.path.getsize(caminho)
-            except OSError:
-                logger.exception(
-                    "Erro ao acessar o arquivo selecionado."
-                )
-                mensagem_anexos.value = (
-                    f"Não foi possível ler: {Path(caminho).name}"
-                )
-                continue
-
-            if tamanho == 0:
-                mensagem_anexos.value = (
-                    f"{Path(caminho).name} está vazio."
-                )
-                continue
-
-            if tamanho > TAMANHO_MAXIMO_ARQUIVO:
-                mensagem_anexos.value = (
-                    f"{Path(caminho).name} excede o limite de 10 MB."
-                )
-                continue
-
-            anexos.append(
-                {
-                    "nome": arquivo.name,
-                    "caminho": arquivo.path,
-                    "tamanho": arquivo.size or 0,
-                    "extensao": Path(arquivo.name).suffix.lower().lstrip("."),
-                }
-            )
-
-            caminhos_existentes.add(caminho)
-
-        atualizar_lista_anexos()
-
-    # ==========================================================
     # FILE PICKER COMPARTILHADO
     # ==========================================================
 
@@ -387,12 +282,7 @@ def criar_card_pergunta(
         mensagem_anexos.value = (
             "O seletor de arquivos não foi inicializado."
         )
-    else:
-        # O cartão é reconstruído durante a navegação.
-        # Atualizamos o callback do seletor compartilhado.
-        seletor_arquivos.on_result = ao_selecionar_arquivos
 
-    
     async def abrir_seletor(e):
         seletor_arquivos = getattr(
             page,
@@ -471,12 +361,19 @@ def criar_card_pergunta(
                     )
                     continue
 
-                if tamanho <= 0 or tamanho > TAMANHO_MAXIMO_ARQUIVO:
+                if tamanho <= 0:
+                    mensagem_anexos.value = f"{nome} está vazio."
+                    continue
+
+                if tamanho > TAMANHO_MAXIMO_ARQUIVO:
+                    mensagem_anexos.value = (
+                        f"{nome} excede o limite de 10 MB."
+                    )
                     continue
 
                 anexos.append(
                     {
-                        "nome": nome,
+                        "nome": Path(caminho).name,
                         "caminho": caminho,
                         "tamanho": tamanho,
                         "extensao": extensao,

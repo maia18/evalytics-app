@@ -1,4 +1,3 @@
-
 import json
 import logging
 import os
@@ -7,7 +6,6 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-
 import firebase_admin
 from dotenv import load_dotenv
 from fastapi import (
@@ -22,9 +20,8 @@ from fastapi import (
 from firebase_admin import auth, firestore, storage
 from pydantic import BaseModel, Field, ValidationError
 
-
 # ============================================================
-# CONFIGURAÇÕES
+# CONFIGURAÇÃO
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,62 +33,31 @@ logger = logging.getLogger("evalytics.api")
 PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID")
 BUCKET_NAME = os.getenv("FIREBASE_STORAGE_BUCKET")
 
-if not PROJECT_ID:
+if not PROJECT_ID or not BUCKET_NAME:
     raise RuntimeError(
-        "FIREBASE_PROJECT_ID não definido no arquivo .env."
+        "Defina FIREBASE_PROJECT_ID e FIREBASE_STORAGE_BUCKET no .env."
     )
 
-if not BUCKET_NAME:
-    raise RuntimeError(
-        "FIREBASE_STORAGE_BUCKET não definido no arquivo .env."
-    )
-
-MAX_FILE_SIZE = (
-    int(os.getenv("MAX_FILE_SIZE_MB", "10"))
-    * 1024
-    * 1024
-)
-
+MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE_MB", "10")) * 1024 * 1024
 MAX_FILES_PER_EVALUATION = int(
     os.getenv("MAX_FILES_PER_EVALUATION", "100")
 )
-
 MAX_FILES_PER_INDICATOR = int(
     os.getenv("MAX_FILES_PER_INDICATOR", "20")
 )
 
-if (
-    MAX_FILE_SIZE <= 0
-    or MAX_FILES_PER_EVALUATION <= 0
-    or MAX_FILES_PER_INDICATOR <= 0
-):
-    raise RuntimeError(
-        "Os limites de tamanho e quantidade de arquivos "
-        "devem ser maiores que zero."
-    )
-
-
-# ============================================================
-# TIPOS DE ARQUIVO PERMITIDOS
-# ============================================================
+if min(
+    MAX_FILE_SIZE,
+    MAX_FILES_PER_EVALUATION,
+    MAX_FILES_PER_INDICATOR,
+) <= 0:
+    raise RuntimeError("Os limites de arquivos devem ser maiores que zero.")
 
 ALLOWED_EXTENSIONS = {
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".webp",
-    ".pdf",
-    ".doc",
-    ".docx",
-    ".xls",
-    ".xlsx",
-    ".ppt",
-    ".pptx",
-    ".txt",
-    ".csv",
-    ".odt",
-    ".ods",
-    ".odp",
+    ".png", ".jpg", ".jpeg", ".webp",
+    ".pdf", ".doc", ".docx",
+    ".xls", ".xlsx", ".ppt", ".pptx",
+    ".txt", ".csv", ".odt", ".ods", ".odp",
 }
 
 ALLOWED_MIME_TYPES = {
@@ -115,7 +81,7 @@ ALLOWED_MIME_TYPES = {
 
 
 # ============================================================
-# FIREBASE ADMIN
+# FIREBASE
 # ============================================================
 
 if not firebase_admin._apps:
@@ -131,7 +97,7 @@ bucket = storage.bucket()
 
 
 # ============================================================
-# APLICAÇÃO FASTAPI
+# FASTAPI E MODELOS
 # ============================================================
 
 app = FastAPI(
@@ -143,10 +109,6 @@ app = FastAPI(
     ),
 )
 
-
-# ============================================================
-# MODELOS
-# ============================================================
 
 class EvidenceManifestItem(BaseModel):
     upload_id: str = Field(min_length=1, max_length=80)
@@ -168,10 +130,6 @@ class EvaluationPayload(BaseModel):
 def require_user(
     authorization: str | None = Header(default=None),
 ) -> dict:
-    """
-    Valida o token de autenticação do Firebase enviado pelo cliente.
-    """
-
     if not authorization:
         raise HTTPException(
             status_code=401,
@@ -191,17 +149,15 @@ def require_user(
         )
 
     try:
-        decoded_token = auth.verify_id_token(token.strip())
+        usuario = auth.verify_id_token(token.strip())
 
-        if not decoded_token.get("uid"):
-            raise ValueError("Token sem identificador de usuário.")
+        if not usuario.get("uid"):
+            raise ValueError("Token sem UID.")
 
-        return decoded_token
+        return usuario
 
     except Exception as exc:
-        logger.warning(
-            "Token Firebase inválido ou expirado."
-        )
+        logger.warning("Token Firebase inválido ou expirado.")
 
         raise HTTPException(
             status_code=401,
@@ -210,8 +166,6 @@ def require_user(
 
 
 def get_user_id(user: dict) -> str:
-    """Obtém o UID do usuário autenticado."""
-
     uid = user.get("uid")
 
     if not uid:
@@ -228,76 +182,44 @@ def get_user_id(user: dict) -> str:
 # ============================================================
 
 def safe_filename(name: str) -> str:
-    """Remove caminhos e caracteres problemáticos do nome."""
-
-    base = Path(name.replace("\\", "/")).name
-
-    base = re.sub(
-        r"[^A-Za-z0-9._() -]",
-        "_",
-        base,
-    ).strip(" .")
-
-    return (base or "evidencia")[:180]
+    nome = Path(name.replace("\\", "/")).name
+    nome = re.sub(r"[^A-Za-z0-9._() -]", "_", nome).strip(" .")
+    return (nome or "evidencia")[:180]
 
 
 def safe_path_segment(value: str) -> str:
-    """Produz um segmento seguro para o caminho no Storage."""
+    segmento = re.sub(r"[^A-Za-z0-9_-]", "_", str(value)).strip("_")
 
-    segment = re.sub(
-        r"[^A-Za-z0-9_-]",
-        "_",
-        str(value),
-    ).strip("_")
-
-    if not segment:
+    if not segmento:
         raise HTTPException(
             status_code=400,
             detail="Identificador de indicador inválido.",
         )
 
-    return segment[:120]
+    return segmento[:120]
 
 
-def validate_file(
-    upload: UploadFile,
-    content: bytes,
-) -> str:
-    """
-    Valida extensão, conteúdo vazio, tamanho e MIME declarado.
-    Retorna o MIME normalizado.
+def validate_file(upload: UploadFile, content: bytes) -> str:
+    nome = upload.filename or ""
+    extensao = Path(nome).suffix.lower()
 
-    Observação: o MIME declarado não comprova, por si só,
-    o formato real do conteúdo.
-    """
-
-    original_name = upload.filename or ""
-    extension = Path(original_name).suffix.lower()
-
-    if extension not in ALLOWED_EXTENSIONS:
+    if extensao not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=415,
-            detail=(
-                f"Formato não permitido: "
-                f"{extension or 'sem extensão'}."
-            ),
+            detail=f"Formato não permitido: {extensao or 'sem extensão'}.",
         )
 
     if not content:
         raise HTTPException(
             status_code=400,
-            detail=f"O arquivo {original_name} está vazio.",
+            detail=f"O arquivo {nome} está vazio.",
         )
 
     if len(content) > MAX_FILE_SIZE:
         limite_mb = MAX_FILE_SIZE // (1024 * 1024)
-
         raise HTTPException(
             status_code=413,
-            detail=(
-                f"O arquivo {original_name} excede "
-                f"o limite de {limite_mb} MB."
-            ),
+            detail=f"O arquivo {nome} excede o limite de {limite_mb} MB.",
         )
 
     mime = (
@@ -317,15 +239,10 @@ def validate_manifest(
     manifest: list[EvidenceManifestItem],
     files: list[UploadFile],
 ) -> None:
-    """Valida correspondência, identificadores e limites dos anexos."""
-
     if len(files) != len(manifest):
         raise HTTPException(
             status_code=400,
-            detail=(
-                "A lista de arquivos não corresponde "
-                "aos metadados enviados."
-            ),
+            detail="A lista de arquivos não corresponde aos metadados enviados.",
         )
 
     if len(files) > MAX_FILES_PER_EVALUATION:
@@ -348,36 +265,31 @@ def validate_manifest(
     quantidade_por_indicador: dict[str, int] = {}
 
     for upload, item in zip(files, manifest):
-        quantidade_por_indicador[item.indicador_id] = (
-            quantidade_por_indicador.get(item.indicador_id, 0) + 1
+        indicador_id = item.indicador_id
+
+        quantidade_por_indicador[indicador_id] = (
+            quantidade_por_indicador.get(indicador_id, 0) + 1
         )
 
         if (
-            quantidade_por_indicador[item.indicador_id]
+            quantidade_por_indicador[indicador_id]
             > MAX_FILES_PER_INDICATOR
         ):
             raise HTTPException(
                 status_code=413,
                 detail=(
-                    f"O limite de {MAX_FILES_PER_INDICATOR} "
-                    f"arquivos para o indicador "
-                    f"{item.indicador_id} foi excedido."
+                    f"O limite de {MAX_FILES_PER_INDICATOR} arquivos "
+                    f"para o indicador {indicador_id} foi excedido."
                 ),
             )
 
-        nome_upload = upload.filename or ""
-        nome_manifesto = item.filename
+        extensao_upload = Path(upload.filename or "").suffix.lower()
+        extensao_manifesto = Path(item.filename).suffix.lower()
 
-        if (
-            Path(nome_upload).suffix.lower()
-            != Path(nome_manifesto).suffix.lower()
-        ):
+        if extensao_upload != extensao_manifesto:
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "A extensão do arquivo não corresponde "
-                    "ao manifesto de evidências."
-                ),
+                detail="A extensão do arquivo não corresponde ao manifesto.",
             )
 
 
@@ -385,17 +297,9 @@ def validate_manifest(
 # ACESSO ÀS AVALIAÇÕES
 # ============================================================
 
-def get_owned_evaluation(
-    evaluation_id: str,
-    uid: str,
-):
-    """
-    Retorna uma avaliação apenas quando pertence ao usuário
-    autenticado.
-    """
-
-    ref = db.collection("avaliacoes").document(evaluation_id)
-    snapshot = ref.get()
+def get_owned_evaluation(evaluation_id: str, uid: str):
+    referencia = db.collection("avaliacoes").document(evaluation_id)
+    snapshot = referencia.get()
 
     if not snapshot.exists:
         raise HTTPException(
@@ -403,19 +307,41 @@ def get_owned_evaluation(
             detail="Avaliação não encontrada.",
         )
 
-    data = snapshot.to_dict() or {}
+    dados = snapshot.to_dict() or {}
 
-    if data.get("usuario_id") != uid:
+    if dados.get("usuario_id") != uid:
         raise HTTPException(
             status_code=403,
             detail="Você não tem acesso a esta avaliação.",
         )
 
-    return ref, data
+    return referencia, dados
+
+
+def cleanup_partial_evaluation(
+    evaluation_ref,
+    uploaded_paths: list[str],
+) -> None:
+    """Remove os arquivos e o documento de uma operação incompleta."""
+
+    for caminho in uploaded_paths:
+        try:
+            bucket.blob(caminho).delete()
+        except Exception:
+            logger.exception("Falha ao remover upload parcial: %s", caminho)
+
+    if evaluation_ref is not None:
+        try:
+            evaluation_ref.delete()
+        except Exception:
+            logger.exception(
+                "Falha ao remover avaliação incompleta: %s",
+                evaluation_ref.id,
+            )
 
 
 # ============================================================
-# SAÚDE DA API
+# SAÚDE E LISTAGEM
 # ============================================================
 
 @app.get("/health")
@@ -423,15 +349,12 @@ def health():
     return {"status": "ok"}
 
 
-# ============================================================
-# LISTAGEM DE AVALIAÇÕES
-# ============================================================
-
 @app.get("/avaliacoes")
-def list_evaluations(
-    user: dict = Depends(require_user),
-):
+def list_evaluations(user: dict = Depends(require_user)):
+    logger.info("Iniciando listagem de avaliações.")
+
     uid = get_user_id(user)
+    logger.info("UID autenticado obtido.")
 
     documentos = (
         db.collection("avaliacoes")
@@ -453,9 +376,8 @@ def list_evaluations(
 
     return {"avaliacoes": avaliacoes}
 
-
 # ============================================================
-# CRIAÇÃO DE AVALIAÇÃO E UPLOAD DAS EVIDÊNCIAS
+# CRIAÇÃO DA AVALIAÇÃO E UPLOAD PERMANENTE
 # ============================================================
 
 @app.post("/avaliacoes", status_code=201)
@@ -467,19 +389,12 @@ async def create_evaluation(
 ):
     uid = get_user_id(user)
 
-    # --------------------------------------------------------
-    # Interpretar e validar os dados recebidos
-    # --------------------------------------------------------
-
     try:
         payload = EvaluationPayload.model_validate_json(avaliacao)
-
         manifest_data = json.loads(evidencias)
 
         if not isinstance(manifest_data, list):
-            raise ValueError(
-                "O manifesto de evidências deve ser uma lista."
-            )
+            raise ValueError("O manifesto deve ser uma lista.")
 
         manifest = [
             EvidenceManifestItem.model_validate(item)
@@ -489,27 +404,19 @@ async def create_evaluation(
     except (ValueError, ValidationError, TypeError) as exc:
         raise HTTPException(
             status_code=400,
-            detail=(
-                "Dados da avaliação ou lista de "
-                "evidências inválidos."
-            ),
+            detail="Dados da avaliação ou lista de evidências inválidos.",
         ) from exc
-
-    # --------------------------------------------------------
-    # Validar os arquivos e o manifesto
-    # --------------------------------------------------------
-
-    validate_manifest(manifest, files)
 
     evaluation_ref = None
     uploaded_paths: list[str] = []
 
     try:
-        now = datetime.now(timezone.utc).isoformat()
+        validate_manifest(manifest, files)
 
+        now = datetime.now(timezone.utc).isoformat()
         evaluation_ref = db.collection("avaliacoes").document()
 
-        evaluation_document = {
+        evaluation_ref.set({
             "curso_id": payload.curso_id,
             "curso_nome": payload.curso_nome,
             "data_avaliacao": now,
@@ -517,36 +424,25 @@ async def create_evaluation(
             "justificativas": payload.justificativas,
             "usuario_id": uid,
             "evidencias": [],
-        }
-
-        # Cria o documento inicial da avaliação.
-        evaluation_ref.set(evaluation_document)
+        })
 
         evidence_documents = []
 
-        # A ordem de files deve ser a mesma do manifesto.
         for upload, item in zip(files, manifest, strict=True):
-            # Lê no máximo um byte acima do limite para detectar
-            # arquivos grandes sem carregá-los integralmente.
             content = await upload.read(MAX_FILE_SIZE + 1)
-
             mime = validate_file(upload, content)
 
             filename = safe_filename(item.filename)
             extension = Path(filename).suffix.lower()
-
             indicador_path = safe_path_segment(item.indicador_id)
             evidence_id = str(uuid.uuid4())
 
             object_path = (
-                f"evidencias/{uid}/"
-                f"{evaluation_ref.id}/"
-                f"{indicador_path}/"
-                f"{evidence_id}{extension}"
+                f"evidencias/{uid}/{evaluation_ref.id}/"
+                f"{indicador_path}/{evidence_id}{extension}"
             )
 
             blob = bucket.blob(object_path)
-
             blob.metadata = {
                 "ownerUid": uid,
                 "evaluationId": evaluation_ref.id,
@@ -554,37 +450,29 @@ async def create_evaluation(
                 "originalFilename": filename,
             }
 
-            # Registra antes do upload para que a rotina de
-            # limpeza também tente remover eventuais uploads
-            # parcialmente concluídos.
+            # Registrar antes do upload permite tentar limpar
+            # o objeto caso a operação falhe parcialmente.
             uploaded_paths.append(object_path)
 
-            blob.upload_from_string(
-                content,
-                content_type=mime,
-            )
+            # O arquivo permanece no Firebase Storage após a requisição.
+            blob.upload_from_string(content, content_type=mime)
 
-            evidence_documents.append(
-                {
-                    "id": evidence_id,
-                    "upload_id": item.upload_id,
-                    "indicador_id": item.indicador_id,
-                    "nome": filename,
-                    "caminho_storage": object_path,
-                    "content_type": mime,
-                    "tamanho_bytes": len(content),
-                    "criado_em": now,
-                }
-            )
+            evidence_documents.append({
+                "id": evidence_id,
+                "upload_id": item.upload_id,
+                "indicador_id": item.indicador_id,
+                "nome": filename,
+                "caminho_storage": object_path,
+                "content_type": mime,
+                "tamanho_bytes": len(content),
+                "criado_em": now,
+            })
 
-        # Salva os metadados depois de concluir os uploads.
-        evaluation_ref.update(
-            {"evidencias": evidence_documents}
-        )
+        # Registra os metadados após concluir todos os uploads.
+        evaluation_ref.update({"evidencias": evidence_documents})
 
         logger.info(
-            "Avaliação %s criada para o usuário %s. "
-            "Evidências: %s",
+            "Avaliação %s criada para o usuário %s. Evidências: %s",
             evaluation_ref.id,
             uid,
             len(evidence_documents),
@@ -596,28 +484,16 @@ async def create_evaluation(
         }
 
     except HTTPException:
-        _cleanup_partial_evaluation(
-            evaluation_ref,
-            uploaded_paths,
-        )
+        cleanup_partial_evaluation(evaluation_ref, uploaded_paths)
         raise
 
     except Exception as exc:
-        _cleanup_partial_evaluation(
-            evaluation_ref,
-            uploaded_paths,
-        )
-
-        logger.exception(
-            "Erro ao salvar avaliação e evidências."
-        )
+        cleanup_partial_evaluation(evaluation_ref, uploaded_paths)
+        logger.exception("Erro ao salvar avaliação e evidências.")
 
         raise HTTPException(
             status_code=500,
-            detail=(
-                "Não foi possível salvar a avaliação "
-                "e suas evidências."
-            ),
+            detail="Não foi possível salvar a avaliação e suas evidências.",
         ) from exc
 
     finally:
@@ -625,38 +501,11 @@ async def create_evaluation(
             try:
                 await upload.close()
             except Exception:
-                logger.warning(
-                    "Não foi possível fechar um arquivo recebido."
-                )
-
-
-def _cleanup_partial_evaluation(
-    evaluation_ref,
-    uploaded_paths: list[str],
-) -> None:
-    """Tenta remover arquivos e documento de uma operação incompleta."""
-
-    for path in uploaded_paths:
-        try:
-            bucket.blob(path).delete()
-        except Exception:
-            logger.exception(
-                "Falha ao remover upload parcial: %s",
-                path,
-            )
-
-    if evaluation_ref is not None:
-        try:
-            evaluation_ref.delete()
-        except Exception:
-            logger.exception(
-                "Falha ao remover avaliação incompleta: %s",
-                evaluation_ref.id,
-            )
+                logger.warning("Não foi possível fechar um arquivo recebido.")
 
 
 # ============================================================
-# LISTAGEM DE EVIDÊNCIAS DE UMA AVALIAÇÃO
+# LISTAGEM DE EVIDÊNCIAS
 # ============================================================
 
 @app.get("/avaliacoes/{evaluation_id}/evidencias")
@@ -665,47 +514,40 @@ def list_evidence(
     user: dict = Depends(require_user),
 ):
     uid = get_user_id(user)
+    _, dados = get_owned_evaluation(evaluation_id, uid)
 
-    _, data = get_owned_evaluation(evaluation_id, uid)
-
-    return {
-        "evidencias": data.get("evidencias", [])
-    }
+    return {"evidencias": dados.get("evidencias", [])}
 
 
 # ============================================================
-# URL TEMPORÁRIA PARA ACESSAR UMA EVIDÊNCIA
+# URL TEMPORÁRIA DE ACESSO
 # ============================================================
 
-@app.get(
-    "/avaliacoes/{evaluation_id}/evidencias/"
-    "{evidence_id}/url"
-)
+@app.get("/avaliacoes/{evaluation_id}/evidencias/{evidence_id}/url")
 def get_evidence_url(
     evaluation_id: str,
     evidence_id: str,
     user: dict = Depends(require_user),
 ):
     uid = get_user_id(user)
+    _, dados = get_owned_evaluation(evaluation_id, uid)
 
-    _, data = get_owned_evaluation(evaluation_id, uid)
-
-    evidence = next(
+    evidencia = next(
         (
             item
-            for item in data.get("evidencias", [])
+            for item in dados.get("evidencias", [])
             if item.get("id") == evidence_id
         ),
         None,
     )
 
-    if not evidence:
+    if not evidencia:
         raise HTTPException(
             status_code=404,
             detail="Evidência não encontrada.",
         )
 
-    storage_path = evidence.get("caminho_storage")
+    storage_path = evidencia.get("caminho_storage")
 
     if not storage_path:
         raise HTTPException(
@@ -744,35 +586,26 @@ def get_evidence_url(
 
         raise HTTPException(
             status_code=500,
-            detail=(
-                "Não foi possível gerar o link "
-                "temporário da evidência."
-            ),
+            detail="Não foi possível gerar o link temporário da evidência.",
         ) from exc
 
 
 # ============================================================
-# EXCLUSÃO DE UMA EVIDÊNCIA
+# EXCLUSÃO DE EVIDÊNCIA
 # ============================================================
 
-@app.delete(
-    "/avaliacoes/{evaluation_id}/evidencias/{evidence_id}"
-)
+@app.delete("/avaliacoes/{evaluation_id}/evidencias/{evidence_id}")
 def delete_evidence(
     evaluation_id: str,
     evidence_id: str,
     user: dict = Depends(require_user),
 ):
     uid = get_user_id(user)
+    evaluation_ref, dados = get_owned_evaluation(evaluation_id, uid)
 
-    evaluation_ref, data = get_owned_evaluation(
-        evaluation_id,
-        uid,
-    )
+    evidence_list = dados.get("evidencias", [])
 
-    evidence_list = data.get("evidencias", [])
-
-    evidence = next(
+    evidencia = next(
         (
             item
             for item in evidence_list
@@ -781,13 +614,13 @@ def delete_evidence(
         None,
     )
 
-    if not evidence:
+    if not evidencia:
         raise HTTPException(
             status_code=404,
             detail="Evidência não encontrada.",
         )
 
-    storage_path = evidence.get("caminho_storage")
+    storage_path = evidencia.get("caminho_storage")
 
     if not storage_path:
         raise HTTPException(
@@ -795,20 +628,16 @@ def delete_evidence(
             detail="O caminho da evidência não está cadastrado.",
         )
 
-    # Exclui o arquivo e, em seguida, atualiza o Firestore.
-    # As duas operações não formam uma transação única.
     try:
         bucket.blob(storage_path).delete()
 
-        updated_evidence = [
-            item
-            for item in evidence_list
-            if item.get("id") != evidence_id
-        ]
-
-        evaluation_ref.update(
-            {"evidencias": updated_evidence}
-        )
+        evaluation_ref.update({
+            "evidencias": [
+                item
+                for item in evidence_list
+                if item.get("id") != evidence_id
+            ]
+        })
 
         logger.info(
             "Evidência %s removida da avaliação %s.",
@@ -819,10 +648,7 @@ def delete_evidence(
         return {"ok": True}
 
     except Exception as exc:
-        logger.exception(
-            "Erro ao excluir evidência %s.",
-            evidence_id,
-        )
+        logger.exception("Erro ao excluir evidência %s.", evidence_id)
 
         raise HTTPException(
             status_code=500,
