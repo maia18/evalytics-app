@@ -1,24 +1,12 @@
 import json
 import logging
-import mimetypes
 import os
-import uuid
-
-from contextlib import ExitStack
 from pathlib import Path
-
 import requests
 
-from components.core.auth.auth_state import auth_state
-
-from dotenv import load_dotenv
+from database.services.firebase_config import db
 
 logger = logging.getLogger(__name__)
-
-
-load_dotenv()
-
-API_URL = os.getenv("EVALYTICS_API_URL", "").rstrip("/")
 
 TIMEOUT_UPLOAD = 120
 TAMANHO_MAXIMO_ARQUIVO = 10 * 1024 * 1024
@@ -34,44 +22,46 @@ EXTENSOES_PERMITIDAS = {
     "odt", "ods", "odp",
 }
 
-
-def _obter_headers() -> dict[str, str]:
-    """Obtém o token de autenticação da sessão atual."""
-
-    token = auth_state.id_token
-
-    if not token:
-        raise ValueError(
-            "Sessão expirada ou usuário não autenticado."
-        )
-
-    return {
-        "Authorization": f"Bearer {token}",
-    }
+COLECAO_AVALIACOES = "avaliacoes_institucionais"
 
 
-def _preparar_anexos(
-    anexos: dict | None,
-) -> tuple[list[dict], list[dict]]:
+def enviar_ficheiro_dreamhost(caminho_local: str, nome_arquivo: str) -> str:
     """
-    Valida os anexos e prepara o manifesto do upload.
-
-    A chave do dicionário é o ID do indicador.
+    Envia um ficheiro local para o script PHP alojado no DreamHost
+    e retorna a URL pública gerada.
     """
+    url_servidor = "https://evalytics.com.br/upload.php"
+    
+    try:
+        with open(caminho_local, "rb") as f:
+            files = {"file": (nome_arquivo, f)}
+            resposta = requests.post(url_servidor, files=files, timeout=TIMEOUT_UPLOAD)
+            
+            if resposta.ok:
+                dados = resposta.json()
+                if dados.get("success"):
+                    return dados.get("file_url")
+            
+            logger.error("Erro no upload para o DreamHost: %s", resposta.text)
+            return None
+            
+    except Exception:
+        logger.exception("Falha de comunicação ao enviar ficheiro para o DreamHost.")
+        return None
 
-    manifest = []
-    arquivos = []
 
+def _preparar_anexos(anexos: dict | None) -> list[dict]:
+    """
+    Valida os anexos e retorna uma lista com os caminhos e metadados validados.
+    """
+    arquivos_validados = []
     anexos = anexos or {}
 
     for indicador_id, lista_anexos in anexos.items():
         indicador_id = str(indicador_id)
 
         if not isinstance(lista_anexos, list):
-            raise ValueError(
-                f"Lista de anexos inválida para o indicador "
-                f"{indicador_id}."
-            )
+            raise ValueError(f"Lista de anexos inválida para o indicador {indicador_id}.")
 
         if len(lista_anexos) > QUANTIDADE_MAXIMA_ARQUIVOS_POR_INDICADOR:
             raise ValueError(
@@ -84,57 +74,33 @@ def _preparar_anexos(
             nome_original = anexo.get("nome")
 
             if not caminho_original or not nome_original:
-                raise ValueError(
-                    "Um anexo não possui nome ou caminho válido."
-                )
+                raise ValueError("Um anexo não possui nome ou caminho válido.")
 
             caminho = str(Path(caminho_original).resolve())
             nome = Path(nome_original).name
             extensao = Path(nome).suffix.lower().lstrip(".")
 
             if extensao not in EXTENSOES_PERMITIDAS:
-                raise ValueError(
-                    f"Formato não permitido: {nome}."
-                )
+                raise ValueError(f"Formato não permitido: {nome}.")
 
             if not os.path.isfile(caminho):
-                raise FileNotFoundError(
-                    f"O arquivo não foi encontrado: {nome}."
-                )
+                raise FileNotFoundError(f"O arquivo não foi encontrado: {nome}.")
 
             tamanho = os.path.getsize(caminho)
 
             if tamanho <= 0:
-                raise ValueError(
-                    f"O arquivo '{nome}' está vazio."
-                )
+                raise ValueError(f"O arquivo '{nome}' está vazio.")
 
             if tamanho > TAMANHO_MAXIMO_ARQUIVO:
-                raise ValueError(
-                    f"O arquivo '{nome}' excede o limite de 10 MB."
-                )
+                raise ValueError(f"O arquivo '{nome}' excede o limite de 10 MB.")
 
-            upload_id = str(uuid.uuid4())
+            arquivos_validados.append({
+                "caminho": caminho,
+                "nome": nome,
+                "indicador_id": indicador_id,
+            })
 
-            manifest.append(
-                {
-                    "upload_id": upload_id,
-                    "indicador_id": indicador_id,
-                    "filename": nome,
-                }
-            )
-
-            arquivos.append(
-                {
-                    "upload_id": upload_id,
-                    "caminho": caminho,
-                    "nome": nome,
-                    "tamanho": tamanho,
-                    "indicador_id": indicador_id,
-                }
-            )
-
-    return manifest, arquivos
+    return arquivos_validados
 
 
 def salvar_avaliacao(
@@ -145,167 +111,68 @@ def salvar_avaliacao(
     anexos: dict | None = None,
 ) -> bool:
     """
-    Envia a avaliação e as evidências ao backend FastAPI.
-
-    O backend deve persistir os dados no Firestore e os arquivos
-    no Firebase Storage.
+    Salva a avaliação institucional diretamente no Firestore
+    e faz o upload das evidências para o servidor DreamHost via PHP.
     """
-
-    if not API_URL:
-        logger.error(
-            "EVALYTICS_API_URL não foi configurada."
-        )
-        return False
-
     try:
-        headers = _obter_headers()
+        # 1. Valida os arquivos locais antes de qualquer operação
+        arquivos = _preparar_anexos(anexos)
+        evidencias_urls = {}
 
-        manifest, arquivos = _preparar_anexos(anexos)
+        # 2. Faz o upload dos arquivos para a DreamHost usando a nova função
+        for arquivo in arquivos:
+            url_publica = enviar_ficheiro_dreamhost(arquivo["caminho"], arquivo["nome"])
+            
+            if not url_publica:
+                raise Exception(f"Não foi possível enviar o arquivo {arquivo['nome']} para o DreamHost.")
 
+            indicador_id = arquivo["indicador_id"]
+            if indicador_id not in evidencias_urls:
+                evidencias_urls[indicador_id] = []
+                
+            evidencias_urls[indicador_id].append({
+                "nome": arquivo["nome"],
+                "url": url_publica
+            })
+
+        # 3. Prepara o dicionário de dados da avaliação
         dados_avaliacao = {
             "curso_id": curso_id,
             "curso_nome": curso_nome,
             "respostas": respostas,
             "justificativas": justificativas or {},
+            "evidencias": evidencias_urls,
         }
 
-        dados_formulario = {
-            "avaliacao": json.dumps(
-                dados_avaliacao,
-                ensure_ascii=False,
-            ),
-            "evidencias": json.dumps(
-                manifest,
-                ensure_ascii=False,
-            ),
-        }
+        # 4. Salva diretamente no Firestore
+        db.collection(COLECAO_AVALIACOES).add(dados_avaliacao)
 
-        with ExitStack() as stack:
-            arquivos_multipart = []
-
-            for arquivo in arquivos:
-                stream = stack.enter_context(
-                    open(arquivo["caminho"], "rb")
-                )
-
-                tipo_mime = (
-                    mimetypes.guess_type(arquivo["nome"])[0]
-                    or "application/octet-stream"
-                )
-
-                arquivos_multipart.append(
-                    (
-                        "files",
-                        (
-                            arquivo["nome"],
-                            stream,
-                            tipo_mime,
-                        ),
-                    )
-                )
-
-            resposta = requests.post(
-                f"{API_URL}/avaliacoes",
-                headers=headers,
-                data=dados_formulario,
-                files=arquivos_multipart,
-                timeout=TIMEOUT_UPLOAD,
-            )
-            
-        if not resposta.ok:
-            logger.error(
-                "Erro na API ao salvar avaliação. "
-                "Status: %s | Resposta: %s",
-                resposta.status_code,
-                resposta.text,
-            )
-                    
-        resposta.raise_for_status()
-        
         logger.info(
-            "Avaliação do curso '%s' enviada com sucesso. "
-            "Arquivos enviados: %s.",
+            "Avaliação do curso '%s' salva com sucesso no Firestore. "
+            "Arquivos enviados para o DreamHost: %s.",
             curso_nome,
             len(arquivos),
         )
-
         return True
 
-    except requests.Timeout:
-        logger.error(
-            "Tempo limite excedido ao enviar a avaliação."
-        )
-        return False
-
-    except requests.HTTPError:
-        logger.exception(
-            "O backend recusou o envio da avaliação. "
-            "Status HTTP: %s.",
-            (
-                resposta.status_code
-                if "resposta" in locals()
-                else "indisponível"
-            ),
-        )
-        return False
-
-    except requests.RequestException:
-        logger.exception(
-            "Falha de comunicação com o backend."
-        )
-        return False
-
     except Exception:
-        logger.exception(
-            "Erro ao enviar a avaliação do curso '%s'.",
-            curso_nome,
-        )
+        logger.exception("Erro ao salvar a avaliação do curso '%s' no Firebase/DreamHost.", curso_nome)
         return False
 
 
 def listar_avaliacoes() -> list[dict]:
-    """Consulta as avaliações pela API autenticada."""
-
-    if not API_URL:
-        logger.error(
-            "EVALYTICS_API_URL não foi configurada."
-        )
-        return []
-
+    """Consulta as avaliações diretamente do Firestore."""
     try:
-        resposta = requests.get(
-            f"{API_URL}/avaliacoes",
-            headers=_obter_headers(),
-            timeout=30,
-        )
+        docs = db.collection(COLECAO_AVALIACOES).stream()
+        lista = []
         
-        if not resposta.ok:
-            logger.error(
-                "Erro na API ao salvar avaliação. "
-                "Status: %s | Resposta: %s",
-                resposta.status_code,
-                resposta.text,
-            )
-            
-        resposta.raise_for_status()
-        dados = resposta.json()
+        for doc in docs:
+            dados = doc.to_dict()
+            dados["id"] = doc.id
+            lista.append(dados)
 
-        if isinstance(dados, list):
-            return dados
-
-        if isinstance(dados, dict):
-            return dados.get("avaliacoes", [])
-
-        return []
-
-    except requests.RequestException:
-        logger.exception(
-            "Erro de comunicação ao consultar avaliações."
-        )
-        return []
+        return lista
 
     except Exception:
-        logger.exception(
-            "Erro ao consultar avaliações pela API."
-        )
+        logger.exception("Erro ao consultar avaliações no Firestore.")
         return []

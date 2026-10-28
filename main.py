@@ -52,6 +52,7 @@ async def main(page: ft.Page) -> None:
         # NAVEGAÇÃO INICIAL
         # ======================================================
 
+    
         if sessao_restaurada:
             logger.info(
                 "Sessão persistida restaurada com sucesso."
