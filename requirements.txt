@@ -43,6 +43,7 @@ docx==0.2.4
 dulwich==1.2.11
 executing==2.2.1
 fastapi==0.139.2
+fpdf2>=2.8,<3
 fastjsonschema==2.21.2
 filelock==3.30.1
 findpython==0.8.0

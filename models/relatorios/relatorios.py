@@ -48,7 +48,12 @@ def ViewRelatorios(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         exportar_csv(page, resultados=list(resultados_filtrados))
 
     def exportar_pdf_atual(e=None) -> None:
-        processar_exportacao_pdf(page, resultados_filtrados, semestre_atual) # Delega a lógica complexa para o serviço auxiliar
+        processar_exportacao_pdf(
+            page,
+            resultados_filtrados,
+            semestre_atual,
+            eixo_atual,
+        )
         
     # ==================================================
     # TABELA E FILTROS

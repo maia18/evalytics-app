@@ -3,12 +3,73 @@ import logging
 import flet as ft
 from typing import Optional
 from datetime import datetime
+from database.services.firebase_config import db
 from models.avaliacoes.core.feedback import mostrar_feedback
 from models.relatorios.core.grafico_radar import salvar_grafico_radar
+from utils.services.indicadores.indicadores_repository import listar_indicadores
 from .pdf_builder import construir_documento_pdf
 
 logger = logging.getLogger(__name__)
 CAMINHO_IMAGEM_TEMP = "radar_temp.png"
+COLECAO_AVALIACOES = "avaliacoes"
+
+
+def carregar_avaliacoes_detalhadas(
+    resultados: list[dict],
+    eixo_selecionado: int | None = None,
+) -> list[dict]:
+    """Carrega respostas e perguntas completas das avaliações filtradas."""
+    ids = {str(item.get("id")) for item in resultados if item.get("id")}
+    if not ids:
+        return []
+
+    indicadores_atuais = listar_indicadores()
+    avaliacoes = []
+    for documento in db.collection(COLECAO_AVALIACOES).stream():
+        if documento.id not in ids:
+            continue
+
+        dados = documento.to_dict() or {}
+        perguntas = dados.get("perguntas")
+        perguntas_historicas = isinstance(perguntas, list) and bool(perguntas)
+        # Avaliações antigas não têm snapshot: usa o catálogo atual como fallback.
+        if not isinstance(perguntas, list) or not perguntas:
+            perguntas = [
+                {
+                    "id": str(indicador.get("id", "")),
+                    "titulo": indicador.get("titulo", "Pergunta sem título"),
+                    "descricao": indicador.get("descricao", ""),
+                    "eixo": indicador.get("eixo"),
+                    "criterios": indicador.get("criterios", {}),
+                }
+                for indicador in indicadores_atuais
+                if indicador.get("status", "ATIVO") == "ATIVO"
+            ]
+
+        perguntas = [
+            pergunta for pergunta in perguntas
+            if eixo_selecionado is None
+            or str(pergunta.get("eixo")) == str(eixo_selecionado)
+        ]
+        perguntas.sort(
+            key=lambda pergunta: (
+                int(pergunta.get("eixo", 0) or 0),
+                str(pergunta.get("titulo", "")).casefold(),
+            )
+        )
+
+        avaliacoes.append({
+            "id": documento.id,
+            "curso_nome": dados.get("curso_nome", "Curso não informado"),
+            "data_avaliacao": dados.get("data_avaliacao"),
+            "respostas": dados.get("respostas", {}) or {},
+            "justificativas": dados.get("justificativas", dados.get("comentarios", {})) or {},
+            "evidencias": dados.get("evidencias", {}) or {},
+            "perguntas": perguntas,
+            "perguntas_historicas": perguntas_historicas,
+        })
+
+    return avaliacoes
 
 def normalizar_nome_curso(nome: str) -> str:
     """Padroniza o nome dos cursos para exibição."""
@@ -30,6 +91,8 @@ def gerar_pdf_completo(
     semestre: str = "Todos",
     quantidade_avaliacoes: int = 0,
     cursos: list[str] | None = None,
+    resultados: list[dict] | None = None,
+    eixo_selecionado: int | None = None,
 ) -> Optional[str]:
     """Orquestra a validação, estruturação, geração visual do PDF e os alertas na UI."""
 
@@ -70,6 +133,9 @@ def gerar_pdf_completo(
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         nome_arquivo = f"relatorio_evalytics_{timestamp}.pdf"
+        avaliacoes_detalhadas = carregar_avaliacoes_detalhadas(
+            resultados or [], eixo_selecionado=eixo_selecionado
+        )
 
         # Delega a tarefa de desenho do documento ao pdf_builder
         construir_documento_pdf(
@@ -79,7 +145,8 @@ def gerar_pdf_completo(
             semestre=semestre,
             quantidade_avaliacoes=quantidade_avaliacoes,
             texto_cursos=texto_cursos,
-            caminho_imagem_radar=CAMINHO_IMAGEM_TEMP
+            caminho_imagem_radar=CAMINHO_IMAGEM_TEMP,
+            avaliacoes_detalhadas=avaliacoes_detalhadas,
         )
 
         # ==================================================

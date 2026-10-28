@@ -1,4 +1,5 @@
 import flet as ft
+from datetime import date, datetime
 
 NOMES_EIXOS = {
     1: "Organização Didático-Pedagógica",
@@ -10,16 +11,27 @@ def formatar_nota(nota: float) -> str:
     """Formata notas flutuantes para exibição."""
     return f"{nota:.1f}"
 
-def formatar_data(data_iso: str) -> str:
-    """Converte data ISO para o padrão brasileiro (DD/MM/AAAA)."""
-    if not data_iso:
+def formatar_data(data_iso) -> str:
+    """Converte timestamps do Firestore ou datas ISO para DD/MM/AAAA."""
+    if data_iso is None or data_iso == "":
         return "-"
+
+    if isinstance(data_iso, (datetime, date)):
+        return data_iso.strftime("%d/%m/%Y")
+
+    if hasattr(data_iso, "strftime"):
+        try:
+            return data_iso.strftime("%d/%m/%Y")
+        except (TypeError, ValueError):
+            pass
+
     try:
-        data = data_iso[:10]
+        texto = str(data_iso).strip()
+        data = texto[:10]
         ano, mes, dia = data.split("-")
         return f"{dia}/{mes}/{ano}"
-    except (ValueError, AttributeError):
-        return data_iso
+    except (ValueError, AttributeError, TypeError):
+        return str(data_iso)
 
 def criar_linha_resultado(item: dict) -> ft.DataRow:
     """Gera uma DataRow para um item de resultado específico."""

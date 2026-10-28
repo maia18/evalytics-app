@@ -9,6 +9,12 @@ def obter_semestre(data_iso: str) -> str:
         return ""
 
     try:
+        if hasattr(data_iso, "year") and hasattr(data_iso, "month"):
+            ano = int(data_iso.year)
+            mes = int(data_iso.month)
+            semestre = "1" if mes <= 6 else "2"
+            return f"{ano}.{semestre}"
+
         ano = int(data_iso[:4])
         mes = int(data_iso[5:7])
         semestre = "1" if mes <= 6 else "2"

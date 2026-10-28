@@ -5,6 +5,12 @@ class RelatorioEvalytics(FPDF):
     Documento PDF customizado que estende o FPDF original. 
         Define um cabeçalho e rodapé padrão que serão injetados automaticamente em todas as páginas."""
 
+    def set_font(self, family=None, style="", size=0):
+        """Usa a fonte Unicode incorporada no lugar das fontes PDF básicas."""
+        if family and str(family).lower() in {"helvetica", "arial"}:
+            family = "dejavu"
+        super().set_font(family, style, size)
+
     def header(self) -> None:
         """Imprime o cabeçalho no topo da página atual."""
         

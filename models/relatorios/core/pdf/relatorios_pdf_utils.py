@@ -42,7 +42,8 @@ def calcular_medias_pdf(resultados_filtrados: list[dict]) -> dict[int, float | N
 def processar_exportacao_pdf(
     page: ft.Page, 
     resultados_filtrados: list[dict], 
-    semestre_atual: str | None
+    semestre_atual: str | None,
+    eixo_atual: int | None = None,
 ) -> None:
     """Valida os dados atuais e prepara os agregados para a geração do PDF."""
     
@@ -77,4 +78,6 @@ def processar_exportacao_pdf(
         semestre=semestre_pdf,
         quantidade_avaliacoes=quantidade_avaliacoes,
         cursos=cursos,
+        resultados=resultados_filtrados,
+        eixo_selecionado=eixo_atual,
     )

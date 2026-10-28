@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from pathlib import Path
+from datetime import datetime
 import requests
 
 from database.services.firebase_config import db
@@ -22,7 +23,7 @@ EXTENSOES_PERMITIDAS = {
     "odt", "ods", "odp",
 }
 
-COLECAO_AVALIACOES = "avaliacoes_institucionais"
+COLECAO_AVALIACOES = "avaliacoes"
 
 
 def enviar_ficheiro_dreamhost(caminho_local: str, nome_arquivo: str) -> str:
@@ -109,6 +110,7 @@ def salvar_avaliacao(
     respostas: dict,
     justificativas: dict | None = None,
     anexos: dict | None = None,
+    indicadores: list[dict] | None = None,
 ) -> bool:
     """
     Salva a avaliação institucional diretamente no Firestore
@@ -139,9 +141,22 @@ def salvar_avaliacao(
         dados_avaliacao = {
             "curso_id": curso_id,
             "curso_nome": curso_nome,
+            "data_avaliacao": datetime.now(),
             "respostas": respostas,
             "justificativas": justificativas or {},
             "evidencias": evidencias_urls,
+            # Preserva as perguntas e alternativas exibidas nesta avaliação,
+            # mesmo que o catálogo seja alterado futuramente.
+            "perguntas": [
+                {
+                    "id": str(indicador.get("id", "")),
+                    "titulo": indicador.get("titulo", ""),
+                    "descricao": indicador.get("descricao", ""),
+                    "eixo": indicador.get("eixo"),
+                    "criterios": indicador.get("criterios", {}),
+                }
+                for indicador in (indicadores or [])
+            ],
         }
 
         # 4. Salva diretamente no Firestore

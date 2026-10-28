@@ -109,6 +109,7 @@ class FormularioStepsMixin:
                 respostas=respostas,
                 justificativas=justificativas,
                 anexos=anexos,
+                indicadores=self.indicadores_ativos,
             )
         except Exception:
             sucesso = False
