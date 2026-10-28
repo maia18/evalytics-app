@@ -18,11 +18,13 @@ def criar_topbar_content(
     menu_button: ft.IconButton,
     atualizar_tema: Callable[[], None],
     notificacoes_pendentes: int = 0,
-) -> ft.Row:
+) -> ft.ResponsiveRow:
     """Constrói a faixa de navegação superior (Cabeçalho da Página)."""
 
     local_atual = obter_localizacao()
     icone_tema = obter_icone_tema(dark_mode)
+    tela_muito_estreita = page.width is not None and page.width < 400
+    titulo_exibido = titulo.split()[0] if tela_muito_estreita else titulo
 
     '''
     Extrai múltiplos componentes interligados relacionados a notificações.
@@ -30,39 +32,62 @@ def criar_topbar_content(
     '''
     area_notificacoes, painel_notificacoes, badge_notificacoes, atualizar_lista = criar_componentes_notificacoes(page, cores)
 
-    conteudo = ft.Row(
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN, # Joga o bloco 1 pra esquerda e o bloco 2 pra direita
+    conteudo = ft.ResponsiveRow(
+        spacing=8,
+        run_spacing=4,
         controls=[
-            
-            # BLOCO ESQUERDO: Menu Hambúrguer (Mobile) e Títulos da Página
-            ft.Row(
-                spacing=10,
-                controls=[
-                    menu_button,
-                    ft.Column(
-                        spacing=0,
-                        controls=[
-                            ft.Text(titulo, size=20, weight="bold", color=cores[TEXTO_PRINCIPAL]),
-                            ft.Text(subtitulo, size=12, color=ft.Colors.GREY),
-                        ],
-                    ),
-                ],
+            ft.Container(
+                col={"xs": 12, "sm": 6, "md": 6, "lg": 6, "xl": 6, "xxl": 6},
+                content=ft.Row(
+                    spacing=6,
+                    controls=[
+                        menu_button,
+                        ft.Column(
+                            expand=1,
+                            spacing=0,
+                            controls=[
+                                ft.Text(
+                                    titulo_exibido,
+                                    size=16,
+                                    max_lines=1,
+                                    overflow=ft.TextOverflow.ELLIPSIS,
+                                    weight="bold",
+                                    color=cores[TEXTO_PRINCIPAL],
+                                ),
+                                ft.Text(
+                                    subtitulo,
+                                    size=10,
+                                    max_lines=1,
+                                    overflow=ft.TextOverflow.ELLIPSIS,
+                                    color=ft.Colors.GREY,
+                                    visible=not tela_muito_estreita,
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
             ),
-    
-            # BLOCO DIREITO: Ações Rápidas (Localização, Tema, Notificações, Perfil)
-            ft.Row(
-                controls=[
-                    
+            # Em telas pequenas as ações passam para outra linha e quebram
+            # naturalmente, em vez de comprimir os rótulos horizontalmente.
+            ft.Container(
+                col={"xs": 12, "sm": 6, "md": 6, "lg": 6, "xl": 6, "xxl": 6},
+                content=ft.Row(
+                    wrap=True,
+                    alignment=ft.MainAxisAlignment.END,
+                    spacing=4,
+                    run_spacing=4,
+                    controls=[
                     # Chip/Badge informativo da Localização Atual
                     ft.Container(
-                        padding=10,
+                        width=100,
+                        padding=4,
                         border_radius=8,
                         bgcolor=cores[SURFACE],
                         content=ft.Row(
-                            spacing=6,
+                            spacing=3,
                             controls=[
-                                ft.Icon(ft.Icons.LOCATION_ON_OUTLINED, size=18, color=COR_PRIMARIA),
-                                ft.Text(local_atual, size=14, weight="w500", color=cores[TEXTO_PRINCIPAL]),
+                                ft.Icon(ft.Icons.LOCATION_ON_OUTLINED, size=14, color=COR_PRIMARIA),
+                                ft.Text(local_atual, size=10, weight="w500", color=cores[TEXTO_PRINCIPAL]),
                             ],
                         ),
                     ),
@@ -78,11 +103,12 @@ def criar_topbar_content(
                     
                     # Foto do Usuário (Placeholder)
                     ft.CircleAvatar(
-                        radius=18,
+                        radius=14,
                         color=cores[TEXTO_PRINCIPAL],
-                        content=ft.Text("AC"),
+                        content=ft.Text("AC", size=10),
                     ),
-                ],
+                    ],
+                ),
             ),
         ],
     )

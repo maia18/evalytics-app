@@ -1,69 +1,120 @@
 import flet as ft
-from components.core.constants.constants import (
-    BORDA, 
-    CARD, 
-    TEXTO_PRINCIPAL,
-)
+
+from components.core.constants.constants import CARD, BORDA, TEXTO_PRINCIPAL, TEXTO_SECUNDARIO
 from components.core.theme.border_utils import criar_borda_uniforme
-from .grafico_componentes import criar_coluna_grafico, criar_estado_vazio
+
 
 def criar_grafico_eixos(
     layout,
     medias_eixos: dict[int, float],
     nomes_eixos: dict[int, str],
     cores_barras: list[str],
+    respostas_por_eixo: dict[int, int] | None = None,
+    media_geral: float | None = None,
 ) -> ft.Container:
-    """Constrói o gráfico de desempenho médio por eixo."""
+    """Exibe médias por eixo na escala de 0 a 5, com volume e comparação."""
+    respostas_por_eixo = respostas_por_eixo or {}
+    eixos_ordenados = sorted(
+        medias_eixos.items(), key=lambda item: item[1], reverse=True
+    )
 
-    barras_grafico = []
-    cor_texto = layout.cores[TEXTO_PRINCIPAL]
-
-    # Mapeamento dos dados para o componente visual
-    for i, (eixo_id, nota) in enumerate(sorted(medias_eixos.items())):
-        nome = nomes_eixos.get(eixo_id, f"Eixo {eixo_id}")
-        cor = cores_barras[i % len(cores_barras)]
-
-        barras_grafico.append(
-            criar_coluna_grafico(nome, nota, cor, cor_texto)
+    linhas = []
+    for indice, (eixo_id, media) in enumerate(eixos_ordenados):
+        diferenca = (
+            media - media_geral if media_geral is not None else None
+        )
+        comparacao = (
+            f"{diferenca:+.1f} vs. média geral"
+            if diferenca is not None
+            else "Sem base para comparação"
+        )
+        cor = cores_barras[indice % len(cores_barras)] if cores_barras else None
+        linhas.append(
+            ft.Column(
+                spacing=5,
+                controls=[
+                    ft.Column(
+                        spacing=2,
+                        controls=[
+                            ft.Text(
+                                nomes_eixos.get(eixo_id, f"Eixo {eixo_id}"),
+                                size=12,
+                                max_lines=3,
+                                weight="w500",
+                                color=layout.cores[TEXTO_PRINCIPAL],
+                            ),
+                            ft.Text(
+                                f"{media:.1f} / 5,0",
+                                size=12,
+                                weight="bold",
+                                color=layout.cores[TEXTO_PRINCIPAL],
+                            ),
+                        ],
+                    ),
+                    ft.ProgressBar(
+                        value=max(0.0, min((media - 1.0) / 4.0, 1.0)),
+                        color=cor,
+                        bgcolor=ft.Colors.with_opacity(0.16, cor),
+                        bar_height=10,
+                        border_radius=8,
+                    ),
+                    ft.Column(
+                        spacing=2,
+                        controls=[
+                            ft.Text(
+                                f"{respostas_por_eixo.get(eixo_id, 0)} respostas",
+                                size=10,
+                                color=layout.cores[TEXTO_SECUNDARIO],
+                            ),
+                            ft.Text(
+                                comparacao,
+                                size=10,
+                                max_lines=3,
+                                color=layout.cores[TEXTO_SECUNDARIO],
+                            ),
+                        ],
+                    ),
+                ],
+            )
         )
 
-    # Tratamento imediato de estado vazio delegando a criação da UI
-    if not barras_grafico:
-        return criar_estado_vazio(layout.cores)
+    if not linhas:
+        linhas = [
+            ft.Text(
+                "Não há respostas válidas para os filtros selecionados.",
+                color=layout.cores[TEXTO_SECUNDARIO],
+            )
+        ]
 
-    # Montagem do layout final do gráfico
     return ft.Container(
         bgcolor=layout.cores[CARD],
-        padding=20,
+        padding=8,
         border_radius=8,
         border=criar_borda_uniforme(layout.cores[BORDA]),
         content=ft.Column(
-            spacing=14,
+            spacing=10,
             controls=[
                 ft.Column(
                     spacing=4,
                     controls=[
                         ft.Text(
                             "Desempenho médio por eixo",
-                            size=18,
+                            size=15,
                             weight="bold",
-                            color=cor_texto,
+                            color=layout.cores[TEXTO_PRINCIPAL],
                         ),
                         ft.Text(
-                            "Média das respostas registradas nas avaliações institucionais.",
-                            size=14,
-                            color=ft.Colors.GREY,
+                            "Média das respostas válidas em cada eixo.",
+                            size=11,
+                            color=layout.cores[TEXTO_SECUNDARIO],
                         ),
                     ],
                 ),
-                ft.Container(
-                    height=200,
-                    padding=ft.Padding.only(left=12, right=12, top=8, bottom=4),
-                    content=ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                        vertical_alignment=ft.CrossAxisAlignment.END,
-                        controls=barras_grafico,
-                    ),
+                *linhas,
+                ft.Text(
+                    "Escala de avaliação: 1,0 a 5,0",
+                    size=9,
+                    color=layout.cores[TEXTO_SECUNDARIO],
                 ),
             ],
         ),

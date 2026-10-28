@@ -43,19 +43,18 @@ def criar_sidebar_colapsada(
         )
     )
 
-    # 3. Rodapé da Sidebar
-    controles.extend(
-        [
-            # Ocupa o espaço disponível e empurra o logout para baixo
-            ft.Container(
-                expand=True,
-            ),
+    # 3. Área rolável do menu e rodapé fixado na base da Sidebar
+    area_menu = ft.Column(
+        controls=controles,
+        spacing=0,
+        expand=True,
+        scroll=ft.ScrollMode.AUTO,
+    )
 
-            ft.Divider(
-                height=1,
-            ),
-
-            # Botão de logout
+    return ft.Column(
+        controls=[
+            area_menu,
+            ft.Divider(height=1),
             criar_botao_logout(
                 page=page,
                 dark_mode=dark_mode,
@@ -63,13 +62,7 @@ def criar_sidebar_colapsada(
                 mudar_tela=mudar_tela,
                 compact=True,
             ),
-        ]
-    )
-
-    # 4. Sidebar final
-    return ft.Column(
-        controls=controles,
+        ],
         spacing=0,
         expand=True,
-        scroll=ft.ScrollMode.AUTO,
     )

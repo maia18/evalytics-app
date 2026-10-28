@@ -13,19 +13,20 @@ def criar_kpi_card(
     valor: str,
     icone: str,
     cor_icone: str,
+    col: dict[str, int] | None = None,
 ) -> ft.Container:
     """Constrói um cartão numérico de KPI."""
 
     return ft.Container(
-        width=240,
+        col=col,
         bgcolor=layout.cores[CARD],
-        padding=16,
+        padding=8,
         border_radius=8,
         border=criar_borda_uniforme(
             layout.cores[BORDA]
         ),
         content=ft.Column(
-            spacing=10,
+            spacing=6,
             controls=[
                 ft.Row(
                     alignment=(
@@ -34,7 +35,9 @@ def criar_kpi_card(
                     controls=[
                         ft.Text(
                             titulo,
-                            size=14,
+                            size=10,
+                            max_lines=2,
+                            expand=1,
                             color=layout.cores[
                                 TEXTO_SECUNDARIO
                             ],
@@ -43,13 +46,13 @@ def criar_kpi_card(
                         ft.Icon(
                             icone,
                             color=cor_icone,
-                            size=18,
+                            size=16,
                         ),
                     ],
                 ),
                 ft.Text(
                     valor,
-                    size=28,
+                    size=24,
                     weight="bold",
                     color=layout.cores[
                         TEXTO_PRINCIPAL

@@ -6,6 +6,11 @@ from datetime import datetime
 import requests
 
 from database.services.firebase_config import db
+from database.services.cursos.firestore_courses import obter_cursos_db
+from utils.services.cursos.curso_utils import (
+    criar_indice_cursos_atuais,
+    resolver_curso_avaliacao,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -176,13 +181,18 @@ def salvar_avaliacao(
 
 
 def listar_avaliacoes() -> list[dict]:
-    """Consulta as avaliações diretamente do Firestore."""
+    """Lista apenas avaliações vinculadas a cursos ainda cadastrados."""
     try:
+        indice_cursos = criar_indice_cursos_atuais(obter_cursos_db())
         docs = db.collection(COLECAO_AVALIACOES).stream()
         lista = []
         
         for doc in docs:
-            dados = doc.to_dict()
+            dados = doc.to_dict() or {}
+            curso_atual = resolver_curso_avaliacao(dados, indice_cursos)
+            if not curso_atual:
+                continue
+            dados["curso_nome"] = curso_atual.get("nome", "")
             dados["id"] = doc.id
             lista.append(dados)
 

@@ -1,246 +1,284 @@
 import flet as ft
 from typing import Callable
+
 from components.core.constants.constants import (
-    BORDA,
     COR_PRIMARIA,
     TEXTO_SECUNDARIO,
 )
+from components.core.router.rotas_cts import (
+    ROTA_DASHBOARD_VISAO_GERAL,
+    ROTA_DASHBOARD_AVALIACOES,
+)
 from components.layout.responsive.responsive import ResponsiveLayout
-
-from models.avaliacoes.avaliacoes import (
-    criar_conteudo_avaliacoes,
+from database.services.dashboard.firestore_dashboard import obter_dados_dashboard
+from models.avaliacoes.avaliacoes import criar_conteudo_avaliacoes
+from models.dashboard.widgets.graphics.grafico_eixos import criar_grafico_eixos
+from models.dashboard.widgets.kpi_cards import criar_kpi_card
+from models.dashboard.widgets.grafico_evolucao_semestres import (
+    criar_grafico_evolucao_semestres,
 )
-from models.dashboard.widgets.kpi_cards import (
-    criar_kpi_card,
-)
-from models.dashboard.widgets.graphics.grafico_eixos import (
-    criar_grafico_eixos,
-)
-from database.services.dashboard.firestore_dashboard import (
-    obter_dados_dashboard,
+from models.dashboard.widgets.tabela_cursos_dashboard import (
+    criar_tabela_cursos_dashboard,
 )
 
-"""
-# ==========================================================
-# CORES DAS BARRAS
-# ==========================================================
-"""
-CORES_BARRAS_GRAFICO_EIXOS = [
-    COR_PRIMARIA,
-    "#34D399",
-    "#F87171",
-]
 
-"""
-# ==========================================================
-# NOMES DOS EIXOS
-# ==========================================================
-"""
+CORES_BARRAS_GRAFICO_EIXOS = [COR_PRIMARIA, "#34D399", "#F87171"]
 NOMES_EIXOS = {
     1: "Organização Didático-Pedagógica",
     2: "Corpo Docente e Tutorial",
     3: "Infraestrutura",
 }
 
-def ViewDashboard(
+
+def _criar_filtros(
+    dados: dict,
+    aplicar,
+    limpar,
+) -> tuple[ft.Container, ft.Dropdown, ft.Dropdown]:
+    dropdown_semestre = ft.Dropdown(
+        label="Semestre",
+        value="TODOS",
+        expand=1,
+        text_size=12,
+        label_style=ft.TextStyle(size=10),
+        dense=True,
+        options=[
+            ft.dropdown.Option(key="TODOS", text="Todos"),
+            *[
+                ft.dropdown.Option(key=semestre, text=semestre)
+                for semestre in dados["semestres_disponiveis"]
+            ],
+        ],
+    )
+    dropdown_curso = ft.Dropdown(
+        label="Curso",
+        value="TODOS",
+        expand=1,
+        text_size=12,
+        label_style=ft.TextStyle(size=10),
+        dense=True,
+        options=[
+            ft.dropdown.Option(key="TODOS", text="Todos"),
+            *[
+                ft.dropdown.Option(key=curso, text=curso)
+                for curso in dados["cursos_disponiveis"]
+            ],
+        ],
+    )
+    botao_aplicar = ft.ElevatedButton(
+        "Aplicar",
+        icon=ft.Icons.FILTER_ALT,
+        bgcolor=ft.Colors.BLUE_700,
+        color=ft.Colors.WHITE,
+        on_click=aplicar,
+        expand=1,
+    )
+    botao_limpar = ft.OutlinedButton(
+        "Limpar",
+        icon=ft.Icons.CLEAR,
+        on_click=limpar,
+        expand=1,
+    )
+
+    colunas_campos = {"xs": 12, "sm": 12, "md": 6, "lg": 3, "xl": 3, "xxl": 3}
+    colunas_botoes = {"xs": 12, "sm": 6, "md": 6, "lg": 3, "xl": 3, "xxl": 3}
+    conteudo_filtros = ft.ResponsiveRow(
+        spacing=8,
+        run_spacing=8,
+        controls=[
+            ft.Container(
+                col=colunas_campos,
+                content=ft.Row(controls=[dropdown_semestre]),
+            ),
+            ft.Container(
+                col=colunas_campos,
+                content=ft.Row(controls=[dropdown_curso]),
+            ),
+            ft.Container(
+                col=colunas_botoes,
+                content=ft.Row(controls=[botao_aplicar]),
+            ),
+            ft.Container(
+                col=colunas_botoes,
+                content=ft.Row(controls=[botao_limpar]),
+            ),
+        ],
+    )
+
+    container = ft.Container(
+        padding=ft.Padding.symmetric(horizontal=8, vertical=6),
+        border=ft.Border.all(1, "#3A3A3A"),
+        border_radius=8,
+        content=conteudo_filtros,
+    )
+    return container, dropdown_semestre, dropdown_curso
+
+
+def _criar_kpis(layout, dados: dict) -> list[ft.Control]:
+    media = dados["media_geral"]
+    colunas = {"xs": 12, "sm": 6, "md": 6, "lg": 3, "xl": 3, "xxl": 3}
+    return [
+        criar_kpi_card(
+            layout,
+            "Avaliações realizadas",
+            f"{dados['avaliacoes']:,}".replace(",", "."),
+            ft.Icons.ASSIGNMENT_OUTLINED,
+            COR_PRIMARIA,
+            col=colunas,
+        ),
+        criar_kpi_card(
+            layout,
+            "Respostas registradas",
+            f"{dados['respostas']:,}".replace(",", "."),
+            ft.Icons.TRENDING_UP,
+            COR_PRIMARIA,
+            col=colunas,
+        ),
+        criar_kpi_card(
+            layout,
+            "Cursos avaliados",
+            str(dados["cursos"]),
+            ft.Icons.SCHOOL_OUTLINED,
+            COR_PRIMARIA,
+            col=colunas,
+        ),
+        criar_kpi_card(
+            layout,
+            "Média geral (1–5)",
+            f"{media:.1f}" if media is not None else "—",
+            ft.Icons.STAR_OUTLINE,
+            COR_PRIMARIA,
+            col=colunas,
+        ),
+    ]
+
+
+def _criar_layout(
     page: ft.Page,
     mudar_tela: Callable[[str], None],
+    rota: str,
+    exibir_visao_geral: bool,
 ) -> ft.View:
-    """
-    Constrói a página principal do Dashboard.
-
-        A primeira aba apresenta uma visão consolidada dos dados reais das avaliações.
-        A segunda aba apresenta o acompanhamento das avaliações registradas.
-    """
-
-    # ==========================================================
-    # LAYOUT
-    # ==========================================================
-
     layout = ResponsiveLayout(
         page,
         titulo_pagina="Indicadores de Avaliação",
-        subtitulo=(
-            "Acompanhe os resultados e a evolução "
-            "das avaliações institucionais."
-        ),
+        subtitulo="Acompanhe os resultados e a evolução das avaliações institucionais.",
         mudar_tela=mudar_tela,
     )
 
-    # ==========================================================
-    # DADOS REAIS
-    # ==========================================================
-
-    dados_dashboard = obter_dados_dashboard()
-
-    quantidade_avaliacoes = dados_dashboard[
-        "avaliacoes"
-    ]
-
-    quantidade_respostas = dados_dashboard[
-        "respostas"
-    ]
-
-    quantidade_cursos = dados_dashboard[
-        "cursos"
-    ]
-
-    media_geral = dados_dashboard[
-        "media_geral"
-    ]
-
-    medias_eixos = dados_dashboard[
-        "medias_eixos"
-    ]
-
-    # ==========================================================
-    # KPIs
-    # ==========================================================
-
-    linha_kpis = ft.Row(
-        wrap=True,
-        spacing=20,
-        run_spacing=20,
-        controls=[
-            criar_kpi_card(
+    if exibir_visao_geral:
+        dados_iniciais = obter_dados_dashboard()
+        seletores = {}
+        texto_contexto = ft.Text(
+            "Todos os cursos · Todos os semestres",
+            size=12,
+            color=layout.cores[TEXTO_SECUNDARIO],
+        )
+        linha_kpis = ft.ResponsiveRow(
+            spacing=12,
+            run_spacing=12,
+            controls=_criar_kpis(layout, dados_iniciais),
+        )
+        area_eixos = ft.Container(
+            content=criar_grafico_eixos(
                 layout,
-                "Avaliações realizadas",
-                str(quantidade_avaliacoes),
-                ft.Icons.ASSIGNMENT_OUTLINED,
-                COR_PRIMARIA,
-            ),
+                dados_iniciais["medias_eixos"],
+                NOMES_EIXOS,
+                CORES_BARRAS_GRAFICO_EIXOS,
+                dados_iniciais["respostas_por_eixo"],
+                dados_iniciais["media_geral"],
+            )
+        )
+        area_cursos = ft.Container(
+            content=criar_tabela_cursos_dashboard(
+                layout, dados_iniciais["dados_por_curso"]
+            )
+        )
+        area_evolucao = ft.Container(
+            content=criar_grafico_evolucao_semestres(
+                layout, dados_iniciais["evolucao_semestres"]
+            )
+        )
 
-            criar_kpi_card(
-                layout,
-                "Respostas registradas",
-                f"{quantidade_respostas:,}".replace(
-                    ",",
-                    ".",
+        def aplicar_filtros(e=None) -> None:
+            semestre_selecionado = seletores["semestre"].value
+            curso_selecionado = seletores["curso"].value
+            dados = obter_dados_dashboard(
+                semestre=(
+                    semestre_selecionado
+                    if semestre_selecionado not in (None, "", "TODOS")
+                    else None
                 ),
-                ft.Icons.TRENDING_UP,
-                COR_PRIMARIA,
-            ),
-
-            criar_kpi_card(
-                layout,
-                "Cursos avaliados",
-                str(quantidade_cursos),
-                ft.Icons.SCHOOL_OUTLINED,
-                COR_PRIMARIA,
-            ),
-
-            criar_kpi_card(
-                layout,
-                "Média geral",
-                (
-                    f"{media_geral:.1f}"
-                    if quantidade_respostas
-                    else "—"
+                curso_nome=(
+                    curso_selecionado
+                    if curso_selecionado not in (None, "", "TODOS")
+                    else None
                 ),
-                ft.Icons.STAR_OUTLINE,
-                COR_PRIMARIA,
-            ),
-        ],
-    )
+            )
+            linha_kpis.controls = _criar_kpis(layout, dados)
+            area_eixos.content = criar_grafico_eixos(
+                layout,
+                dados["medias_eixos"],
+                NOMES_EIXOS,
+                CORES_BARRAS_GRAFICO_EIXOS,
+                dados["respostas_por_eixo"],
+                dados["media_geral"],
+            )
+            area_cursos.content = criar_tabela_cursos_dashboard(
+                layout, dados["dados_por_curso"]
+            )
+            area_evolucao.content = criar_grafico_evolucao_semestres(
+                layout, dados["evolucao_semestres"]
+            )
+            texto_contexto.value = (
+                f"{curso_selecionado if curso_selecionado not in (None, '', 'TODOS') else 'Todos os cursos'}"
+                f" · {semestre_selecionado if semestre_selecionado not in (None, '', 'TODOS') else 'Todos os semestres'}"
+            )
+            page.update()
 
-    # ==========================================================
-    # GRÁFICO POR EIXO
-    # ==========================================================
+        def limpar_filtros(e=None) -> None:
+            seletores["semestre"].value = "TODOS"
+            seletores["curso"].value = "TODOS"
+            aplicar_filtros()
 
-    area_graficos = criar_grafico_eixos(
-        layout,
-        medias_eixos,
-        NOMES_EIXOS,
-        CORES_BARRAS_GRAFICO_EIXOS,
-    )
-    
-    indice_aba_atual = getattr(page, "_dashboard_aba_atual", 0)
+        filtros, dropdown_semestre, dropdown_curso = _criar_filtros(
+            dados_iniciais, aplicar_filtros, limpar_filtros
+        )
+        seletores["semestre"] = dropdown_semestre
+        seletores["curso"] = dropdown_curso
 
-    # ==========================================================
-    # CONTEÚDO DA PRIMEIRA ABA
-    # ==========================================================
-
-    conteudo_dashboard_executivo = ft.Container(
-        expand=True,
-        content=ft.Column(
-            spacing=16,
+        conteudo = ft.Column(
+            expand=True,
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+            spacing=12,
             scroll=ft.ScrollMode.AUTO,
             controls=[
-                ft.Container(height=8),
+                filtros,
+                texto_contexto,
                 linha_kpis,
-                area_graficos,
+                area_eixos,
+                area_cursos,
+                area_evolucao,
             ],
-        ),
+        )
+    else:
+        conteudo = criar_conteudo_avaliacoes(layout, mudar_tela, page)
+
+    layout.add_content(ft.Container(expand=True, content=conteudo))
+    return layout.criar_view(rota)
+
+
+def ViewDashboard(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
+    """Subtela Visão Geral dos indicadores institucionais."""
+    return _criar_layout(
+        page, mudar_tela, ROTA_DASHBOARD_VISAO_GERAL, exibir_visao_geral=True
     )
 
-    # ==========================================================
-    # ABAS
-    # ==========================================================
 
-    barra_abas = ft.TabBar(
-        tabs=[
-            ft.Tab(
-                label="Visão Geral",
-                icon=ft.Icons.GRID_VIEW_ROUNDED,
-            ),
-            ft.Tab(
-                label="Acompanhamento das Avaliações",
-                icon=ft.Icons.TABLE_ROWS_ROUNDED,
-            ),
-        ],
-        label_color=COR_PRIMARIA,
-        unselected_label_color=(
-            layout.cores[TEXTO_SECUNDARIO]
-        ),
-        indicator_color=COR_PRIMARIA,
-        divider_color=layout.cores[BORDA],
+def ViewDashboardAvaliacoes(
+    page: ft.Page, mudar_tela: Callable[[str], None]
+) -> ft.View:
+    """Subtela de acompanhamento das avaliações registradas."""
+    return _criar_layout(
+        page, mudar_tela, ROTA_DASHBOARD_AVALIACOES, exibir_visao_geral=False
     )
-
-    # ==========================================================
-    # CONTEÚDO DAS ABAS
-    # ==========================================================
-
-    conteudo_abas = ft.TabBarView(
-        expand=True,
-        controls=[
-            conteudo_dashboard_executivo,
-
-            criar_conteudo_avaliacoes(
-                layout,
-                mudar_tela,
-                page,
-            ),
-        ],
-    )
-
-    abas = ft.Tabs(
-        length=2,
-        selected_index=indice_aba_atual,
-        on_change=lambda e: setattr(
-            page,
-            "_dashboard_aba_atual",
-            e.control.selected_index,
-        ),
-        expand=True,
-        content=ft.Column(
-            expand=True,
-            controls=[
-                barra_abas,
-                conteudo_abas,
-            ],
-        ),
-    )
-
-    conteudo = ft.Column(
-        expand=True,
-        controls=[
-            abas,
-        ],
-    )
-
-    # ==========================================================
-    # FINALIZAÇÃO
-    # ==========================================================
-
-    layout.add_content(conteudo)
-    return layout.criar_view("/dashboard")

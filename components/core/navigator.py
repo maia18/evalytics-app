@@ -46,6 +46,11 @@ class Navigator:
         self.page.views.clear()
         self.page.overlay.clear()
 
+        # Mantém a rota atual disponível para componentes como a sidebar,
+        # já que esta navegação monta views diretamente sem chamar page.go().
+        self.page.rota_navegacao_atual = rota
+        self.page.route = rota
+
         view_builder: ViewBuilder = obter_view(rota)
 
         self.page.views.append(

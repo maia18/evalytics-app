@@ -1,7 +1,7 @@
 import flet as ft
 from typing import Callable
 from components.layout.responsive.responsive import ResponsiveLayout
-from database.services.cursos.firestore_courses import obter_cursos_db
+from database.services.cursos.firestore_courses import curso_esta_ativo, obter_cursos_db
 from models.formulario.core.form_controller import FormularioController
 from models.formulario.core.formulario_ui import (
     criar_dropdown_cursos,
@@ -58,7 +58,7 @@ def ViewFormulario(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     # ==========================================================
     
     try:
-        cursos = obter_cursos_db()
+        cursos = [curso for curso in obter_cursos_db() if curso_esta_ativo(curso)]
     except Exception:
         cursos = []
 

@@ -5,7 +5,7 @@ from components.core.constants.constants import (
 
 def criar_campos_formulario_curso(
     cores: dict[str, str],
-) -> dict[str, ft.TextField]:
+) -> dict[str, ft.Control]:
     """
     Cria um novo conjunto de campos de formulário para cadastro/edição de curso.
 
@@ -16,5 +16,14 @@ def criar_campos_formulario_curso(
     return {
         "nome": ft.TextField(label="Nome do Curso", border_color=cores[COR_PRIMARIA], dense=True),
         "departamento": ft.TextField(label="Departamento", border_color=cores[COR_PRIMARIA], dense=True),
-        "coordenador": ft.TextField(label="Coordenador Responsável", border_color=cores[COR_PRIMARIA], dense=True),
+        "coordenador": ft.TextField(label="Coordenador Responsável (opcional)", border_color=cores[COR_PRIMARIA], dense=True),
+        "status": ft.Dropdown(
+            label="Status",
+            value="ATIVO",
+            dense=True,
+            options=[
+                ft.dropdown.Option(key="ATIVO", text="Ativo"),
+                ft.dropdown.Option(key="INATIVO", text="Inativo"),
+            ],
+        ),
     }

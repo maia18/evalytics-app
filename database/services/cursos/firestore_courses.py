@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Optional
 from firebase_admin import firestore
 from database.services.firebase_config import db
@@ -7,7 +8,38 @@ from .curso_notificacoes import criar_notificacao_curso
 logger = logging.getLogger(__name__)
 COLECAO_CURSOS = "cursos"
 
-def adicionar_curso_db(codigo: str, nome: str, depto: str, coord: str) -> Optional[str]:
+
+def curso_esta_ativo(curso: dict) -> bool:
+    """Normaliza o status de cursos novos e documentos legados."""
+    valor = curso.get("ativo", curso.get("status", True))
+    if isinstance(valor, bool):
+        return valor
+    return str(valor).strip().casefold() in {"ativo", "active", "true", "1"}
+
+def gerar_codigo_curso() -> str:
+    """Gera o próximo código sequencial CUR-0001 disponível."""
+    codigos = {
+        str(curso.get("codigo", "")).strip().upper()
+        for curso in obter_cursos_db()
+    }
+    numeros = [
+        int(match.group(1))
+        for codigo in codigos
+        if (match := re.fullmatch(r"CUR-(\d+)", codigo))
+    ]
+    proximo = max(numeros, default=0) + 1
+    while f"CUR-{proximo:04d}" in codigos:
+        proximo += 1
+    return f"CUR-{proximo:04d}"
+
+
+def adicionar_curso_db(
+    codigo: str,
+    nome: str,
+    depto: str,
+    coord: str,
+    ativo: bool = True,
+) -> Optional[str]:
     """
     Adiciona um curso na coleção de cursos.
         Retorna o ID do documento criado, ou None em caso de erro.
@@ -18,6 +50,7 @@ def adicionar_curso_db(codigo: str, nome: str, depto: str, coord: str) -> Option
             "nome": nome,
             "departamento": depto,
             "coordenador": coord,
+            "ativo": ativo,
             "timestamp": firestore.SERVER_TIMESTAMP,
         }
 
@@ -54,7 +87,13 @@ def obter_cursos_db() -> list[dict]:
         logger.exception("Erro ao obter cursos.")
         return []
 
-def atualizar_curso_db(doc_id: str, nome: str, depto: str, coord: str) -> bool:
+def atualizar_curso_db(
+    doc_id: str,
+    nome: str,
+    depto: str,
+    coord: str,
+    ativo: bool = True,
+) -> bool:
     """
     Atualiza um curso existente.
         Retorna True em caso de sucesso.
@@ -65,6 +104,7 @@ def atualizar_curso_db(doc_id: str, nome: str, depto: str, coord: str) -> bool:
                 "nome": nome,
                 "departamento": depto,
                 "coordenador": coord,
+                "ativo": ativo,
             }
         )
 
@@ -79,6 +119,21 @@ def atualizar_curso_db(doc_id: str, nome: str, depto: str, coord: str) -> bool:
 
     except Exception:
         logger.exception("Erro ao atualizar curso.")
+        return False
+
+
+def atualizar_status_curso_db(doc_id: str, ativo: bool) -> bool:
+    """Atualiza apenas o status, sem alterar os demais dados do curso."""
+    try:
+        db.collection(COLECAO_CURSOS).document(doc_id).update({"ativo": ativo})
+        logger.info(
+            "Status do curso '%s' alterado para %s.",
+            doc_id,
+            "ativo" if ativo else "inativo",
+        )
+        return True
+    except Exception:
+        logger.exception("Erro ao atualizar o status do curso '%s'.", doc_id)
         return False
 
 def excluir_curso_db(doc_id: str) -> bool:

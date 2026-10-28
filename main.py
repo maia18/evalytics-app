@@ -73,7 +73,6 @@ async def main(page: ft.Page) -> None:
         )
         raise
 
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 

@@ -4,10 +4,15 @@ import flet as ft
 from typing import Optional
 from datetime import datetime
 from database.services.firebase_config import db
+from database.services.cursos.firestore_courses import obter_cursos_db
 from models.avaliacoes.core.feedback import mostrar_feedback
 from models.relatorios.core.grafico_radar import salvar_grafico_radar
 from utils.services.indicadores.indicadores_repository import listar_indicadores
-from utils.services.cursos.curso_utils import normalizar_nome_curso
+from utils.services.cursos.curso_utils import (
+    criar_indice_cursos_atuais,
+    normalizar_nome_curso,
+    resolver_curso_avaliacao,
+)
 from .pdf_builder import construir_documento_pdf
 
 logger = logging.getLogger(__name__)
@@ -25,12 +30,22 @@ def carregar_avaliacoes_detalhadas(
         return []
 
     indicadores_atuais = listar_indicadores()
+    cursos_cadastrados = obter_cursos_db()
+    nomes_cadastrados = [
+        str(curso.get("nome", "")).strip()
+        for curso in cursos_cadastrados
+        if curso.get("nome") and str(curso.get("nome")).strip()
+    ]
+    indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
     avaliacoes = []
     for documento in db.collection(COLECAO_AVALIACOES).stream():
         if documento.id not in ids:
             continue
 
         dados = documento.to_dict() or {}
+        curso_atual = resolver_curso_avaliacao(dados, indice_cursos)
+        if not curso_atual:
+            continue
         perguntas = dados.get("perguntas")
         perguntas_historicas = isinstance(perguntas, list) and bool(perguntas)
         # Avaliações antigas não têm snapshot: usa o catálogo atual como fallback.
@@ -61,7 +76,10 @@ def carregar_avaliacoes_detalhadas(
 
         avaliacoes.append({
             "id": documento.id,
-            "curso_nome": dados.get("curso_nome", "Curso não informado"),
+            "curso_nome": normalizar_nome_curso(
+                curso_atual.get("nome"),
+                nomes_cadastrados,
+            ),
             "data_avaliacao": dados.get("data_avaliacao"),
             "respostas": dados.get("respostas", {}) or {},
             "justificativas": dados.get("justificativas", dados.get("comentarios", {})) or {},

@@ -51,7 +51,7 @@ def criar_secao_filtros(
         label="Semestre",
         options=opcoes_semestre,
         value="TODOS",
-        width=220,
+        width=240,
         dense=True,
     )
 
@@ -172,26 +172,55 @@ def criar_secao_filtros(
     # LAYOUT
     # ======================================================
 
+    linha_controles = ft.Row(
+        visible=False,
+        wrap=True,
+        spacing=18,
+        run_spacing=18,
+        controls=[
+            dropdown_semestre,
+            dropdown_curso,
+            dropdown_eixo,
+            botao_filtrar,
+            botao_limpar,
+        ],
+    )
+    icone_filtros = ft.Icon(ft.Icons.KEYBOARD_ARROW_RIGHT, size=20)
+
+    def alternar_filtros(e=None):
+        linha_controles.visible = not linha_controles.visible
+        icone_filtros.name = (
+            ft.Icons.KEYBOARD_ARROW_DOWN
+            if linha_controles.visible
+            else ft.Icons.KEYBOARD_ARROW_RIGHT
+        )
+        page.update()
+
     return ft.Container(
         bgcolor=layout.cores[CARD],
-        padding=20,
+        padding=ft.Padding.symmetric(horizontal=16, vertical=8),
         border_radius=8,
         border=borda_container,
         content=ft.Column(
             spacing=15,
             controls=[
-                ft.Row(
-                    wrap=True,
-                    spacing=10,
-                    run_spacing=10,
-                    controls=[
-                        dropdown_semestre,
-                        dropdown_curso,
-                        dropdown_eixo,
-                        botao_filtrar,
-                        botao_limpar,
-                    ],
+                ft.Container(
+                    on_click=alternar_filtros,
+                    content=ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            ft.Row(
+                                spacing=8,
+                                controls=[
+                                    ft.Icon(ft.Icons.FILTER_ALT, size=18),
+                                    ft.Text("Filtros", weight="w500"),
+                                ],
+                            ),
+                            icone_filtros,
+                        ],
+                    ),
                 ),
+                linha_controles,
             ],
         ),
     )

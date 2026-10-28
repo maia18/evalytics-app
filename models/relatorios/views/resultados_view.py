@@ -11,7 +11,6 @@ def TelaResultados(page: ft.Page) -> ft.Container:
     # ÁREA DOS CARDS
     # ======================================================
     cards_resultados = ft.Column(
-        expand=True,
         spacing=15,
     )
 
@@ -47,7 +46,7 @@ def TelaResultados(page: ft.Page) -> ft.Container:
     cabecalho = ft.Column(
         spacing=5,
         controls=[
-            ft.Text("Dashboard de Resultados", size=28, weight="bold"),
+            ft.Text("Dashboard de Resultados", size=25, weight="bold"),
             ft.Text(
                 "Acompanhe o desempenho institucional através dos eixos avaliados.",
                 size=14,
@@ -57,10 +56,11 @@ def TelaResultados(page: ft.Page) -> ft.Container:
     )
 
     dashboard = ft.Container(
-        padding=30,
+        padding=ft.Padding.symmetric(horizontal=18, vertical=12),
         expand=True,
         content=ft.Column(
             expand=True,
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 cabecalho,
                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),

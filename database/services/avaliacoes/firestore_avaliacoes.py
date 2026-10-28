@@ -1,6 +1,11 @@
 import logging
 from database.services.firebase_config import db
+from database.services.cursos.firestore_courses import obter_cursos_db
 from utils.services.indicadores.indicadores_repository import listar_indicadores
+from utils.services.cursos.curso_utils import (
+    criar_indice_cursos_atuais,
+    resolver_curso_avaliacao,
+)
 from .avaliacoes_formatadores import (
     NOMES_EIXOS, 
     definir_cor_nota, 
@@ -24,13 +29,18 @@ def obter_respostas_tabela() -> list[dict]:
             for indicador in indicadores
             if indicador.get("id")
         }
+        cursos_cadastrados = obter_cursos_db()
+        indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
 
         linhas = []
 
         for documento in documentos:
             dados = documento.to_dict() or {}
             avaliacao_id = documento.id
-            curso_nome = dados.get("curso_nome", "Curso não informado")
+            curso_atual = resolver_curso_avaliacao(dados, indice_cursos)
+            if not curso_atual:
+                continue
+            curso_nome = curso_atual.get("nome", "Curso não informado")
             
             data_formatada = formatar_data(dados.get("data_avaliacao"))
             respostas = dados.get("respostas", {})

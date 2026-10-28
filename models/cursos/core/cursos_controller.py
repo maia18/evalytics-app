@@ -1,50 +1,68 @@
 import flet as ft
 from typing import Callable
-from database.services.cursos.firestore_courses import obter_cursos_db
+
+from database.services.cursos.firestore_courses import (
+    curso_esta_ativo,
+    obter_cursos_db,
+)
 from models.cursos.widgets.tabela_cursos import (
-    criar_linha_curso, 
     ContextoTabelaCursos,
+    criar_linha_curso,
+)
+from utils.services.avaliacoes.avaliacoes_service import listar_avaliacoes
+from utils.services.cursos.curso_utils import (
+    chave_curso,
+    nome_departamento_exibicao,
+    normalizar_nome_curso,
 )
 
-def carregar_cursos_iniciais(
-    contexto_tabela: ContextoTabelaCursos, 
-    tabela_cursos: ft.DataTable, 
-    atualizar_interface_callback: Callable[[], None]
-) -> None:
-    """
-    Busca os dados dos cursos no Firestore e renderiza as linhas no componente DataTable.
-        Esta função atua como uma ponte (Controller) entre o Banco de Dados e a View (Tabela).
-    
-    Args:
-        contexto_tabela: Objeto de estado contendo referências para modais/edições dos cursos.
-        tabela_cursos: A instância física do componente DataTable na interface do Flet.
-        atualizar_interface_callback: Função (geralmente `page.update()`) para repintar a tela.
-    """
-    
-    # 1. Busca a lista de dicionários contendo os dados dos cursos
-    cursos = obter_cursos_db()
-    
-    # 2. Reseta a tabela
-    #   Passo crítico: 
-    #       Sem limpar (clear), se essa função for chamada novamente para recarregar a tela, as linhas se duplicarão indefinidamente.
-    tabela_cursos.rows.clear()
 
-    # 3. Itera sobre os dados brutos e os transforma em componentes visuais (DataRow)
-    for c in cursos:
-        linha = criar_linha_curso(
-            contexto_tabela,
-            c.get("id"),
-            
-            # Utiliza o segundo parâmetro do método .get() como valor padrão (fallback)
-            #   Evita que o app quebre se o campo estiver ausente no documento do Firestore.
-            c.get("codigo", "S/C"), 
-            c.get("nome", ""),
-            c.get("departamento", ""),
-            c.get("coordenador", ""),
+def carregar_cursos_iniciais(
+    contexto_tabela: ContextoTabelaCursos,
+    tabela_cursos: ft.DataTable,
+    atualizar_interface_callback: Callable[[], None],
+) -> None:
+    """Carrega cursos e avaliações, depois reconstrói as linhas da tabela."""
+    cursos = obter_cursos_db()
+    avaliacoes = listar_avaliacoes()
+    nomes_cadastrados = [
+        str(curso.get("nome", "")).strip()
+        for curso in cursos
+        if curso.get("nome") and str(curso.get("nome")).strip()
+    ]
+    contagem_por_nome: dict[str, int] = {}
+
+    for avaliacao in avaliacoes:
+        curso_nome = normalizar_nome_curso(
+            avaliacao.get("curso_nome", avaliacao.get("curso", "")),
+            nomes_cadastrados,
         )
-        
-        # Injeta a linha criada diretamente na estrutura interna da tabela
-        tabela_cursos.rows.append(linha)
-        
-    # 4. Avisa o Flet que a árvore de componentes foi modificada e precisa ser redesenhada na tela.
+        chave = chave_curso(curso_nome)
+        if chave:
+            contagem_por_nome[chave] = contagem_por_nome.get(chave, 0) + 1
+
+    linhas = []
+    for curso in cursos:
+        nome = curso.get("nome", "")
+        quantidade_avaliacoes = contagem_por_nome.get(
+            chave_curso(normalizar_nome_curso(nome, nomes_cadastrados)), 0
+        )
+        linhas.append(
+            criar_linha_curso(
+                contexto_tabela,
+                curso.get("id"),
+                curso.get("codigo", ""),
+                nome,
+                nome_departamento_exibicao(
+                    curso.get("departamento", ""), cursos
+                ),
+                curso.get("coordenador", ""),
+                curso_esta_ativo(curso),
+                quantidade_avaliacoes,
+            )
+        )
+
+    contexto_tabela.estado["cursos"] = cursos
+    contexto_tabela.estado["todas_linhas"] = linhas
+    tabela_cursos.rows = linhas
     atualizar_interface_callback()

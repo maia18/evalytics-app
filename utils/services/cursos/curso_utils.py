@@ -40,11 +40,53 @@ def normalizar_nome_curso(
     return nome_limpo
 
 
+def criar_indice_cursos_atuais(
+    cursos_cadastrados: list[dict],
+) -> tuple[dict[str, dict], dict[str, dict]]:
+    """Cria índices por ID e nome para validar avaliações contra o catálogo."""
+    por_id: dict[str, dict] = {}
+    por_nome: dict[str, dict] = {}
+    for curso in cursos_cadastrados:
+        if curso.get("id"):
+            por_id[str(curso["id"])] = curso
+        nome = str(curso.get("nome", "")).strip()
+        chave = chave_curso(nome)
+        if chave:
+            por_nome.setdefault(chave, curso)
+    return por_id, por_nome
+
+
+def resolver_curso_avaliacao(
+    avaliacao: dict,
+    indice_cursos: tuple[dict[str, dict], dict[str, dict]],
+) -> dict | None:
+    """Retorna o curso atual da avaliação ou None se ele foi removido.
+
+    Quando a avaliação tem curso_id, ele é a identidade canônica: um ID removido
+    não pode ser reassociado a um curso recriado com o mesmo nome. Avaliações
+    antigas sem ID podem ser validadas pelo nome.
+    """
+    por_id, por_nome = indice_cursos
+    curso_id = str(avaliacao.get("curso_id") or "").strip()
+    if curso_id:
+        return por_id.get(curso_id)
+
+    nome = avaliacao.get("curso_nome") or avaliacao.get("curso")
+    if not nome:
+        return None
+    return por_nome.get(chave_curso(str(nome)))
+
+
 def listar_nomes_cursos_filtraveis(
     resultados: list[dict],
     cursos_cadastrados: list[dict],
 ) -> list[str]:
-    """Une o catálogo da Gestão de Cursos às grafias encontradas nas avaliações."""
+    """Lista apenas os cursos do catálogo atual para filtros da interface.
+
+    Avaliações antigas podem continuar armazenando nomes de cursos removidos;
+    esses nomes permanecem nos dados históricos, mas não devem voltar a aparecer
+    como opções dos filtros.
+    """
     nomes_cadastrados = [
         str(curso.get("nome", "")).strip()
         for curso in cursos_cadastrados
@@ -54,15 +96,34 @@ def listar_nomes_cursos_filtraveis(
         chave_curso(nome): normalizar_nome_curso(nome, nomes_cadastrados)
         for nome in nomes_cadastrados
     }
-
-    for resultado in resultados:
-        nome = resultado.get("curso_nome", resultado.get("curso", ""))
-        if not nome or not str(nome).strip():
-            continue
-        chave = chave_curso(str(nome))
-        nomes_por_chave.setdefault(
-            chave,
-            normalizar_nome_curso(str(nome), nomes_cadastrados),
-        )
-
     return sorted(set(nomes_por_chave.values()), key=str.casefold)
+
+
+def chave_departamento(nome: str | None) -> str:
+    """Cria uma chave de comparação de departamento sem diferenças de caixa."""
+    return " ".join(str(nome or "").split()).casefold()
+
+
+def listar_departamentos_unicos(cursos: list[dict]) -> list[str]:
+    """Agrupa grafias equivalentes e prefere a versão em caixa alta, se existir."""
+    nomes_por_chave: dict[str, str] = {}
+    for curso in cursos:
+        nome = " ".join(str(curso.get("departamento", "")).split())
+        chave = chave_departamento(nome)
+        if not chave:
+            continue
+
+        atual = nomes_por_chave.get(chave)
+        if atual is None or (nome.isupper() and not atual.isupper()):
+            nomes_por_chave[chave] = nome
+
+    return sorted(nomes_por_chave.values(), key=str.casefold)
+
+
+def nome_departamento_exibicao(nome: str | None, cursos: list[dict]) -> str:
+    """Retorna a grafia canônica visível para um departamento."""
+    chave = chave_departamento(nome)
+    for departamento in listar_departamentos_unicos(cursos):
+        if chave_departamento(departamento) == chave:
+            return departamento
+    return " ".join(str(nome or "").split())

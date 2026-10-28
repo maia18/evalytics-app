@@ -1,6 +1,5 @@
 import flet as ft
 from typing import Callable
-from components.core.constants.constants import ESTILO_BOTAO_CANCELAR
 from components.core.constants.constants import (
     COR_PRIMARIA,
     ESTILO_BOTAO_CANCELAR,
@@ -11,7 +10,7 @@ from models.cursos.modals.modal_utils import fechar_modal
 def criar_modal_edit(
     page: ft.Page,
     estado: dict,
-    campos_edit: dict[str, ft.TextField],
+    campos_edit: dict[str, ft.Control],
     atualizar_interface: Callable[[], None],
     cores: dict[str, str],
 ) -> ft.AlertDialog:
@@ -25,25 +24,45 @@ def criar_modal_edit(
         nome = campos_edit["nome"].value
         depto = campos_edit["departamento"].value
         coord = campos_edit["coordenador"].value
+        ativo = campos_edit["status"].value == "ATIVO"
+
+        nome = (nome or "").strip()
+        depto = (depto or "").strip()
+        campos_edit["nome"].error_text = None
+        campos_edit["departamento"].error_text = None
+        if not nome or not depto:
+            if not nome:
+                campos_edit["nome"].error_text = "Informe o nome do curso."
+            if not depto:
+                campos_edit["departamento"].error_text = "Informe o departamento."
+            page.update()
+            return
 
         if linha_em_edicao and id_banco:
-            sucesso = atualizar_curso_db(id_banco, nome, depto, coord)
+            sucesso = atualizar_curso_db(id_banco, nome, depto, coord, ativo)
             if sucesso:
-                '''
-                Modifica apenas a linha visual (DataRow) que está sendo apontada
-                    Reflete os novos textos nas células visuais diretamente (célula 0, o código, não é editável aqui)
-                '''
                 linha_em_edicao.cells[1].content.value = nome
                 linha_em_edicao.cells[2].content.value = depto
                 linha_em_edicao.cells[3].content.value = coord
+                linha_em_edicao.cells[4].content.value = ativo
+                linha_em_edicao.cells[4].content.label = "Ativo" if ativo else "Inativo"
 
-        fechar_modal(page, modal)
-        atualizar_interface()
+                fechar_modal(page, modal)
+                atualizar_interface()
 
     modal = ft.AlertDialog(
         modal=True,
         title=ft.Text("Editar Curso", size=20, weight="bold"),
-        content=ft.Column(width=400, height=220, spacing=15, controls=list(campos_edit.values())),
+        content=ft.Column(
+            width=500,
+            height=330,
+            spacing=12,
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+            controls=[
+                ft.Text("Nome e departamento são obrigatórios."),
+                *list(campos_edit.values()),
+            ],
+        ),
         actions=[
             ft.TextButton("Cancelar", on_click=lambda e: fechar_modal(page, modal), style=ESTILO_BOTAO_CANCELAR),
             ft.ElevatedButton(

@@ -1,7 +1,13 @@
 import logging
 from database.services.firebase_config import db
+from database.services.cursos.firestore_courses import obter_cursos_db
 from utils.services.indicadores.indicadores_repository import listar_indicadores
-from utils.services.cursos.curso_utils import chave_curso
+from utils.services.cursos.curso_utils import (
+    chave_curso,
+    criar_indice_cursos_atuais,
+    normalizar_nome_curso,
+    resolver_curso_avaliacao,
+)
 
 # Importação dos utilitários puros
 from .relatorio_utils import obter_semestre
@@ -28,11 +34,14 @@ def _obter_mapa_eixos() -> dict[str, int]:
 def listar_semestres_disponiveis() -> list[str]:
     """Retorna os semestres encontrados nas avaliações reais no Firestore."""
     try:
+        indice_cursos = criar_indice_cursos_atuais(obter_cursos_db())
         documentos = db.collection(COLECAO_AVALIACOES).stream()
         semestres = set()
 
         for documento in documentos:
-            dados = documento.to_dict()
+            dados = documento.to_dict() or {}
+            if not resolver_curso_avaliacao(dados, indice_cursos):
+                continue
             data_avaliacao = dados.get("data_avaliacao", "")
             semestre = obter_semestre(data_avaliacao)
 
@@ -53,18 +62,24 @@ def calcular_medias_eixos(
     """Calcula as médias das avaliações por eixo, buscando diretamente no banco."""
     try:
         mapa_eixo = _obter_mapa_eixos()
+        cursos_cadastrados = obter_cursos_db()
+        indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
         avaliacoes = db.collection(COLECAO_AVALIACOES).stream()
 
         acumulador: dict[int, list[float]] = {eixo_id: [] for eixo_id in EIXOS_PADRAO}
 
         for avaliacao in avaliacoes:
-            dados = avaliacao.to_dict()
+            dados = avaliacao.to_dict() or {}
+            curso_atual = resolver_curso_avaliacao(dados, indice_cursos)
+            if not curso_atual:
+                continue
             data_avaliacao = dados.get("data_avaliacao", "")
             semestre_avaliacao = obter_semestre(data_avaliacao)
 
             if semestre and semestre_avaliacao != semestre:
                 continue
-            if curso_nome and chave_curso(dados.get("curso_nome")) != chave_curso(curso_nome):
+            nome_curso = curso_atual.get("nome", "")
+            if curso_nome and chave_curso(nome_curso) != chave_curso(curso_nome):
                 continue
 
             respostas = dados.get("respostas", {})
@@ -102,17 +117,28 @@ def listar_resultados_consolidados(
     """Retorna avaliações consolidadas por eixo."""
     try:
         mapa_eixo = _obter_mapa_eixos()
+        cursos_cadastrados = obter_cursos_db()
+        nomes_cadastrados = [
+            str(curso.get("nome", "")).strip()
+            for curso in cursos_cadastrados
+            if curso.get("nome") and str(curso.get("nome")).strip()
+        ]
+        indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
         documentos = db.collection(COLECAO_AVALIACOES).stream()
         resultados: list[dict] = []
 
         for documento in documentos:
-            dados = documento.to_dict()
+            dados = documento.to_dict() or {}
+            curso_atual = resolver_curso_avaliacao(dados, indice_cursos)
+            if not curso_atual:
+                continue
             data_avaliacao = dados.get("data_avaliacao", "")
             semestre_avaliacao = obter_semestre(data_avaliacao)
 
             if semestre and semestre_avaliacao != semestre:
                 continue
-            if curso_nome and chave_curso(dados.get("curso_nome")) != chave_curso(curso_nome):
+            nome_original = curso_atual.get("nome", "")
+            if curso_nome and chave_curso(nome_original) != chave_curso(curso_nome):
                 continue
 
             respostas = dados.get("respostas", {})
@@ -149,7 +175,9 @@ def listar_resultados_consolidados(
             resultados.append({
                 "id": documento.id,
                 "curso_id": dados.get("curso_id", ""),
-                "curso_nome": dados.get("curso_nome", ""),
+                "curso_nome": normalizar_nome_curso(
+                    nome_original, nomes_cadastrados
+                ),
                 "data_avaliacao": data_avaliacao,
                 "semestre": semestre_avaliacao,
                 "eixos": {
