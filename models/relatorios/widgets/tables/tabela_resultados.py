@@ -20,9 +20,17 @@ def criar_tabela_resultados(
         content=criar_estrutura_tabela(page, resultados_iniciais),
     )
 
-    def atualizar_tabela(semestre: str | None = None, eixo: int | None = None) -> None:
+    def atualizar_tabela(
+        semestre: str | None = None,
+        curso_nome: str | None = None,
+        eixo: int | None = None,
+    ) -> None:
         """Busca novos dados com base nos filtros e re-renderiza o componente visual interno."""
-        resultados_filtrados = listar_resultados_consolidados(semestre=semestre, eixo=eixo)
+        resultados_filtrados = listar_resultados_consolidados(
+            semestre=semestre,
+            eixo=eixo,
+            curso_nome=curso_nome,
+        )
         conteudo_tabela.content = criar_estrutura_tabela(page, resultados_filtrados)
         page.update()
 

@@ -1,6 +1,7 @@
 import logging
 from database.services.firebase_config import db
 from utils.services.indicadores.indicadores_repository import listar_indicadores
+from utils.services.cursos.curso_utils import chave_curso
 
 # Importação dos utilitários puros
 from .relatorio_utils import obter_semestre
@@ -47,6 +48,7 @@ def listar_semestres_disponiveis() -> list[str]:
 def calcular_medias_eixos(
     semestre: str | None = None,
     eixo: int | None = None,
+    curso_nome: str | None = None,
 ) -> dict[int, float | None]:
     """Calcula as médias das avaliações por eixo, buscando diretamente no banco."""
     try:
@@ -61,6 +63,8 @@ def calcular_medias_eixos(
             semestre_avaliacao = obter_semestre(data_avaliacao)
 
             if semestre and semestre_avaliacao != semestre:
+                continue
+            if curso_nome and chave_curso(dados.get("curso_nome")) != chave_curso(curso_nome):
                 continue
 
             respostas = dados.get("respostas", {})
@@ -93,6 +97,7 @@ def calcular_medias_eixos(
 def listar_resultados_consolidados(
     semestre: str | None = None,
     eixo: int | None = None,
+    curso_nome: str | None = None,
 ) -> list[dict]:
     """Retorna avaliações consolidadas por eixo."""
     try:
@@ -106,6 +111,8 @@ def listar_resultados_consolidados(
             semestre_avaliacao = obter_semestre(data_avaliacao)
 
             if semestre and semestre_avaliacao != semestre:
+                continue
+            if curso_nome and chave_curso(dados.get("curso_nome")) != chave_curso(curso_nome):
                 continue
 
             respostas = dados.get("respostas", {})

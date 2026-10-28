@@ -7,6 +7,7 @@ from database.services.firebase_config import db
 from models.avaliacoes.core.feedback import mostrar_feedback
 from models.relatorios.core.grafico_radar import salvar_grafico_radar
 from utils.services.indicadores.indicadores_repository import listar_indicadores
+from utils.services.cursos.curso_utils import normalizar_nome_curso
 from .pdf_builder import construir_documento_pdf
 
 logger = logging.getLogger(__name__)
@@ -70,19 +71,6 @@ def carregar_avaliacoes_detalhadas(
         })
 
     return avaliacoes
-
-def normalizar_nome_curso(nome: str) -> str:
-    """Padroniza o nome dos cursos para exibição."""
-    if not nome:
-        return "Curso não informado"
-
-    nome_limpo = str(nome).strip().lower()
-    mapeamento = {
-        "eng telecom": "Engenharia de Telecomunicações",
-        "engenharia de telecomunicações": "Engenharia de Telecomunicações",
-    }
-
-    return mapeamento.get(nome_limpo, str(nome).strip())
 
 def gerar_pdf_completo(
     page: ft.Page,

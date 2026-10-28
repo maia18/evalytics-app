@@ -1,3 +1,6 @@
+from utils.services.cursos.curso_utils import chave_curso
+
+
 def obter_semestre(data_iso: str) -> str:
     """
     Converte uma data ISO para o semestre acadêmico.
@@ -26,6 +29,7 @@ def filtrar_resultados(
     resultados: list[dict],
     semestre: str | None = None,
     eixo: int | None = None,
+    curso_nome: str | None = None,
 ) -> list[dict]:
     """
     Filtra os resultados consolidados por semestre e/ou eixo em memória.
@@ -44,6 +48,11 @@ def filtrar_resultados(
 
             semestre_resultado = obter_semestre(data_avaliacao)
             if semestre_resultado != semestre:
+                continue
+
+        if curso_nome:
+            nome_resultado = resultado.get("curso_nome", resultado.get("curso", ""))
+            if chave_curso(str(nome_resultado)) != chave_curso(curso_nome):
                 continue
 
         # --------------------------------------------------

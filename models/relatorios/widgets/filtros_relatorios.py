@@ -3,6 +3,8 @@ from components.core.constants.constants import CARD
 from utils.services.relatorio.relatorio_service import (
     listar_semestres_disponiveis,
 )
+from database.services.cursos.firestore_courses import obter_cursos_db
+from utils.services.cursos.curso_utils import listar_nomes_cursos_filtraveis
 
 NOMES_EIXOS = {
     1: "Organização Didático-Pedagógica",
@@ -17,6 +19,7 @@ def criar_secao_filtros(
     ao_filtrar,
     ao_exportar_csv=None,
     ao_exportar_pdf=None,
+    resultados: list[dict] | None = None,
 ) -> ft.Container:
     """
     Cria a seção de filtros dos relatórios.
@@ -49,6 +52,24 @@ def criar_secao_filtros(
         options=opcoes_semestre,
         value="TODOS",
         width=220,
+        dense=True,
+    )
+
+    cursos = listar_nomes_cursos_filtraveis(
+        resultados or [],
+        obter_cursos_db(),
+    )
+    dropdown_curso = ft.Dropdown(
+        label="Curso",
+        options=[
+            ft.dropdown.Option(key="TODOS", text="Todos os cursos"),
+            *[
+                ft.dropdown.Option(key=curso, text=curso)
+                for curso in cursos
+            ],
+        ],
+        value="TODOS",
+        width=280,
         dense=True,
     )
 
@@ -85,6 +106,7 @@ def criar_secao_filtros(
 
     def aplicar_filtros(e=None):
         semestre = dropdown_semestre.value
+        curso = dropdown_curso.value
         eixo = dropdown_eixo.value
 
         semestre_filtro = (
@@ -99,8 +121,15 @@ def criar_secao_filtros(
             else int(eixo)
         )
 
+        curso_filtro = (
+            None
+            if curso in (None, "", "TODOS")
+            else curso
+        )
+
         ao_filtrar(
             semestre_filtro,
+            curso_filtro,
             eixo_filtro,
         )
 
@@ -110,9 +139,11 @@ def criar_secao_filtros(
 
     def limpar_filtros(e):
         dropdown_semestre.value = "TODOS"
+        dropdown_curso.value = "TODOS"
         dropdown_eixo.value = "TODOS"
 
         ao_filtrar(
+            None,
             None,
             None,
         )
@@ -155,6 +186,7 @@ def criar_secao_filtros(
                     run_spacing=10,
                     controls=[
                         dropdown_semestre,
+                        dropdown_curso,
                         dropdown_eixo,
                         botao_filtrar,
                         botao_limpar,

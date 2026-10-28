@@ -18,8 +18,16 @@ def TelaResultados(page: ft.Page) -> ft.Container:
     # ======================================================
     # ATUALIZA DASHBOARD (CONTROLLER LOGIC)
     # ======================================================
-    def atualizar_dashboard(semestre: str | None = None, eixo: int | None = None) -> None:
-        medias = calcular_medias_eixos(semestre=semestre, eixo=eixo)
+    def atualizar_dashboard(
+        semestre: str | None = None,
+        curso_nome: str | None = None,
+        eixo: int | None = None,
+    ) -> None:
+        medias = calcular_medias_eixos(
+            semestre=semestre,
+            eixo=eixo,
+            curso_nome=curso_nome,
+        )
         cards_resultados.controls.clear()
 
         # Renderiza apenas o eixo selecionado ou todos se não houver filtro
