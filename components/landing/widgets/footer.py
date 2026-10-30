@@ -1,23 +1,15 @@
 import flet as ft
-from components.core.constants.constants import (
-    COR_TEXTO_TITULO,
-    COR_TEXTO_SECUNDARIO,
-)
+from components.landing.palette import FUNDO, TEXTO_CLARO, TEXTO_CLARO_SECUNDARIO
 
 def criar_rodape() -> ft.Container:
     """Cria o rodapé da Landing Page."""
 
     return ft.Container(
         padding=ft.Padding.symmetric(
-            horizontal=40,
+            horizontal=24,
             vertical=28,
         ),
-        border=ft.Border(
-            top=ft.BorderSide(
-                1,
-                ft.Colors.BLACK12,
-            ),
-        ),
+        bgcolor=FUNDO,
         content=ft.ResponsiveRow(
             columns=12,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -52,7 +44,7 @@ def criar_rodape() -> ft.Container:
                                 "Evalytics",
                                 size=14,
                                 weight=ft.FontWeight.BOLD,
-                                color=COR_TEXTO_TITULO,
+                                color=TEXTO_CLARO,
                             ),
                         ],
                     ),
@@ -74,7 +66,7 @@ def criar_rodape() -> ft.Container:
                     content=ft.Text(
                         "Avaliação institucional orientada por dados",
                         size=12,
-                        color=COR_TEXTO_SECUNDARIO,
+                        color=TEXTO_CLARO_SECUNDARIO,
                         text_align=ft.TextAlign.CENTER,
                     ),
                 ),
@@ -95,7 +87,7 @@ def criar_rodape() -> ft.Container:
                     content=ft.Text(
                         "© 2026 Evalytics",
                         size=12,
-                        color=COR_TEXTO_SECUNDARIO,
+                        color=TEXTO_CLARO_SECUNDARIO,
                         text_align=ft.TextAlign.CENTER,
                     ),
                 ),

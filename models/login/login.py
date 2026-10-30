@@ -199,12 +199,46 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         cabecalho_abas, campo_nome, campo_email, campo_senha, opcoes_extras, btn_login, secao_social, COR_CARD
     )
 
-    # Retorna o container `View` (Página de navegação real do Flet)
+    # O card ocupa uma fração responsiva da tela: em celulares usa toda a
+    # largura disponível e, em telas maiores, mantém uma largura confortável.
+    card_responsivo = ft.ResponsiveRow(
+        columns=12,
+        alignment=ft.MainAxisAlignment.CENTER,
+        controls=[
+            ft.Container(
+                col={
+                    "xs": 12,
+                    "sm": 8,
+                    "md": 6,
+                    "lg": 5,
+                    "xl": 4,
+                    "xxl": 4,
+                },
+                content=card_login,
+            ),
+        ],
+    )
+
+    conteudo = ft.Column(
+        expand=True,
+        scroll=ft.ScrollMode.AUTO,
+        alignment=ft.MainAxisAlignment.START,
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+        controls=[
+            ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=20,
+                controls=[cabecalho, card_responsivo, rodape_termos],
+            ),
+        ],
+    )
+
+    # Retorna a página com rolagem vertical para telas baixas ou cadastro longo.
     return ft.View(
         route="/login", 
         bgcolor=COR_FUNDO,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
-        vertical_alignment=ft.MainAxisAlignment.CENTER,
-        padding=20, 
-        controls=[ft.Container(content=ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=30, controls=[cabecalho, card_login, rodape_termos]))],
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+        vertical_alignment=ft.MainAxisAlignment.START,
+        padding=ft.Padding.symmetric(horizontal=16, vertical=12),
+        controls=[conteudo],
     )

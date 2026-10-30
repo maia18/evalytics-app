@@ -1,5 +1,6 @@
 import flet as ft
 from components.core.auth.auth_state import auth_state
+from components.core.router.rotas_cts import ROTA_INICIAL
 
 def criar_botao_logout(
     page: ft.Page,
@@ -15,7 +16,7 @@ def criar_botao_logout(
     '''
     async def fazer_logout(e):
         await auth_state.encerrar_sessao(page)
-        mudar_tela("/login")
+        mudar_tela(ROTA_INICIAL)
 
     # Condicional de renderização da interface baseada na prop 'compact'
     if compact:

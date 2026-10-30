@@ -15,7 +15,7 @@ def criar_opcoes_extras(
         label="Lembrar-me",
         label_style=ft.TextStyle(
             color=cor_texto_secundario,
-            size=14,
+            size=12,
         ),
         fill_color=cor_primaria, # A cor de preenchimento quando marcado
     )
@@ -24,6 +24,9 @@ def criar_opcoes_extras(
     opcoes = ft.Row(
         # SPACE_BETWEEN é essencial aqui: empurra o Checkbox para a extrema esquerda e o botão "Esqueceu a senha?" para a extrema direita.
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        width=float("inf"),
+        wrap=False,
+        spacing=0,
         controls=[
             checkbox_lembrar,
             
@@ -32,6 +35,8 @@ def criar_opcoes_extras(
                 "Esqueceu a senha?",
                 style=ft.ButtonStyle(
                     color=cor_primaria,
+                    padding=0,
+                    text_style=ft.TextStyle(size=12),
                 ),
             ),
         ],

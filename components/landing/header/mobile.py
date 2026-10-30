@@ -1,10 +1,6 @@
 import flet as ft
 from typing import Callable
-from components.core.constants.constants import (
-    COR_TEXTO_TITULO,
-    COR_TEXTO_SECUNDARIO,
-    COR_PRIMARIA,
-)
+from components.landing.palette import ROXO_CLARO, TEXTO_CLARO, TEXTO_CLARO_SECUNDARIO
 
 def criar_menu_mobile(
     page: ft.Page, 
@@ -23,13 +19,13 @@ def criar_menu_mobile(
     btn_menu = ft.IconButton(
         icon=ft.Icons.MENU,
         icon_size=25,
-        icon_color=COR_TEXTO_TITULO,
+        icon_color=TEXTO_CLARO,
     )
 
     btn_fechar = ft.IconButton(
         icon=ft.Icons.CLOSE,
         icon_size=25,
-        icon_color=COR_TEXTO_TITULO,
+        icon_color=TEXTO_CLARO,
     )
 
     # =========================================================
@@ -51,7 +47,7 @@ def criar_menu_mobile(
                 ft.TextButton(
                     "Recursos",
                     style=ft.ButtonStyle(
-                        color=COR_TEXTO_SECUNDARIO,
+                        color=TEXTO_CLARO_SECUNDARIO,
                         alignment=ft.Alignment.CENTER_LEFT,
                     ),
                     on_click=ir_para_recursos,
@@ -61,7 +57,7 @@ def criar_menu_mobile(
                 ft.TextButton(
                     "Sobre",
                     style=ft.ButtonStyle(
-                        color=COR_TEXTO_SECUNDARIO,
+                        color=TEXTO_CLARO_SECUNDARIO,
                         alignment=ft.Alignment.CENTER_LEFT,
                     ),
                     on_click=ir_para_sobre,
@@ -71,7 +67,7 @@ def criar_menu_mobile(
                 ft.TextButton(
                     "Entrar",
                     style=ft.ButtonStyle(
-                        color=COR_PRIMARIA,
+                        color=ROXO_CLARO,
                         alignment=ft.Alignment.CENTER_LEFT,
                     ),
                     on_click=lambda e: mudar_tela("/login"),

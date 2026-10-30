@@ -1,76 +1,70 @@
 import flet as ft
-from components.core.constants.constants import (
-    COR_TEXTO_TITULO,
-    COR_TEXTO_SECUNDARIO,
-    COR_PRIMARIA,
-)
+from components.landing.palette import TEXTO_CLARO, TEXTO_CLARO_SECUNDARIO, ROXO
 
-def criar_etapa(numero: str, titulo: str, descricao: str) -> ft.Row:
+def criar_etapa(
+    numero: str,
+    titulo: str,
+    descricao: str,
+    opacidade: float = 1.0,
+) -> ft.Row:
     """
-    Cria um item visual de etapa utilizado para apresentar fluxos, processos ou instruções na Landing Page.
+    Cria um item visual de etapa com indicador numérico preenchido.
 
         Cada etapa é composta por:
 
-            - Indicador numérico;
+            - Indicador numérico colorido;
             - Título da etapa;
             - Descrição resumida.
+
+        O parâmetro 'opacidade' controla a intensidade da cor de fundo
+        do indicador, permitindo criar efeitos de gradiente visual
+        entre etapas consecutivas.
     """
 
     return ft.Row(
-        spacing=15,  # Espaçamento entre o indicador numérico e o conteúdo textual.
-        vertical_alignment=ft.CrossAxisAlignment.CENTER, # Mantém todos os elementos alinhados verticalmente.
+        spacing=14,
+        vertical_alignment=ft.CrossAxisAlignment.START,
         controls=[
 
             # =================================================
             # INDICADOR DA ETAPA
             # =================================================
-            
-            # Exibe o número da etapa dentro de um bloco visual destacado.
+
             ft.Container(
-                width=38,
-                height=38,
-                border_radius=8, # Bordas arredondadas para manter consistência visual com a identidade da aplicação.
-
-                # Utiliza uma versão suavizada da cor primária para destacar sem competir visualmente com o restante do conteúdo.
+                width=36,
+                height=36,
+                border_radius=10,
                 bgcolor=ft.Colors.with_opacity(
-                    0.10,
-                    COR_PRIMARIA,
+                    opacidade,
+                    ROXO,
                 ),
-
                 alignment=ft.Alignment.CENTER,
-
                 content=ft.Text(
                     numero,
-                    size=12,
+                    size=13,
                     weight=ft.FontWeight.BOLD,
-                    color=COR_PRIMARIA,
+                    color=ft.Colors.WHITE,
                 ),
             ),
 
             # =================================================
             # CONTEÚDO DA ETAPA
             # =================================================
-            
-            # Agrupa título e descrição.
+
             ft.Column(
                 spacing=2,
-                expand=True, # Permite que o conteúdo utilize toda a largura disponível.
-                
+                expand=True,
                 controls=[
-
-                    # Título principal da etapa.
                     ft.Text(
                         titulo,
                         size=14,
                         weight=ft.FontWeight.BOLD,
-                        color=COR_TEXTO_TITULO,
+                        color=TEXTO_CLARO,
                     ),
-
-                    # Texto complementar explicando o objetivo ou funcionamento da etapa.
                     ft.Text(
                         descricao,
                         size=12,
-                        color=COR_TEXTO_SECUNDARIO,
+                        color=TEXTO_CLARO_SECUNDARIO,
                     ),
                 ],
             ),

@@ -1,9 +1,6 @@
 import flet as ft
 from typing import Callable
-from components.core.constants.constants import (
-    COR_TEXTO_SECUNDARIO,
-    COR_PRIMARIA,
-)
+from components.landing.palette import ROXO, ROXO_CLARO, TEXTO_CLARO_SECUNDARIO
 
 def criar_menu_desktop(
     mudar_tela: Callable[[str], None], 
@@ -34,7 +31,7 @@ def criar_menu_desktop(
             ft.TextButton(
                 "Recursos",
                 style=ft.ButtonStyle(
-                    color=COR_TEXTO_SECUNDARIO,
+                    color=TEXTO_CLARO_SECUNDARIO,
                 ),
                 on_click=ir_para_recursos,
             ),
@@ -47,7 +44,7 @@ def criar_menu_desktop(
             ft.TextButton(
                 "Sobre",
                 style=ft.ButtonStyle(
-                    color=COR_TEXTO_SECUNDARIO,
+                    color=TEXTO_CLARO_SECUNDARIO,
                 ),
                 on_click=ir_para_sobre,
             ),
@@ -57,10 +54,14 @@ def criar_menu_desktop(
             # =================================================
             
             # Direciona o usuário para a área autenticada da aplicação através da tela de login.
-            ft.TextButton(
+            ft.ElevatedButton(
                 "Entrar",
+                bgcolor=ROXO,
+                color=ft.Colors.WHITE,
+                height=40,
                 style=ft.ButtonStyle(
-                    color=COR_PRIMARIA,
+                    shape=ft.RoundedRectangleBorder(radius=20),
+                    padding=ft.Padding.symmetric(horizontal=20),
                 ),
                 on_click=lambda e: mudar_tela("/login"),
             ),

@@ -13,9 +13,8 @@ def criar_card_login(
     """Painel central principal que engloba (wraps) os elementos do formulário de autenticação."""
     
     return ft.Container(
-        width=420, 
         bgcolor=cor_card, 
-        padding=40, 
+        padding=24,
         border_radius=12,
         shadow=ft.BoxShadow(
             blur_radius=15, 

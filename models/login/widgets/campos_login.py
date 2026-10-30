@@ -14,7 +14,8 @@ def _criar_campo_texto(
             ft.TextField(
                 hint_text=hint_text, hint_style=ft.TextStyle(color=cor_secundario),
                 border_color=cor_borda, border_radius=8, content_padding=15,
-                cursor_color=cor_titulo, text_style=ft.TextStyle(color=cor_titulo), **kwargs,
+                cursor_color=cor_titulo, text_style=ft.TextStyle(color=cor_titulo),
+                width=float("inf"), **kwargs,
             ),
         ],
     )

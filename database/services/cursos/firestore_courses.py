@@ -16,6 +16,20 @@ def curso_esta_ativo(curso: dict) -> bool:
         return valor
     return str(valor).strip().casefold() in {"ativo", "active", "true", "1"}
 
+
+def _notificar_status_curso(nome: str, ativo: bool) -> None:
+    status = "ativado" if ativo else "inativado"
+    disponibilidade = (
+        "está disponível para avaliações."
+        if ativo
+        else "não está disponível para novas avaliações."
+    )
+    criar_notificacao_curso(
+        titulo=f"Curso {status}",
+        descricao=f"O curso '{nome}' foi {status} e {disponibilidade}",
+    )
+
+
 def gerar_codigo_curso() -> str:
     """Gera o próximo código sequencial CUR-0001 disponível."""
     codigos = {
@@ -99,7 +113,13 @@ def atualizar_curso_db(
         Retorna True em caso de sucesso.
     """
     try:
-        db.collection(COLECAO_CURSOS).document(doc_id).update(
+        curso_ref = db.collection(COLECAO_CURSOS).document(doc_id)
+        snapshot = curso_ref.get()
+        dados_atuais = snapshot.to_dict() or {}
+        status_anterior = curso_esta_ativo(dados_atuais)
+        status_alterado = ativo != status_anterior
+
+        curso_ref.update(
             {
                 "nome": nome,
                 "departamento": depto,
@@ -110,10 +130,13 @@ def atualizar_curso_db(
 
         logger.info("Curso '%s' atualizado com sucesso.", nome)
 
-        criar_notificacao_curso(
-            titulo="Curso atualizado",
-            descricao=f"As informações do curso '{nome}' foram atualizadas.",
-        )
+        if status_alterado:
+            _notificar_status_curso(nome, ativo)
+        else:
+            criar_notificacao_curso(
+                titulo="Curso atualizado",
+                descricao=f"As informações do curso '{nome}' foram atualizadas.",
+            )
 
         return True
 
@@ -125,12 +148,19 @@ def atualizar_curso_db(
 def atualizar_status_curso_db(doc_id: str, ativo: bool) -> bool:
     """Atualiza apenas o status, sem alterar os demais dados do curso."""
     try:
-        db.collection(COLECAO_CURSOS).document(doc_id).update({"ativo": ativo})
+        curso_ref = db.collection(COLECAO_CURSOS).document(doc_id)
+        snapshot = curso_ref.get()
+        dados_atuais = snapshot.to_dict() or {}
+        status_anterior = curso_esta_ativo(dados_atuais)
+
+        curso_ref.update({"ativo": ativo})
         logger.info(
             "Status do curso '%s' alterado para %s.",
             doc_id,
             "ativo" if ativo else "inativo",
         )
+        if ativo != status_anterior:
+            _notificar_status_curso(dados_atuais.get("nome", doc_id), ativo)
         return True
     except Exception:
         logger.exception("Erro ao atualizar o status do curso '%s'.", doc_id)

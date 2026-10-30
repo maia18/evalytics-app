@@ -1,5 +1,5 @@
 import flet as ft
-from components.core.constants.constants import COR_TEXTO_TITULO
+from components.landing.palette import TEXTO_CLARO
 
 def criar_logo() -> ft.Row:
     """Cria o componente de identidade visual da aplicação."""
@@ -22,7 +22,7 @@ def criar_logo() -> ft.Row:
                 "Evalytics",
                 size=20,
                 weight=ft.FontWeight.BOLD,
-                color=COR_TEXTO_TITULO,
+                color=TEXTO_CLARO,
             ),
         ],
     )

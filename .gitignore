@@ -4,9 +4,10 @@ env/
 .env
 .env.*
 
-# Arquivos temporários do Python
+# Outros arquivos
 __pycache__/
 *.pyc
+.flet
 
 # Arquivos locais
 relatorio_*.csv

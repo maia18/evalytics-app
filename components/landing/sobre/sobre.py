@@ -1,64 +1,162 @@
 import flet as ft
-from components.core.constants.constants import (
-    COR_CARD,
+from components.landing.palette import (
+    FUNDO,
+    CARD_ESCURO,
+    BORDA_ESCURO,
+    TEXTO_CLARO,
+    TEXTO_CLARO_SECUNDARIO,
+    ROXO,
+    ROXO_CLARO,
 )
 from components.landing.helpers import criar_etapa
-from components.landing.sobre.conteudo import criar_sobre_conteudo
 
 def criar_secao_sobre() -> ft.Container:
     """
-    Constrói a seção explicativa da Landing Page, dividindo a tela entre
-        um bloco de texto de apresentação e uma lista visual de etapas (1, 2, 3).
+    Constrói a seção 'Como funciona' da Landing Page.
+        Apresenta o fluxo de avaliação em 3 etapas numeradas
+        e um card destaque institucional.
     """
 
-    # 1. Recupera o bloco de texto (lado esquerdo no desktop)
-    sobre_conteudo = criar_sobre_conteudo()
-    
-    # 2. Constrói a lista de etapas (lado direito no desktop)
-    etapas = ft.Column(
-        spacing=22, # Respiro uniforme entre as etapas
+    # =========================================================
+    # ETAPAS NUMERADAS
+    # =========================================================
+
+    bloco_etapas = ft.Column(
+        spacing=16,
         controls=[
-            criar_etapa("01", "Avaliar", "Colete informações por meio das avaliações institucionais."),
-            criar_etapa("02", "Analisar", "Organize os resultados e acompanhe os indicadores."),
-            criar_etapa("03", "Melhorar", "Use as informações para apoiar decisões e melhorias."),
+
+            ft.Text(
+                "Como funciona",
+                size=24,
+                weight=ft.FontWeight.BOLD,
+                color=TEXTO_CLARO,
+            ),
+
+            ft.Text(
+                "Um fluxo simples em 3 passos.",
+                size=13,
+                color=TEXTO_CLARO_SECUNDARIO,
+            ),
+
+            ft.Container(height=4),
+
+            criar_etapa(
+                "1",
+                "Avaliar",
+                "Colete informações por meio das "
+                "avaliações institucionais.",
+                1.0,
+            ),
+
+            criar_etapa(
+                "2",
+                "Analisar",
+                "Organize os resultados e acompanhe "
+                "os indicadores.",
+                0.80,
+            ),
+
+            criar_etapa(
+                "3",
+                "Melhorar",
+                "Use as informações para apoiar "
+                "decisões e melhorias.",
+                0.60,
+            ),
         ],
     )
 
-    # 3. Retorna a junção desses blocos encapsulados e responsivos
-    return ft.Container(
-        key=ft.ScrollKey("sobre"), # Ponto de âncora para o scroll da página
-        padding=ft.Padding.symmetric(
-            horizontal=60,
-            vertical=75,
+    # =========================================================
+    # CARD DESTAQUE
+    # =========================================================
+
+    card_destaque = ft.Container(
+        padding=24,
+        border_radius=16,
+        bgcolor=CARD_ESCURO,
+        border=ft.Border.all(
+            1,
+            BORDA_ESCURO,
         ),
-        bgcolor=COR_CARD,
+        content=ft.Column(
+            spacing=12,
+            controls=[
+
+                ft.Row(
+                    spacing=8,
+                    controls=[
+                        ft.Container(
+                            width=8,
+                            height=8,
+                            bgcolor=ROXO,
+                            border_radius=8,
+                        ),
+                        ft.Text(
+                            "Da avaliação à melhoria contínua",
+                            size=13,
+                            weight=ft.FontWeight.BOLD,
+                            color=ROXO_CLARO,
+                        ),
+                    ],
+                ),
+
+                ft.Text(
+                    "O Evalytics centraliza todo o processo de "
+                    "avaliação institucional, facilitando a coleta, "
+                    "organização e análise das informações de forma "
+                    "estruturada.",
+                    size=13,
+                    color=TEXTO_CLARO_SECUNDARIO,
+                ),
+            ],
+        ),
+    )
+
+    # =========================================================
+    # SEÇÃO
+    # =========================================================
+
+    return ft.Container(
+        key=ft.ScrollKey("sobre"),
+        padding=ft.Padding.symmetric(
+            horizontal=32,
+            vertical=56,
+        ),
+        bgcolor=FUNDO,
         content=ft.ResponsiveRow(
             columns=12,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER, # Mantém ambos os lados alinhados pelo meio
-            run_spacing=35, # Espaço aplicado quando quebra de linha (mobile)
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            run_spacing=30,
             controls=[
-                
+
                 # =====================================================
-                # BLOCO ESQUERDO: TEXTO
+                # BLOCO ESQUERDO: ETAPAS
                 # =====================================================
+
                 ft.Container(
-                    # No desktop ocupa metade da tela (6/12), no mobile ocupa tudo (12/12)
-                    col={"xs": 12, "sm": 12, "md": 6, "lg": 6, "xl": 6},
-                    padding=ft.Padding.only(
-                        right=40, # Evita colisão visual com a lista de etapas
-                    ),
-                    content=sobre_conteudo,
+                    col={
+                        "xs": 12,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 6,
+                        "xl": 6,
+                    },
+                    content=bloco_etapas,
                 ),
 
                 # =====================================================
-                # BLOCO DIREITO: ETAPAS
+                # BLOCO DIREITO: DESTAQUE
                 # =====================================================
+
                 ft.Container(
-                    col={"xs": 12, "sm": 12, "md": 6, "lg": 6, "xl": 6},
-                    padding=ft.Padding.only(
-                        top=10, # Pequeno ajuste vertical fino para equilibrar visualmente com o título da esquerda
-                    ),
-                    content=etapas,
+                    col={
+                        "xs": 12,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 6,
+                        "xl": 6,
+                    },
+                    content=card_destaque,
                 ),
             ],
         ),

@@ -1,5 +1,6 @@
 import flet as ft
 from typing import Callable
+from components.landing.palette import FUNDO
 from components.landing.header.logo import criar_logo
 from components.landing.header.desktop import criar_menu_desktop
 from components.landing.header.mobile import criar_menu_mobile
@@ -32,8 +33,9 @@ def criar_header(
     # =========================================================
 
     header_desktop = ft.Container(
+        bgcolor=FUNDO,
         padding=ft.Padding.symmetric(
-            horizontal=60,
+            horizontal=32,
             vertical=12,
         ),
         content=ft.Row(
@@ -51,6 +53,7 @@ def criar_header(
     # =========================================================
 
     header_mobile = ft.Container(
+        bgcolor=FUNDO,
         padding=ft.Padding.symmetric(
             horizontal=20,
             vertical=12,
