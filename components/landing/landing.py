@@ -1,6 +1,6 @@
 import flet as ft
 from typing import Callable
-from components.landing.palette import FUNDO
+from components.landing.palette import FUNDO, FUNDO_CABECALHO
 
 # Componentes da Landing Page
 from components.landing.hero import criar_hero
@@ -50,15 +50,17 @@ def ViewLanding(
     )
 
     hero = criar_hero(
+        page=page,
         mudar_tela=mudar_tela,
         ir_para_recursos=ir_para_recursos,
     )
 
-    recursos = criar_secao_recursos()
+    recursos = criar_secao_recursos(page)
 
-    sobre = criar_secao_sobre()
+    sobre = criar_secao_sobre(page)
 
     cta = criar_cta(
+        page=page,
         mudar_tela=mudar_tela,
     )
 
@@ -70,15 +72,17 @@ def ViewLanding(
 
     view = ft.View(
         route="/",
-        bgcolor=FUNDO,
+        bgcolor=FUNDO_CABECALHO,
         padding=0,
+        spacing=0,
         scroll=ft.ScrollMode.AUTO,
         appbar=ft.AppBar(
             title=header,
             toolbar_height=80,
-            bgcolor=FUNDO,
+            bgcolor=FUNDO_CABECALHO,
             elevation=0,
             automatically_imply_leading=False,
+            title_spacing=0,
         ),
         controls=[
             hero,

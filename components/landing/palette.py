@@ -1,6 +1,7 @@
 """Tokens visuais da landing com seções escuras, claras e acentos vivos."""
 
 FUNDO = "#141119"
+FUNDO_CABECALHO = "#1A1522"
 SUPERFICIE = "#F6F2FA"
 CARD = "#FFFFFF"
 CARD_HOVER = "#FBF8FF"

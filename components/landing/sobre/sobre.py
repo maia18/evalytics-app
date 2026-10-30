@@ -1,4 +1,5 @@
 import flet as ft
+from typing import TYPE_CHECKING
 from components.landing.palette import (
     FUNDO,
     CARD_ESCURO,
@@ -9,8 +10,12 @@ from components.landing.palette import (
     ROXO_CLARO,
 )
 from components.landing.helpers import criar_etapa
+from components.landing.transicao import criar_fluxo_animado, preparar_entrada
 
-def criar_secao_sobre() -> ft.Container:
+if TYPE_CHECKING:
+    from flet import Page
+
+def criar_secao_sobre(page: "Page") -> ft.Container:
     """
     Constrói a seção 'Como funciona' da Landing Page.
         Apresenta o fluxo de avaliação em 3 etapas numeradas
@@ -116,13 +121,8 @@ def criar_secao_sobre() -> ft.Container:
     # SEÇÃO
     # =========================================================
 
-    return ft.Container(
-        key=ft.ScrollKey("sobre"),
-        padding=ft.Padding.symmetric(
-            horizontal=32,
-            vertical=56,
-        ),
-        bgcolor=FUNDO,
+    conteudo = ft.Container(
+        padding=ft.Padding.symmetric(horizontal=32, vertical=56),
         content=ft.ResponsiveRow(
             columns=12,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -158,6 +158,19 @@ def criar_secao_sobre() -> ft.Container:
                     },
                     content=card_destaque,
                 ),
+            ],
+        ),
+    )
+
+    return ft.Container(
+        key=ft.ScrollKey("sobre"),
+        bgcolor=FUNDO,
+        clip_behavior=ft.ClipBehavior.NONE,
+        content=ft.Stack(
+            clip_behavior=ft.ClipBehavior.NONE,
+            controls=[
+                *criar_fluxo_animado(page, 340),
+                preparar_entrada(page, conteudo, 0.82),
             ],
         ),
     )

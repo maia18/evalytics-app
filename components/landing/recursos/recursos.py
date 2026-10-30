@@ -1,8 +1,9 @@
 import flet as ft
 from components.landing.palette import FUNDO, SUPERFICIE, TEXTO, TEXTO_SECUNDARIO, ROXO, ROSA, CIANO, LARANJA
 from components.landing.recursos.card import criar_card_responsivo
+from components.landing.transicao import criar_fluxo_animado, preparar_entrada
 
-def criar_secao_recursos() -> ft.Container:
+def criar_secao_recursos(page: ft.Page) -> ft.Container:
     """
     Constrói a seção de recursos da Landing Page.
         Apresenta os principais módulos do Evalytics em uma grade 2×2 com layout horizontal.
@@ -85,25 +86,41 @@ def criar_secao_recursos() -> ft.Container:
     # SEÇÃO
     # =========================================================
 
+    conteudo = ft.Container(
+        padding=ft.Padding.symmetric(horizontal=32, vertical=112),
+        content=ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=36,
+            controls=[titulo_recursos, cards_recursos],
+        ),
+    )
+
     return ft.Container(
         key=ft.ScrollKey("recursos"),
-        padding=ft.Padding.symmetric(
-            horizontal=32,
-            vertical=56,
-        ),
         bgcolor=FUNDO,
         gradient=ft.LinearGradient(
             begin=ft.Alignment.TOP_CENTER,
             end=ft.Alignment.BOTTOM_CENTER,
-            colors=[FUNDO, "#BBA5D7", SUPERFICIE, SUPERFICIE, "#BBA5D7", FUNDO],
-            stops=[0, 0.12, 0.24, 0.76, 0.88, 1],
+            colors=[
+                FUNDO,
+                "#20182A",
+                "#705C8A",
+                "#D7C9E9",
+                SUPERFICIE,
+                SUPERFICIE,
+                "#D7C9E9",
+                "#705C8A",
+                "#20182A",
+                FUNDO,
+            ],
+            stops=[0, 0.07, 0.14, 0.21, 0.28, 0.72, 0.79, 0.86, 0.93, 1],
         ),
-        content=ft.Column(
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=36,
+        clip_behavior=ft.ClipBehavior.NONE,
+        content=ft.Stack(
+            clip_behavior=ft.ClipBehavior.NONE,
             controls=[
-                titulo_recursos,
-                cards_recursos,
+                *criar_fluxo_animado(page, 460),
+                preparar_entrada(page, conteudo, 0.48),
             ],
         ),
     )
