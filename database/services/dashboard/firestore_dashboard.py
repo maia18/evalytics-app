@@ -11,6 +11,8 @@ from utils.services.cursos.curso_utils import (
     listar_departamentos_unicos,
     listar_nomes_cursos_filtraveis,
     resolver_curso_avaliacao,
+    filtrar_cursos_por_coordenador,
+    chave_escopo_cursos,
 )
 from utils.services.avaliacoes.avaliacoes_service import listar_avaliacoes
 from utils.services.relatorio.relatorio_utils import obter_semestre
@@ -27,8 +29,9 @@ def obter_dados_dashboard(
     departamento: str | None = None,
 ) -> dict:
     """Agrega KPIs, eixos e cursos das avaliações, com filtros opcionais."""
+    cursos_cadastrados = filtrar_cursos_por_coordenador(obter_cursos_db())
     chave_cache = (
-        f"dashboard:{obter_instituicao_id_atual()}:"
+        f"dashboard:{obter_instituicao_id_atual()}:{chave_escopo_cursos(cursos_cadastrados)}:"
         f"{semestre or ''}:{curso_nome or ''}:{departamento or ''}"
     )
     encontrado, valor_cache = obter_cache(chave_cache)
@@ -53,7 +56,6 @@ def obter_dados_dashboard(
 
     try:
         mapa_eixos = obter_mapa_eixos()
-        cursos_cadastrados = obter_cursos_db()
         indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
 
         registros = []

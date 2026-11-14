@@ -26,8 +26,10 @@ def criar_modal_add(
         nome = (campos_add["nome"].value or "").strip()
         depto = (campos_add["departamento"].value or "").strip()
         coord = (campos_add["coordenador"].value or "").strip()
+        coord_email = (campos_add["coordenador_email"].value or "").strip()
         campos_add["nome"].error_text = None
         campos_add["departamento"].error_text = None
+        campos_add["coordenador_email"].error_text = None
 
         if not nome or not depto:
             if not nome:
@@ -36,10 +38,14 @@ def criar_modal_add(
                 campos_add["departamento"].error_text = "Informe o departamento."
             contexto.page.update()
             return
+        if coord_email and ("@" not in coord_email or "." not in coord_email.rsplit("@", 1)[-1]):
+            campos_add["coordenador_email"].error_text = "Informe um e-mail válido."
+            contexto.page.update()
+            return
 
         codigo = gerar_codigo_curso()
         ativo = campos_add["status"].value == "ATIVO"
-        novo_id = adicionar_curso_db(codigo, nome, depto, coord, ativo)
+        novo_id = adicionar_curso_db(codigo, nome, depto, coord, ativo, coord_email)
 
         if novo_id:
             # Limpa os campos após salvar para o próximo cadastro
@@ -58,7 +64,7 @@ def criar_modal_add(
         title=ft.Text("Cadastrar Novo Curso", size=20, weight="bold"),
         content=ft.Column(
             width=500,
-            height=330,
+            height=390,
             spacing=12,
             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
             controls=[

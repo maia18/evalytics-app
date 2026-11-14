@@ -17,6 +17,7 @@ from database.services.cursos.firestore_courses import obter_cursos_db
 from database.services.memory_cache import invalidar_cache, obter_cache, salvar_cache
 from utils.services.cursos.curso_utils import (
     criar_indice_cursos_atuais,
+    filtrar_cursos_por_coordenador,
     resolver_curso_avaliacao,
 )
 
@@ -204,14 +205,21 @@ def listar_avaliacoes(
 ) -> list[dict]:
     """Lista apenas avaliações vinculadas a cursos ainda cadastrados."""
     instituicao_id = obter_instituicao_id_atual()
+    cursos_completos = cursos_cadastrados if cursos_cadastrados is not None else obter_cursos_db()
+    cursos_visiveis = filtrar_cursos_por_coordenador(cursos_completos)
+    ids_visiveis = {str(curso.get("id")) for curso in cursos_visiveis if curso.get("id")}
     chave_cache = f"avaliacoes:{instituicao_id}"
     encontrado, valor = obter_cache(chave_cache)
     if encontrado:
-        return [dict(avaliacao) for avaliacao in valor]
+        indice_completo = criar_indice_cursos_atuais(cursos_completos)
+        return [
+            dict(avaliacao)
+            for avaliacao in valor
+            if str((resolver_curso_avaliacao(avaliacao, indice_completo) or {}).get("id", "")) in ids_visiveis
+        ]
 
     try:
-        cursos = cursos_cadastrados if cursos_cadastrados is not None else obter_cursos_db()
-        indice_cursos = criar_indice_cursos_atuais(cursos)
+        indice_cursos = criar_indice_cursos_atuais(cursos_completos)
         docs = listar_documentos_da_instituicao(COLECAO_AVALIACOES)
         lista = []
         
@@ -231,7 +239,13 @@ def listar_avaliacoes(
             tuple(dict(avaliacao) for avaliacao in lista),
             CACHE_AVALIACOES_TTL,
         )
-        return lista
+        return [
+            avaliacao
+            for avaliacao in lista
+            if str(
+                (resolver_curso_avaliacao(avaliacao, indice_cursos) or {}).get("id", "")
+            ) in ids_visiveis
+        ]
 
     except Exception:
         logger.exception("Erro ao consultar avaliações no Firestore.")
@@ -247,10 +261,7 @@ def carregar_cursos_e_avaliacoes() -> tuple[list[dict], list[dict]]:
     encontrado_pacote, pacote = obter_cache(chave_pacote)
     if encontrado_pacote:
         cursos_cache, avaliacoes_cache = pacote
-        return (
-            [dict(item) for item in cursos_cache],
-            [dict(item) for item in avaliacoes_cache],
-        )
+        return _filtrar_pacote_por_escopo(cursos_cache, avaliacoes_cache)
 
     # Navegações iniciais podem solicitar o mesmo conjunto ao mesmo tempo.
     # A segunda chamada aguarda no worker e reutiliza o cache que a primeira gravar.
@@ -258,10 +269,7 @@ def carregar_cursos_e_avaliacoes() -> tuple[list[dict], list[dict]]:
         encontrado_pacote, pacote = obter_cache(chave_pacote)
         if encontrado_pacote:
             cursos_cache, avaliacoes_cache = pacote
-            return (
-                [dict(item) for item in cursos_cache],
-                [dict(item) for item in avaliacoes_cache],
-            )
+            return _filtrar_pacote_por_escopo(cursos_cache, avaliacoes_cache)
 
         cursos, avaliacoes = _buscar_cursos_e_avaliacoes(instituicao_id)
         salvar_cache(
@@ -272,7 +280,24 @@ def carregar_cursos_e_avaliacoes() -> tuple[list[dict], list[dict]]:
             ),
             CACHE_CURSOS_AVALIACOES_TTL,
         )
-        return cursos, avaliacoes
+        return _filtrar_pacote_por_escopo(cursos, avaliacoes)
+
+
+def _filtrar_pacote_por_escopo(
+    cursos: list[dict], avaliacoes: list[dict]
+) -> tuple[list[dict], list[dict]]:
+    """Aplica o escopo do coordenador após ler o cache compartilhado."""
+    cursos_visiveis = filtrar_cursos_por_coordenador(cursos)
+    ids_visiveis = {str(curso.get("id")) for curso in cursos_visiveis if curso.get("id")}
+    indice_cursos = criar_indice_cursos_atuais(cursos)
+    avaliacoes_visiveis = [
+        dict(avaliacao)
+        for avaliacao in avaliacoes
+        if str(
+            (resolver_curso_avaliacao(avaliacao, indice_cursos) or {}).get("id", "")
+        ) in ids_visiveis
+    ]
+    return [dict(curso) for curso in cursos_visiveis], avaliacoes_visiveis
 
 
 def _buscar_cursos_e_avaliacoes(

@@ -35,6 +35,7 @@ def criar_linha_curso(
     coord: str,
     ativo: bool = True,
     quantidade_avaliacoes: int = 0,
+    coordenador_email: str = "",
 ) -> ft.DataRow:
     """Cria uma linha do catálogo com dados, status e ações."""
     codigo_limpo = str(codigo or "").strip()
@@ -108,6 +109,7 @@ def criar_linha_curso(
         contexto.campos_edit["nome"].value = nome or ""
         contexto.campos_edit["departamento"].value = depto or ""
         contexto.campos_edit["coordenador"].value = coord or ""
+        contexto.campos_edit["coordenador_email"].value = coordenador_email or ""
         contexto.campos_edit["status"].value = (
             "ATIVO" if controle_status.value else "INATIVO"
         )

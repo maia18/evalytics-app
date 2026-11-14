@@ -1,9 +1,10 @@
 import asyncio
 import flet as ft
-from .auth_service import renovar_token_firebase
+from .auth_service import renovar_token_firebase, obter_dados_usuario_firebase
 from .auth_constants import (
     CHAVE_REFRESH_TOKEN, 
     CHAVE_LEMBRAR_ME,
+    CHAVE_EMAIL_USUARIO,
 )
 
 class AuthState:
@@ -72,6 +73,7 @@ class AuthState:
         if lembrar_me and self._refresh_token:
             await self._prefs.set(CHAVE_REFRESH_TOKEN, self._refresh_token)
             await self._prefs.set(CHAVE_LEMBRAR_ME, True)
+            await self._prefs.set(CHAVE_EMAIL_USUARIO, dados.get("email", ""))
         else:
             await self._remover_sessao_persistida() # Caso contrário, limpamos qualquer cache antigo por segurança.
 
@@ -101,6 +103,9 @@ class AuthState:
             lembrar_me = await self._prefs.get(CHAVE_LEMBRAR_ME)
             if lembrar_me:
                 await self._prefs.set(CHAVE_REFRESH_TOKEN, self._refresh_token)
+                await self._prefs.set(
+                    CHAVE_EMAIL_USUARIO, self._usuario.get("email", "")
+                )
 
     async def _remover_sessao_persistida(self):
         """Método interno de utilidade para limpar o SharedPreferences."""
@@ -109,6 +114,7 @@ class AuthState:
 
         await self._prefs.remove(CHAVE_REFRESH_TOKEN)
         await self._prefs.remove(CHAVE_LEMBRAR_ME)
+        await self._prefs.remove(CHAVE_EMAIL_USUARIO)
 
     async def possui_sessao_persistida(self, page: ft.Page) -> bool:
         """Verifica se existe um token salvo (útil para decidir se mostra a tela de login ou carrega o app direto)."""
@@ -141,6 +147,18 @@ class AuthState:
         if not data:
             await self._remover_sessao_persistida()
             return False
+
+        email_salvo = await self._prefs.get(CHAVE_EMAIL_USUARIO)
+        if email_salvo:
+            data["email"] = email_salvo
+        else:
+            perfil = await asyncio.to_thread(
+                obter_dados_usuario_firebase, api_key, data.get("id_token", "")
+            )
+            if perfil:
+                data.update(perfil)
+                if data.get("email"):
+                    await self._prefs.set(CHAVE_EMAIL_USUARIO, data["email"])
 
         # Restaura o estado em memória com os NOVOS tokens recebidos
         self._autenticado = True

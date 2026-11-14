@@ -6,10 +6,9 @@ from components.landing.header.mobile import criar_menu_mobile
 from components.landing.palette import (
     PAGE,
     BORDER,
-    BORDER_STRONG,
-    SURFACE_ALT,
     ACCENT,
     MAX_CONTENT_WIDTH,
+    ROXO,
 )
 
 def criar_header(
@@ -47,21 +46,21 @@ def criar_header(
                 alignment=ft.Alignment.CENTER,
                 content=menu_desktop,
             ),
-            ft.Container(
-                width=32,
-                height=32,
-                border_radius=16,
-                bgcolor=SURFACE_ALT,
-                border=ft.Border.all(1, BORDER_STRONG),
-                alignment=ft.Alignment.CENTER,
-                tooltip="Login",
-                ink=True,
-                on_click=lambda e: mudar_tela("/login"),
-                content=ft.Icon(
-                    ft.Icons.PERSON_OUTLINE,
-                    size=18,
-                    color=ACCENT,
-                ),
+            ft.Row(
+                spacing=8,
+                controls=[
+                    ft.OutlinedButton(
+                        "Login",
+                        on_click=lambda e: mudar_tela("/login"),
+                        style=ft.ButtonStyle(color=ACCENT),
+                    ),
+                    ft.ElevatedButton(
+                        "Cadastrar-se",
+                        on_click=lambda e: mudar_tela("/cadastro"),
+                        bgcolor=ROXO,
+                        color=ft.Colors.WHITE,
+                    ),
+                ],
             ),
         ],
     )

@@ -80,14 +80,19 @@ def criar_menu_mobile(
                 ),
                 ft.Divider(height=1, color=BORDER),
                 ft.ElevatedButton(
-                    "Entrar",
+                    "Login",
                     bgcolor=ROXO,
-                    color="#ffffff",
+                    color=ft.Colors.WHITE,
                     height=38,
                     style=ft.ButtonStyle(
                         shape=ft.RoundedRectangleBorder(radius=8),
                     ),
                     on_click=lambda e: mudar_tela("/login"),
+                ),
+                ft.OutlinedButton(
+                    "Cadastrar-se",
+                    style=ft.ButtonStyle(color=ROXO_CLARO),
+                    on_click=lambda e: mudar_tela("/cadastro"),
                 ),
             ],
         ),

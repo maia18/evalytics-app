@@ -2,6 +2,7 @@
 
 ROTA_INICIAL = "/"
 ROTA_LOGIN = "/login"
+ROTA_CADASTRO = "/cadastro"
 ROTA_INICIO = "/inicio"
 ROTA_DASHBOARD = "/dashboard"
 ROTA_DASHBOARD_VISAO_GERAL = "/dashboard/visao-geral"

@@ -9,6 +9,8 @@ from utils.services.cursos.curso_utils import (
     criar_indice_cursos_atuais,
     normalizar_nome_curso,
     resolver_curso_avaliacao,
+    filtrar_cursos_por_coordenador,
+    chave_escopo_cursos,
 )
 from utils.services.avaliacoes.avaliacoes_service import listar_avaliacoes
 
@@ -38,7 +40,7 @@ def _obter_mapa_eixos(propagar_erro: bool = False) -> dict[str, int]:
 def listar_semestres_disponiveis() -> list[str]:
     """Retorna os semestres encontrados nas avaliações reais no Firestore."""
     try:
-        cursos = obter_cursos_db()
+        cursos = filtrar_cursos_por_coordenador(obter_cursos_db())
         indice_cursos = criar_indice_cursos_atuais(cursos)
         documentos = listar_avaliacoes(cursos)
         semestres = set()
@@ -77,17 +79,16 @@ def obter_resumo_eixos(
     eixo: int | None = None,
 ) -> dict:
     """Retorna médias e contagens válidas no mesmo conjunto filtrado."""
-    chave_cache = (
-        f"resumo_eixos:{obter_instituicao_id_atual()}:"
-        f"{semestre or ''}:{curso_nome or ''}:{eixo if eixo is not None else ''}"
-    )
-    encontrado, valor_cache = obter_cache(chave_cache)
-    if encontrado:
-        return deepcopy(valor_cache)
-
     try:
         mapa_eixo = _obter_mapa_eixos()
-        cursos_cadastrados = obter_cursos_db()
+        cursos_cadastrados = filtrar_cursos_por_coordenador(obter_cursos_db())
+        chave_cache = (
+            f"resumo_eixos:{obter_instituicao_id_atual()}:{chave_escopo_cursos(cursos_cadastrados)}:"
+            f"{semestre or ''}:{curso_nome or ''}:{eixo if eixo is not None else ''}"
+        )
+        encontrado, valor_cache = obter_cache(chave_cache)
+        if encontrado:
+            return deepcopy(valor_cache)
         indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
         avaliacoes = listar_avaliacoes(cursos_cadastrados)
 
@@ -169,19 +170,20 @@ def listar_resultados_consolidados(
     propagar_erro: bool = False,
 ) -> list[dict]:
     """Retorna avaliações consolidadas por eixo."""
-    chave_cache = (
-        f"resultados:{obter_instituicao_id_atual()}:"
-        f"{semestre or ''}:{eixo if eixo is not None else ''}:{curso_nome or ''}"
-    )
-    encontrado, valor_cache = obter_cache(chave_cache)
-    if encontrado:
-        return deepcopy(valor_cache)
-
     try:
         # Mantém as leituras Firestore em sequência dentro do mesmo worker.
         # Isso evita concorrência no cliente Firestore durante a carga inicial.
         mapa_eixo = _obter_mapa_eixos(propagar_erro)
-        cursos_cadastrados = obter_cursos_db(propagar_erro)
+        cursos_cadastrados = filtrar_cursos_por_coordenador(
+            obter_cursos_db(propagar_erro)
+        )
+        chave_cache = (
+            f"resultados:{obter_instituicao_id_atual()}:{chave_escopo_cursos(cursos_cadastrados)}:"
+            f"{semestre or ''}:{eixo if eixo is not None else ''}:{curso_nome or ''}"
+        )
+        encontrado, valor_cache = obter_cache(chave_cache)
+        if encontrado:
+            return deepcopy(valor_cache)
         nomes_cadastrados = [
             str(curso.get("nome", "")).strip()
             for curso in cursos_cadastrados

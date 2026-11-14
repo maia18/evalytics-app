@@ -8,6 +8,7 @@ from database.services.cursos.firestore_courses import obter_cursos_db
 from utils.services.indicadores.indicadores_repository import listar_indicadores
 from utils.services.cursos.curso_utils import (
     criar_indice_cursos_atuais,
+    filtrar_cursos_por_coordenador,
     resolver_curso_avaliacao,
 )
 
@@ -221,7 +222,7 @@ def preparar_dados_csv(resultados: list[dict]) -> list[list[str]]:
         return dados
 
     mapa_indicadores = obter_mapa_indicadores()
-    cursos_cadastrados = obter_cursos_db()
+    cursos_cadastrados = filtrar_cursos_por_coordenador(obter_cursos_db())
     indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
 
     try:

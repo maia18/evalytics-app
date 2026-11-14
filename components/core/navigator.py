@@ -34,6 +34,7 @@ class Navigator:
         rotas_publicas = {
             "/",
             "/login",
+            "/cadastro",
             "/indicadores",
             "/desenvolvedores",
         }

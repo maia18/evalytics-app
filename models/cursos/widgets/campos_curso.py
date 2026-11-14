@@ -17,6 +17,7 @@ def criar_campos_formulario_curso(
         "nome": ft.TextField(label="Nome do Curso", border_color=cores[COR_PRIMARIA], dense=True),
         "departamento": ft.TextField(label="Departamento", border_color=cores[COR_PRIMARIA], dense=True),
         "coordenador": ft.TextField(label="Coordenador Responsável (opcional)", border_color=cores[COR_PRIMARIA], dense=True),
+        "coordenador_email": ft.TextField(label="E-mail do coordenador (acesso às análises do curso)", border_color=cores[COR_PRIMARIA], dense=True),
         "status": ft.Dropdown(
             label="Status",
             value="ATIVO",

@@ -71,6 +71,7 @@ def adicionar_curso_db(
     depto: str,
     coord: str,
     ativo: bool = True,
+    coordenador_email: str = "",
 ) -> Optional[str]:
     """
     Adiciona um curso na coleção de cursos.
@@ -82,6 +83,7 @@ def adicionar_curso_db(
             "nome": nome,
             "departamento": depto,
             "coordenador": coord,
+            "coordenador_email": coordenador_email.strip().casefold(),
             "ativo": ativo,
             "instituicao_id": obter_instituicao_id_atual(),
             "timestamp": firestore.SERVER_TIMESTAMP,
@@ -137,6 +139,7 @@ def atualizar_curso_db(
     depto: str,
     coord: str,
     ativo: bool = True,
+    coordenador_email: str = "",
 ) -> bool:
     """
     Atualiza um curso existente.
@@ -156,6 +159,7 @@ def atualizar_curso_db(
                 "nome": nome,
                 "departamento": depto,
                 "coordenador": coord,
+                "coordenador_email": coordenador_email.strip().casefold(),
                 "ativo": ativo,
             }
         )

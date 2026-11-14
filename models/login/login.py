@@ -52,7 +52,7 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         COR_PRIMARIA,
     )
 
-    modo_cadastro = {"ativo": False}
+    modo_cadastro = {"ativo": getattr(page, "rota_navegacao_atual", page.route) == "/cadastro"}
     btn_cadastro = ft.TextButton(
         "Cadastre-se",
         data="signup",
@@ -68,6 +68,8 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         spacing=4,
         controls=[texto_cadastro, btn_cadastro],
     )
+    campo_nome.visible = modo_cadastro["ativo"]
+    opcoes_extras.visible = not modo_cadastro["ativo"]
 
     """
     # =========================================================================
@@ -167,7 +169,7 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     
     cabecalho = criar_cabecalho(LOGIN_TEXTO, LOGIN_TEXTO_SECUNDARIO)
     secao_social = criar_login_social(LOGIN_TEXTO_SECUNDARIO, LOGIN_BORDA, LOGIN_TEXTO)
-    secao_social.visible = True
+    secao_social.visible = not modo_cadastro["ativo"]
 
     # O botão principal da ação (Sign In / Create Account)
     btn_login = ft.ElevatedButton(
@@ -176,6 +178,12 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
         height=45, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
         on_click=fazer_login,
     )
+    if modo_cadastro["ativo"]:
+        cabecalho.controls[0].value = "Criar sua conta no Evalytics"
+        cabecalho.controls[1].value = "Preencha seus dados para criar uma conta."
+        btn_login.content = "Criar conta"
+        texto_cadastro.value = "Já possui uma conta?"
+        btn_cadastro.content = "Fazer login"
 
     def alternar_modo_cadastro(e: ft.ControlEvent) -> None:
         modo_cadastro["ativo"] = not modo_cadastro["ativo"]
@@ -319,7 +327,8 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
     def previa_ativa() -> bool:
         return (
             getattr(page, "_login_preview_token", None) is token_animacao
-            and getattr(page, "rota_navegacao_atual", "/login") == "/login"
+            and getattr(page, "rota_navegacao_atual", "/login")
+            in {"/login", "/cadastro"}
         )
 
     async def animar_previa() -> None:
@@ -354,7 +363,7 @@ def ViewLogin(page: ft.Page, mudar_tela: Callable[[str], None]) -> ft.View:
             await asyncio.sleep(0.4)
 
     view = ft.View(
-        route="/login", 
+        route=("/cadastro" if modo_cadastro["ativo"] else "/login"),
         bgcolor=LOGIN_FUNDO,
         horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
         vertical_alignment=ft.MainAxisAlignment.START,

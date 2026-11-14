@@ -104,6 +104,51 @@ def chave_departamento(nome: str | None) -> str:
     return " ".join(str(nome or "").split()).casefold()
 
 
+def filtrar_cursos_por_coordenador(cursos: list[dict]) -> list[dict]:
+    """Limita o catálogo ao curso associado ao e-mail do coordenador autenticado.
+
+    Cursos sem associação explícita continuam visíveis para perfis institucionais.
+    A associação é feita pelo campo `coordenador_email`, com suporte a cursos
+    legados cujo campo `coordenador` já contém um e-mail.
+    """
+    try:
+        from components.core.auth.auth_state import auth_state
+
+        usuario = auth_state.usuario or {}
+    except (AttributeError, TypeError):
+        return cursos
+
+    email = str(usuario.get("email") or "").strip().casefold()
+    perfil = str(
+        usuario.get("papel")
+        or usuario.get("role")
+        or usuario.get("perfil")
+        or usuario.get("tipo_usuario")
+        or ""
+    ).strip().casefold()
+    eh_coordenador = perfil in {"coordenador", "coordinator", "coordenador_curso"}
+    if not email:
+        return [] if eh_coordenador else cursos
+
+    atribuidos = []
+    for curso in cursos:
+        email_coordenador = str(
+            curso.get("coordenador_email") or curso.get("coordenador") or ""
+        ).strip().casefold()
+        if email_coordenador == email:
+            atribuidos.append(curso)
+
+    if atribuidos:
+        return atribuidos
+    return [] if eh_coordenador else cursos
+
+
+def chave_escopo_cursos(cursos: list[dict]) -> str:
+    """Gera uma chave determinística para caches de análises por catálogo."""
+    ids = sorted(str(curso.get("id") or chave_curso(curso.get("nome"))) for curso in cursos)
+    return ",".join(ids)
+
+
 def listar_departamentos_unicos(cursos: list[dict]) -> list[str]:
     """Agrupa grafias equivalentes e prefere a versão em caixa alta, se existir."""
     nomes_por_chave: dict[str, str] = {}

@@ -24,12 +24,14 @@ def criar_modal_edit(
         nome = campos_edit["nome"].value
         depto = campos_edit["departamento"].value
         coord = campos_edit["coordenador"].value
+        coord_email = campos_edit["coordenador_email"].value
         ativo = campos_edit["status"].value == "ATIVO"
 
         nome = (nome or "").strip()
         depto = (depto or "").strip()
         campos_edit["nome"].error_text = None
         campos_edit["departamento"].error_text = None
+        campos_edit["coordenador_email"].error_text = None
         if not nome or not depto:
             if not nome:
                 campos_edit["nome"].error_text = "Informe o nome do curso."
@@ -37,9 +39,13 @@ def criar_modal_edit(
                 campos_edit["departamento"].error_text = "Informe o departamento."
             page.update()
             return
+        if coord_email and ("@" not in coord_email or "." not in coord_email.rsplit("@", 1)[-1]):
+            campos_edit["coordenador_email"].error_text = "Informe um e-mail válido."
+            page.update()
+            return
 
         if linha_em_edicao and id_banco:
-            sucesso = atualizar_curso_db(id_banco, nome, depto, coord, ativo)
+            sucesso = atualizar_curso_db(id_banco, nome, depto, coord, ativo, coord_email)
             if sucesso:
                 linha_em_edicao.cells[1].content.value = nome
                 linha_em_edicao.cells[2].content.value = depto
@@ -55,7 +61,7 @@ def criar_modal_edit(
         title=ft.Text("Editar Curso", size=20, weight="bold"),
         content=ft.Column(
             width=500,
-            height=330,
+            height=390,
             spacing=12,
             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
             controls=[

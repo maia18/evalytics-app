@@ -7,6 +7,8 @@ from database.services.cursos.firestore_courses import obter_cursos_db
 from utils.services.indicadores.indicadores_repository import listar_indicadores
 from utils.services.cursos.curso_utils import (
     criar_indice_cursos_atuais,
+    filtrar_cursos_por_coordenador,
+    chave_escopo_cursos,
     resolver_curso_avaliacao,
 )
 from .avaliacoes_formatadores import (
@@ -23,7 +25,11 @@ def obter_respostas_tabela() -> list[dict]:
     Busca as avaliações reais do Firestore e transforma cada resposta de indicador em uma linha da tabela.
         Uma avaliação pode gerar várias linhas, pois cada indicador respondido representa uma resposta individual.
     """
-    chave_cache = f"respostas_tabela:{obter_instituicao_id_atual()}"
+    cursos_cadastrados = filtrar_cursos_por_coordenador(obter_cursos_db())
+    chave_cache = (
+        f"respostas_tabela:{obter_instituicao_id_atual()}:"
+        f"{chave_escopo_cursos(cursos_cadastrados)}"
+    )
     encontrado, valor = obter_cache(chave_cache)
     if encontrado:
         return [dict(linha) for linha in valor]
@@ -37,7 +43,6 @@ def obter_respostas_tabela() -> list[dict]:
             for indicador in indicadores
             if indicador.get("id")
         }
-        cursos_cadastrados = obter_cursos_db()
         indice_cursos = criar_indice_cursos_atuais(cursos_cadastrados)
 
         linhas = []

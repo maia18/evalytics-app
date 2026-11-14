@@ -10,6 +10,7 @@ from typing import Callable
 from components.core.router.rotas_cts import (
     ROTA_INICIAL,
     ROTA_LOGIN,
+    ROTA_CADASTRO,
     ROTA_INICIO,
     ROTA_DASHBOARD,
     ROTA_DASHBOARD_VISAO_GERAL,
@@ -59,6 +60,7 @@ ROTAS: dict[str, ViewBuilder] = {
     ROTA_INDICADORES: ViewIndicadores,
     ROTA_DESENVOLVEDORES: ViewDesenvolvedores,
     ROTA_LOGIN: ViewLogin,
+    ROTA_CADASTRO: ViewLogin,
     ROTA_INICIO: ViewInicio,
     ROTA_DASHBOARD: ViewDashboard,
     ROTA_DASHBOARD_VISAO_GERAL: ViewDashboard,

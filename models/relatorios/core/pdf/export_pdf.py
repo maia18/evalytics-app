@@ -16,6 +16,7 @@ from utils.services.cursos.curso_utils import (
     criar_indice_cursos_atuais,
     normalizar_nome_curso,
     resolver_curso_avaliacao,
+    filtrar_cursos_por_coordenador,
 )
 from .pdf_builder import construir_documento_pdf
 
@@ -64,7 +65,7 @@ def carregar_avaliacoes_detalhadas(
         return []
 
     indicadores_atuais = listar_indicadores()
-    cursos_cadastrados = obter_cursos_db()
+    cursos_cadastrados = filtrar_cursos_por_coordenador(obter_cursos_db())
     nomes_cadastrados = [
         str(curso.get("nome", "")).strip()
         for curso in cursos_cadastrados

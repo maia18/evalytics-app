@@ -66,6 +66,7 @@ def carregar_cursos_iniciais(
                 curso.get("coordenador", ""),
                 curso_esta_ativo(curso),
                 quantidade_avaliacoes,
+                curso.get("coordenador_email", ""),
             )
         )
 
